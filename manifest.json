@@ -1,0 +1,17 @@
+{
+  "name": "Tab Sugar",
+  "version": "0.1",
+  "description": "Sprinkle some Sugar on Chrome Tabs!",
+  "icons": {
+    "16": "ico/16.png",
+    "48": "ico/48.png",
+    "128": "ico/128.png"
+  },
+  "browser_action": {
+    "default_icon": "ico/browser_action.png"
+  },
+  "background_page": "background.html",
+  "permissions": [
+    "tabs"
+  ]
+}
