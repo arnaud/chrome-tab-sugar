@@ -12,7 +12,8 @@ h2. Features
 
 TBD
 
-Here is a simple !class diagram!:http://yuml.me/diagram/scruffy/class/%5BGroup%7CName%5D+-%5BTab%7CTitle;URL;Favicon%5D,%20%5BGroup%5D+-%5BGroup%5D.
+Here is a simple class diagram:
+!http://yuml.me/diagram/scruffy/class/%5BGroup%7CName%5D+-%5BTab%7CTitle;URL;Favicon%5D,%20%5BGroup%5D+-%5BGroup%5D!
 
 h2. Contributors
 
