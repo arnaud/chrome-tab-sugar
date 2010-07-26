@@ -22,12 +22,17 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
-body {
+html,body {
   font-family: arial;
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ddd), to(#ccc));
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ddd), to(#ccc)) no-repeat;
+  height: 100%;
+  margin: 0;
+  -webkit-user-select: none;
 }
 #dashboard {
-  width: 100%;
+  width: 98%;
+  height: 80%;
+  padding: 1%;
 }
 
 /* Tabs */
@@ -116,6 +121,17 @@ section>ul {
 .ui-draggable-dragging {
   z-index: 999999;
 }
+.ui-resizable { position: relative;}
+.ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block;}
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+.ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
+.ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
+.ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
+.ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
+.ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+.ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+.ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
 .hover {
   /*background: yellow;*/
 }

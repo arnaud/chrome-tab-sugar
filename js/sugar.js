@@ -31,7 +31,8 @@ $(function() {
       containment: '#dashboard',
       revert: 'valid',
       cancel: 'a.ui-icon'
-    });
+    })
+    .sortable();
   });
 
   // groups are draggable, droppable and resizable
@@ -80,7 +81,44 @@ $(function() {
 
   // handle action buttons
   $('.nav.new_group').click(function(){createGroup()});
+
+  // handle group creation with the mouse within the dashboard
+  $('#dashboard, .group').live("mousedown", function(e) {
+    console.debug(e.currentTarget);
+    console.debug('mousedown', e.pageX, e.pageY)
+    var groupUI = createGroupUI();
+    groupUI.css('width', 30).css('height', 20).css('position', 'absolute').css('top', (e.pageY-10)+'px').css('left', (e.pageX-10)+'px').css('opacity', 0).find('.title').hide();
+    groupUI.mousemove(function(e){
+      console.debug('mousemove');
+      var w = e.pageX - $(this).css('left').replace('px', '') + 20;
+      var h = e.pageY - $(this).css('top').replace('px', '') + 10;
+      var opacity = (h + w < 200) ? 0.5 : 1;
+      $(this).css('width', w+'px').css('height', h+'px').css('opacity', opacity);
+    });
+    groupUI.mouseup(onGroupOrDashboardMouseUp);
+    $(this).append(groupUI);
+    return groupUI;
+  });
+
+  // get rid of any group mousemove events on mouseup
+  $('#dashboard').mouseup(function(e){
+    console.debug('mouseup', e.pageX, e.pageY);
+    $('.group', this).not('#icebox').each(onGroupOrDashboardMouseUp);
+  });
 });
+
+function onGroupOrDashboardMouseUp() {
+  $(this).unbind('mousemove');
+  var w = parseInt($(this).css('width').replace('px', ''));
+  var h = parseInt($(this).css('height').replace('px', ''));
+  console.debug($(this), w, h);
+  // minimal size in order to keep the group displayed
+  if(h + w < 200) {
+    $(this).fadeOut();
+  } else {
+    $('.title', this).show();
+  }
+}
 
 function initDashboard() {
   console.debug('initDashboard');
@@ -94,13 +132,13 @@ function initDashboard() {
 }
 
 function createGroup(name) {
-  name = typeof(name) != 'undefined' ? name : "";
   var groupUI = createGroupUI(name);
   $('#dashboard').append(groupUI);
   return groupUI;
 }
 
 function createGroupUI(name) {
+  name = typeof(name) != 'undefined' ? name : "New group";
   return $('<section class="group"><span class="title">'+name+'</span><ul></ul><div class="clear" /></section>');
 }
 
