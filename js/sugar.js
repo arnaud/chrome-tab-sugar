@@ -94,7 +94,7 @@ function initDashboard() {
 }
 
 function createGroup(name) {
-  name = typeof(name) != 'undefined' ? name : "New Group";
+  name = typeof(name) != 'undefined' ? name : "";
   var groupUI = createGroupUI(name);
   $('#dashboard').append(groupUI);
   return groupUI;
