@@ -40,7 +40,7 @@ $(function() {
     var tab = $(this).parent().parent();
     tab.fadeOut();
     //TODO
-    // the initial group should disappear if empty
+    // when grabbing the last tab of a group, the initial group should disappear if empty
     var old_group = $(tab).parent().parent();
     var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
     if(nb_tabs_in_old_group == 0) {
@@ -62,7 +62,28 @@ $(function() {
     $('.group').droppable({
       accept: '.tab',
       hoverClass: 'hover',
-      greedy: true
+      greedy: true,
+      drop: function(ev, ui) {
+        var tab = ui.draggable;
+        var old_group = $(tab).parent().parent();
+        var new_group = $(this);
+        console.debug(old_group, new_group);
+        if(old_group.get(0) == new_group.get(0)) {
+          return false;
+        }
+        // the tab should fade out and appear in a newly created group
+        tab.fadeOut(function() {
+          new_group.find('>ul').append(tab);
+          tab.fadeIn();
+        });
+        // when grabbing the last tab of a group, the initial group should disappear if empty
+        var old_group = $(ui.helper.context.parentElement).parent();
+        var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
+        if(nb_tabs_in_old_group == 0) {
+          old_group.fadeOut();
+          //TODO
+        }
+      }
     });
 
     // dashboard accepts tabs (will create a new group)
@@ -71,15 +92,14 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
-        // when grabbing the last tab of a group...
         var tab = ui.draggable;
         // the tab should fade out and appear in a newly created group
         tab.fadeOut(function() {
           var new_group = createGroup();
-          new_group.find('ul').append(tab);
+          new_group.find('>ul').append(tab);
           tab.fadeIn();
         });
-        // the initial group should disappear if empty
+        // when grabbing the last tab of a group, the initial group should disappear if empty
         var old_group = $(ui.helper.context.parentElement).parent();
         var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
         if(nb_tabs_in_old_group == 0) {
@@ -177,11 +197,15 @@ function addTabToGroup(tab, group) {
 function createTabUI(tab) {
   var url = tab.url;
   var preview = localStorage.getItem(tab.windowId+"-"+tab.id+"-preview");
-  if(preview==null) preview = "ico/blank_preview.png";
+  if(preview==null) {
+    preview = '<img class="preview empty" />';
+  } else {
+    preview = '<img class="preview" src="'+preview+'" />';
+  }
   var favicon = tab.favIconUrl;
   if(favicon==null) favicon = "ico/blank_preview.png";
   var title = tab.title
-  return $('<li class="tab"><div><img class="preview" src="'+preview+'" /><img class="favicon" src="'+favicon+'" /><span class="title"><span>'+title+'</span></span><div class="close"></div></div></li>');
+  return $('<li class="tab"><div>'+preview+'<img class="favicon" src="'+favicon+'" /><span class="title"><span>'+title+'</span></span><div class="close"></div></div></li>');
 }
 
 function addTabToGroupUI(tab, group) {

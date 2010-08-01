@@ -4,9 +4,9 @@ h2. Features
 
 Tab Sugar eases the use of browser tabs when juggling with plenty of them. It acts for Chrome as "Tab Candy":http://www.azarask.in/blog/post/tabcandy/ does for Firefox.
 
-h2. Download
+h2. Install
 
-You can "download Tab Sugar":https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje on the official Google Chrome extension directory.
+You can "install Tab Sugar":https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje from the official "Google Chrome extension directory":https://chrome.google.com/extensions/search?q=tab+sugar.
 
 h2. Use
 
@@ -15,11 +15,8 @@ Groups can be named, dragged, resized & closed
 
 h2. Status
 
-It really is a Work in progress - Pre-alpha
-
+It really is a Work in progress - Pre-alpha.
 I only see it as a Proof of Concept at the moment.
-
-Here is a simple class diagram:
 
 h2. Contributors
 
