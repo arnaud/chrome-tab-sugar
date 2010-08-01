@@ -28,9 +28,12 @@
 
 var tabs = new Array();
 
-// Brower action
+// Browser action
 chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.windows.create({url:chrome.extension.getURL("sugar.html"), left:0, top:0});
+  // opens Tab Sugar in a new window
+  //chrome.windows.create({url:chrome.extension.getURL("sugar.html"), left:0, top:0});
+  // opens Tab Sugar in a new tab
+  chrome.tabs.create({url:chrome.extension.getURL("sugar.html")});
 });
 
 // Called when the URL of a tab changes
