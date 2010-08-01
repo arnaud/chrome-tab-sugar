@@ -30,29 +30,16 @@ var tabs = new Array();
 
 // Browser action
 chrome.browserAction.onClicked.addListener(function(tab) {
+  console.debug('chrome.browserAction.onClicked', tab);
   // opens Tab Sugar in a new window
   //chrome.windows.create({url:chrome.extension.getURL("sugar.html"), left:0, top:0});
   // opens Tab Sugar in a new tab
   chrome.tabs.create({url:chrome.extension.getURL("sugar.html")});
 });
 
-// Called when the URL of a tab changes
-function checkForUrlUpdate(tabId, changeInfo, tab) {
-  if (tab.url.length > 0) { // if the URL is valid
-    //TODO
-  }
-};
-
-// Listen for any changes to the URL of any tab
-chrome.tabs.onUpdated.addListener(checkForUrlUpdate);
-
-
-
-
-
-
 // List all the tabs of all the windows
 chrome.windows.getAll({populate:true}, function (windows) {
+  console.debug('chrome.windows.getAll', windows);
   for(var i = 0; i < windows.length; i++) {
     var ts = windows[i].tabs;
     for(var j = 0; j < ts.length; j++) {
@@ -64,11 +51,13 @@ chrome.windows.getAll({populate:true}, function (windows) {
 
 // Check for tab closing
 chrome.tabs.onRemoved.addListener(function(tabId) {
+  console.debug('chrome.tabs.onRemoved', tabId);
   tabs.unshift(tab);
 });
 
 // Check for tab opening
 chrome.tabs.onCreated.addListener(function(tab) {
+  console.debug('chrome.tabs.onCreated', tab);
   chrome.tabs.getSelected(null, function(t2) {
     console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
     tabs.unshift(tab);//TODO ??
@@ -77,22 +66,26 @@ chrome.tabs.onCreated.addListener(function(tab) {
 
 // Check for tab URL change
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  tabs[indexOfTab(tabId)] = tab;
+  console.debug('chrome.tabs.onUpdated', tabId, changeInfo, tab);
   captureCurrentTab();
 });
 
 function captureCurrentTab() {
-  chrome.tabs.captureVisibleTab(null, function (dataUrl) {
-    alert('Persisting current tab preview');
-    var key = tabId+"-preview";
-    persistData(key, dataUrl);
-    alert('done');
+  console.debug('captureCurrentTab');
+  chrome.windows.getCurrent(function(window) {
+    chrome.tabs.getSelected(null, function(tab) {
+      chrome.tabs.captureVisibleTab(null, function (dataUrl) {
+        var key = window.id+"-"+tab.id+"-preview";
+        persistData(key, dataUrl);
+      });
+    });
   });
 }
 
 function persistData(key, value) {
+  console.debug('persistData', key, {data:value});
   localStorage.removeItem();
-  localStorage.setItem(key, dataUrl);
+  localStorage.setItem(key, value);
 }
 
 </script>

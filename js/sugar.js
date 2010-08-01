@@ -35,6 +35,20 @@ $(function() {
     .sortable();
   });
 
+  // tabs are closeable
+  $('.tab .close').live("click", function(e) {
+    var tab = $(this).parent().parent();
+    tab.fadeOut();
+    //TODO
+    // the initial group should disappear if empty
+    var old_group = $(tab).parent().parent();
+    var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
+    if(nb_tabs_in_old_group == 0) {
+      old_group.fadeOut();
+      //TODO
+    }
+  });
+
   // groups are draggable, droppable and resizable
   $('.group').live("mouseover", function() {
 
@@ -57,12 +71,21 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
+        // when grabbing the last tab of a group...
         var tab = ui.draggable;
+        // the tab should fade out and appear in a newly created group
         tab.fadeOut(function() {
           var new_group = createGroup();
           new_group.find('ul').append(tab);
           tab.fadeIn();
         });
+        // the initial group should disappear if empty
+        var old_group = $(ui.helper.context.parentElement).parent();
+        var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
+        if(nb_tabs_in_old_group == 0) {
+          old_group.fadeOut();
+          //TODO
+        }
       }
     });
 
@@ -76,6 +99,13 @@ $(function() {
     },
     {
       onblur: 'submit'
+    });
+
+    // groups are closeable
+    $('.group>.close').live("click", function(e) {
+      var group = $(this).parent();
+      group.fadeOut();
+      //TODO
     });
   });
 
@@ -136,7 +166,7 @@ function createGroup(name) {
 
 function createGroupUI(name) {
   name = typeof(name) != 'undefined' ? name : "New group";
-  return $('<section class="group"><span class="title">'+name+'</span><ul></ul><div class="clear" /></section>');
+  return $('<section class="group"><span class="title">'+name+'</span><div class="close"></div><ul></ul><div class="clear" /></section>');
 }
 
 function addTabToGroup(tab, group) {
@@ -146,12 +176,12 @@ function addTabToGroup(tab, group) {
 
 function createTabUI(tab) {
   var url = tab.url;
-  var preview = localStorage.getItem(tab.id+"-preview");
+  var preview = localStorage.getItem(tab.windowId+"-"+tab.id+"-preview");
   if(preview==null) preview = "ico/blank_preview.png";
   var favicon = tab.favIconUrl;
   if(favicon==null) favicon = "ico/blank_preview.png";
   var title = tab.title
-  return $('<li class="tab"><div><img class="preview" src="'+preview+'" /><img class="favicon" src="'+favicon+'" /><span class="title"><span>'+title+'</span></span></div></li>');
+  return $('<li class="tab"><div><img class="preview" src="'+preview+'" /><img class="favicon" src="'+favicon+'" /><span class="title"><span>'+title+'</span></span><div class="close"></div></div></li>');
 }
 
 function addTabToGroupUI(tab, group) {
@@ -167,70 +197,3 @@ function addTabToGroupUI(tab, group) {
 $(function() {
   initDashboard();
 });
-
-
-
-/*function createScreenShot(mess) {
-  changeWorkStatus(chrome.i18n.getMessage("createimage"));
-  if (cancel) {
-    $(document).trigger("onfinish");
-    return
-  }
-  var img = [];
-  var theHeader, theFotter;
-  canvas = $("canvas")[0];
-  canvas.width = mess.width;
-  theHeader = $("#txtHeader")[0].value;
-  theFotter = $("#txtFotter")[0].value;
-  if (!url) {
-    url = mess.url
-  }
-
-  function replacim(inText) {
-    return inText.replace(/%U/gi, url).replace(/%D/gi, (new Date))
-  }
-  theHeader = replacim(theHeader);
-  theFotter = replacim(theFotter);
-  var offsetTop = 0;
-  if (theHeader) {
-    mess.height += 20;
-    offsetTop = 20
-  }
-  if (theFotter) {
-    mess.height += 20
-  }
-  canvas.height = mess.height;
-  for (var i = 0; i <= screens.length; i++) {
-    if (cancel) {
-      $(document).trigger("onfinish");
-      return
-    }
-    ctx = canvas.getContext("2d");
-    img[i] = $("<img tag=" + i + "/>");
-    img[i].load(function () {
-      if (cancel) {
-        $(document).trigger("onfinish");
-        return
-      }
-      var i;
-      i = parseInt($(this).attr("tag"));
-      img[i][0].width = 200;
-      ctx.drawImage(img[i][0], 0, screens[i].top + offsetTop);
-      img[i][0].src = "";
-      img[i] = "";
-      if (i == screens.length - 1) {
-        ctx.font = "arial 20px";
-        if (theFotter) {}
-        ctx.textBaseline = "bottom";
-        ctx.fillText(theFotter, 10, canvas.height, canvas.width - 20);
-        if (theHeader) {}
-        ctx.textBaseline = "up";
-        ctx.fillText(theHeader, 10, 10, canvas.width - 20);
-        updateFromCanvas()
-      }
-    });
-    try {
-      img[i].attr("src", screens[i].data)
-    } catch (e) {}
-  }
-}*/

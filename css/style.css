@@ -85,6 +85,16 @@ section>ul {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.tab .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 2px;
+  width: 10px;
+  height: 10px;
+  background: url(/ico/close.png);
+  cursor: pointer;
+}
 
 /* Groups */
 
@@ -111,6 +121,16 @@ section>ul {
 }
 .group>.title input {
   background: transparent;
+}
+.group .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 2px;
+  width: 10px;
+  height: 10px;
+  background: url(/ico/close.png);
+  cursor: pointer;
 }
 
 /* Draggable objects */
