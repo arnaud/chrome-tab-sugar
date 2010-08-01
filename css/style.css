@@ -55,7 +55,7 @@ html,body {
 .ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
 .ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
 .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
-
+.ui-icon-gripsmall-diagonal-se { background: url(/ico/resize.png) no-repeat bottom right; margin: 2px; }
 
 /* Tabs */
 
@@ -71,6 +71,7 @@ section>ul {
   float: left;
   margin: 2px;
   z-index: 2;
+  cursor: pointer;
 }
 .tab>div {
   position: relative;
@@ -122,6 +123,9 @@ section>ul {
   color: #999;
   content: "\00D7";
 }
+.tab .url {
+  display: none;
+}
 
 /* Groups */
 
@@ -139,6 +143,7 @@ section>ul {
   color: #999;
   margin-left: 4px;
   content: "\274D";
+  text-shadow: 1px 1px 1px #fff;
 }
 .group>.title {
   padding: 5px;
@@ -163,6 +168,15 @@ section>ul {
 .group .close:before {
   color: #999;
   content: "\00D7";
+  text-shadow: 1px 1px 1px #fff;
+}
+.group .debug {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: #999;
+  margin-left: 4px;
+  font-size: 10px;
 }
 
 
