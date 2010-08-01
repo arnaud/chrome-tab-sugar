@@ -1,6 +1,17 @@
-h1. README
+h1. Tab Sugar - the Google Chrome extension
 
-With the *Tab Sugar* Google Chrome extension, gain speed and usability while using your day-to-day tabs!
+h2. Features
+
+Tab Sugar eases the use of browser tabs when juggling with plenty of them. It acts for Chrome as "Tab Candy":http://www.azarask.in/blog/post/tabcandy/ does for Firefox.
+
+h2. Download
+
+You can "download Tab Sugar":https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje on the official Google Chrome extension directory.
+
+h2. Use
+
+Tabs can be grouped, drag&dropped (into a group or an empty space), reordered within a group & closed
+Groups can be named, dragged, resized & closed
 
 h2. Status
 
@@ -8,17 +19,12 @@ It really is a Work in progress - Pre-alpha
 
 I only see it as a Proof of Concept at the moment.
 
-h2. Features
-
-TBD
-
 Here is a simple class diagram:
-!http://yuml.me/diagram/scruffy/class/%5BGroup%7CName%5D+-%5BTab%7CTitle;URL;Favicon%5D,%20%5BGroup%5D+-%5BGroup%5D!
 
 h2. Contributors
 
  * "arnaud":http://github.com/arnaud (author)
 
-h2. Licence
+h2. License
 
  * Chrome Tab Sugar is open source and is licensed under the "MIT license":http://en.wikipedia.org/wiki/MIT_License.
