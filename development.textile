@@ -1,0 +1,15 @@
+h1. Tab Sugar - development notes
+
+h2. Classes
+
+!http://yuml.me/diagram/scruffy/class/[Group%7CName;PosX;PosY;Width;Height]+index-[Tab%7CTitle;URL;Favicon;Preview],%20[Group]+-[Group]!
+
+h2. Browser events
+
+On window open/close: a group is created/closed
+On new tab: new tab
+On tab change: tab is modified
+On tab closed: tab is closed
+On tab reordered: tab is reordered
+On browser closed: do nothing
+On browser opened: restore session (optional)
