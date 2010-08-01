@@ -79,9 +79,6 @@ $(function() {
     });
   });
 
-  // handle action buttons
-  $('.nav.new_group').click(function(){createGroup()});
-
   // handle group creation with the mouse within the dashboard
   $('#dashboard, .group').live("mousedown", function(e) {
     console.debug(e.currentTarget);
