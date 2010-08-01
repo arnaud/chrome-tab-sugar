@@ -54,6 +54,8 @@ $(function() {
       old_group.fadeOut();
       //TODO
     }
+    // prevent the tab clicking event to activate
+    return false;
   });
 
   // tabs are clickable
