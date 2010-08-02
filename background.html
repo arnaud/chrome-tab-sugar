@@ -88,4 +88,12 @@ function persistData(key, value) {
   localStorage.setItem(key, value);
 }
 
+// Enable the use of a shortcut key from within the tabs
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  if (request.action == "open") {
+    chrome.tabs.create({url:chrome.extension.getURL("sugar.html")});
+    sendResponse({});
+  }
+});
+
 </script>
