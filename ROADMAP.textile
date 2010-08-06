@@ -1,0 +1,36 @@
+h1. Tab Sugar Roadmap
+
+h2. Releases
+
+h3. Release 1.0
+
+The following features need to be added into Tab Sugar in orfer to the version 1.0 to release:
+
+ * -Represent the windows and tabs with group and tab items-
+ * -Make these tabs draggeable and droppable into groups-
+ * -Create groups with the mouse cursor-
+ * -Create groups while releasing a tab in the dashboard-
+ * -Click on a tab opens it within a new window, with all the other tabs of the group-
+ * -Access Tab Sugar with a shortcut key-
+ * Persist the dashboard with its groups &amp; tabs
+
+h3. Release 1.1
+
+ * Display a preview for each tabs
+
+h3. Release 1.2
+
+ * Resizing a group resizes its content incidentally
+ * Options page:
+   * Choose the shortcut key for accessing Tab Sugar from within any webpage
+   * Choose the behavior of how Tab Sugar opens (specific new tab, new window, any new tab)
+
+h3. Release 1.3
+
+ * Global search feature
+
+h2. Other stuffs
+
+ * Have a new icon
+ * Have a nice looking website
+ * Do a nice presentation video

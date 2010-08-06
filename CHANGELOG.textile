@@ -36,4 +36,5 @@ h3. 0.1.0.1
  * Tab Candy opens as a new window
  * Tabs are displayed with their favicon
  * Tabs are droppable onto the dashboard
+ * Tabs titles can be renamed
  * "New group" button for creating a new group
