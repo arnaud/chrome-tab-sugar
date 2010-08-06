@@ -28,6 +28,9 @@
   ],
   "background_page": "background.html",
   "permissions": [
-    "tabs"
+    "tabs",
+    "unlimited_storage",
+    "chrome://favicon/",
+    "http://tabsugar.com/"
   ]
 }
