@@ -1,0 +1,27 @@
+h1. Tab Sugar - the Google Chrome extension
+
+h2. Early versions
+
+h3. 0.1.0.5
+
+ * The shortcut key "Ctrl+space" opens Tab Sugar from within any actual tab
+
+h4. Notes
+
+The extension needs to be re-enabled since it requires more permissions.
+The shortcut key won't work with tabs already there ; a browser restart or a reload of these tabs will be needed for the shortcut key to work.
+
+h3. 0.1.0.4
+
+ * Tabs are clickable: open a new window with all the tabs of its group
+ * Groups are resizeable
+ * Added a screenshot to the extension page
+
+h3. 0.1.0.3
+
+ * Tab Candy opens as a new tab (will be customizable in a future version via an options page)
+ * Tabs show previews
+ * Empty groups close automatically
+ * Groups and tabs are closeable
+ * The "new group" button was removed
+ * Ability to create empty groups in the dashboard by dragging the mouse with the left button down
