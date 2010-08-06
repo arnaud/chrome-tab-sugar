@@ -1,84 +1,110 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-	<title>arnaud/chrome-tab-sugar @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #5a92e7;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #000000;
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <title>Tab Sugar - the Tab Candy equivalent for Chrome</title>
+  <meta name="description" content="Tab Sugar is a Google Chrome extension equivalent to Tab Candy for Firefox." />
+  <meta name="keywords" content="Tab Sugar,Tab Candy,Chrome,Firefox" />
+  <meta name="author" content="Arnaud Leymet" />
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="/assets/styles/reset.css">
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="/assets/styles/jquery.lightbox-0.5.css">
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="/assets/styles/master.css">
+  <script>
+    if(window.location.hostname=='arnaud.github.com') {
+      document.location.href = 'http://tabsugar.com/';
     }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #a56d18; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #a56d18; }
-    h3 { text-align: center; color: #a56d18; }
-    a { color: #a56d18; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
+  </script>
+  <!--[if lte IE 8]>
+  <script src="/assets/js/html5.js" type="text/javascript"></script>
+  <![endif]--> 
 </head>
-
 <body>
-  <a href="http://github.com/arnaud/chrome-tab-sugar"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/arnaud/chrome-tab-sugar/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/arnaud/chrome-tab-sugar/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+  <script type="text/javascript"> 
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'TODO']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+    })();
+  </script>
+  <header>
+    <div id="title">
+      <h1>Tab Sugar</h1>
+      <h2>Chrome Tabs. Evolved.</h2>
     </div>
-
-    <h1><a href="http://github.com/arnaud/chrome-tab-sugar">Tab Sugar</a>
-      <span class="small">by <a href="http://github.com/arnaud">arnaud</a></span></h1>
-
-    <div class="description">
-      Sprinkle some Sugar on Chrome Tabs!
-    </div>
-
-    <h2>Install</h2>
-<p>https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje</p>
-<h2>License</h2>
-<p>MIT License</p>
-<h2>Authors</h2>
-<p>Arnaud Leymet (arnaud.leymet@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Arnaud Leymet (arnaud.leymet@gmail.com)<br/>      </p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/arnaud/chrome-tab-sugar/zipball/master">zip</a> or
-      <a href="http://github.com/arnaud/chrome-tab-sugar/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/arnaud/chrome-tab-sugar</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/arnaud/chrome-tab-sugar">arnaud/chrome-tab-sugar</a>
-    </div>
-
-  </div>
-
-  
-</body>
-</html>
+    <nav id="menu">
+      <ul>
+        <li>
+          <a href="http://bit.ly/9MZk0v">
+            <span class="entry">Install</span>
+            <span class="info">On Chrome extension page</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://lighthouseapp.com/">
+            <span class="entry">Lighthouse</span>
+            <span class="info">Issue tracker</span>
+          </a>
+        </li>
+        <li>
+          <a href="http://github.com/arnaud/chrome-tab-sugar">
+            <span class="entry">Contribute</span>
+            <span class="info">Get involved &amp; help it grow</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <nav id="downloads">
+    <p class="title">Install</p>
+    <ul>
+      <li>
+        <a href="http://bit.ly/9MZk0v">Install Tab Sugar</a>
+        <span class="version">v0.1.0.5</span>
+      </li>
+    </ul>
+  </nav>
+  <section id="body">
+    <section id="vertical">
+      <h3>Screenshots</h3>
+      <ul id="screenshots">
+        <li>
+          <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1280783764.83/screenshot/2001" title="Dashboard">
+            <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1280783764.83/screenshot/2001" width="64px" height="52px" alt="Dashboard" />
+          </a>
+        </li>
+      </ul>
+      <h3>Open source</h3>
+      <p>Tab Sugar is open source and is licensed under the <a href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a>.</p>
+      <p>Its source code can be found on <a href="http://github.com/arnaud/chrome-tab-sugar">github</a>.</p>
+      <h3>Links</h3>
+      <ul>
+        <li><a href="https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje">Google Chrome extension page</a></li>
+        <li><a href="http://lighthouseapp.com/">Issues tracker</a></li>
+        <li><a href="http://github.com/arnaud/chrome-tab-sugar">Source code</a></li>
+      </ul>
+    </section>
+    <h3>What is Tab Sugar?</h3>
+    <p>Tab Sugar is a Google Chrome extension equivalent to Tab Candy for Firefox.</p>
+    <h3>Features</h3>
+    <p>Tab Sugar <i><span title="All of these features aren't implemented yet.">aims</span></i> to be the Tab Candy equivalent to Chrome and regroup the following features:</p> 
+    <ul> 
+      <li>TODO</li> 
+    </ul> 
+    <h3>Other Tab Management Tools</h3> 
+    <p>There is a bunch of other tab management extensions and tools. Here is a non exhaustive list:</p> 
+    <ul> 
+      <li><a href="http://www.azarask.in/blog/post/tabcandy/">Tab Candy (Firefox)</a></li> 
+      <li><a href="https://chrome.google.com/extensions/detail/oiabeebnmckkdjloeofbfladabfhedlg">TabSense (Chrome)</a></li> 
+    </ul> 
+    <h3>Why is Tab Sugar better?</h3> 
+    <p>Try it and you'll see why :-).</p> 
+  </section> 
+  <footer> 
+    <span>Tab Sugar - Chrome Tabs. Evolved.</span> 
+    <img id="opensourcelogo" src="http://opensource.org/trademarks/opensource/web/opensource-75x65.gif" alt="Open source" title="Open source" /> 
+  </footer> 
+</body> 
+</html> 

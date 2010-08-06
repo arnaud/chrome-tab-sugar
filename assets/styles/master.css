@@ -1,0 +1,219 @@
+/* 
+Totori - User Acceptance Testing Workbench
+http://totori.org/ - MIT License
+*/
+
+html {
+  background: #faf6f6;
+}
+
+body {
+  font-family: Georgia, serif;
+  width: 900px;
+  margin: 0 auto;
+  background: #fff url(/assets/img/bg-top.png) repeat-x top;
+  position: relative;
+  font-size: 1em;
+}
+
+h1, h2, h3 {
+  color: #512;
+  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.3);
+}
+
+h1 {
+  font-size: 4em;
+  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.5);
+}
+
+h2 {
+  font-size: 1.2em;
+  text-shadow: 2px 2px 1px rgba(95, 31, 47, 0.2);
+}
+
+a {
+  color: #512;
+}
+
+/* Title */
+
+#title {
+  display: block;
+  padding: 5em 0 2em 1em;
+  float: left;
+}
+
+/* Menu */
+
+#menu {
+  position: absolute;
+  right: 0;
+  display: block;
+}
+#menu ul {
+}
+#menu ul li {
+  float: left;
+  background: #fff;
+  width: 190px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #eb7;
+}
+#menu ul li a {
+  display: block;
+  text-decoration: none;
+  padding: 5px;
+}
+#menu ul li span.entry {
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 1px 1px 1px 5px;
+}
+#menu ul li span.info {
+  color: #512;
+  font-size: 0.7em;
+  padding: 1px 1px 1px 5px;
+}
+#menu ul li:hover {
+  background: #fec;
+  border-bottom: 3px solid #512;
+}
+#menu ul li:hover * {
+  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.5);
+}
+
+/* Downloads */
+
+#downloads {
+  position: absolute;
+  right: 0;
+  top: 6em;
+  float: right;
+  background: #eb7;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  margin-right: 0.7em;
+  width:16.6em;
+}
+#downloads .title {
+  color: #512;
+  font-weight: bold;
+  padding: 0.3em 0.3em;
+  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.5);
+}
+#downloads ul {
+  
+}
+#downloads ul li {
+  padding: 0.3em;
+  background: #fec url(/assets/img/bg-top.png) repeat-x top;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  margin: 0.3em;
+}
+#downloads ul li a {
+}
+#downloads ul li span {
+  font-size: 0.7em;
+}
+#downloads ul li .size:before {
+  content: '(';
+}
+#downloads ul li .size:after {
+  content: ')';
+}
+#downloads ul li:hover {
+  background-position: right;
+}
+#downloads ul li:hover * {
+  color: #000;
+}
+
+/* Body */
+
+#body {
+  clear: both;
+  margin-right: 17em;
+  padding: 0 1em 1em 1em;
+}
+h3 {
+  padding: 1.5em 0 0.5em 0;
+}
+p {
+  padding-top: 0.5em;
+}
+#body ul {
+  margin-left: 0.5em;
+  list-style-position: inside;
+}
+#body ul {
+  list-style-type: none;
+}
+*+html #body ul {
+  list-style-type: disc;
+}
+#body ul li {
+  margin-top: 0.3em;
+}
+#body ul li:first-child {
+  margin-top: 0.8em;
+}
+#body ul>li:before {
+  display: marker;
+  content: "\203A  ";
+}
+
+/* Vertical */
+
+#vertical {
+  float: right;
+  width: 16em;
+  margin-right:-17em;
+}
+
+#screenshots {
+  list-style-type: none;
+  margin-left: 0;
+  padding-top: 0.5em;
+}
+#screenshots li {
+  display: inline;
+  margin-right: 5px;
+}
+#screenshots>li:before {
+  display: none;
+}
+#body #screenshots {
+  list-style-type: none;
+}
+#screenshots a {
+  text-decoration: none;
+}
+#screenshots img {
+  -webkit-box-shadow: 4px 4px 7px #aaa;
+}
+#lightbox-image {
+  -webkit-box-shadow: 0px 0px 24px #aaa;
+}
+
+/* Footer */
+
+footer {
+  clear: both;
+  background: #fec;
+  border-top: 3px solid #eb7;
+  padding: 0.5em 1em;
+  margin-top: 2em;
+}
+footer span {
+  font-size: 0.7em;
+}
+#opensourcelogo {
+  position: absolute;
+  padding: 0.2em;
+  right: 0;
+  bottom: 2.2em;
+  width: 75px;
+  height: 65px;
+}
