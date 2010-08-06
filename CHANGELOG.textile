@@ -25,3 +25,15 @@ h3. 0.1.0.3
  * Groups and tabs are closeable
  * The "new group" button was removed
  * Ability to create empty groups in the dashboard by dragging the mouse with the left button down
+
+h3. 0.1.0.2
+
+ * Removal of the default group name ("Icebox")
+ * Handle group resizing and creation within the dashboard
+
+h3. 0.1.0.1
+
+ * Tab Candy opens as a new window
+ * Tabs are displayed with their favicon
+ * Tabs are droppable onto the dashboard
+ * "New group" button for creating a new group
