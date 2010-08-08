@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!--
+/**
+ * Copyright (c) 2010 Arnaud Leymet
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
+ */
+-->
+
+<html>
+<head>
+  <title>Tab Sugar Options</title>
+  <link href="css/options.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="js/lib/jquery.1.4.2.min.js" type="text/javascript"></script>
+  <script src="js/lib/jquery.hotkeys-0.7.9.min.js" type="text/javascript"></script>
+  <script src="js/hotkeys.js" type="text/javascript"></script>
+  <script src="js/storage.js" type="text/javascript"></script>
+  <script type="text/javascript">
+
+  // keep a reference of the background page
+  var back = chrome.extension.getBackgroundPage();
+
+  // needed for storage.js to work with this page
+  function updateUI() {}
+
+  function reloadTabSugar() {
+    console.debug('reloadTabSugar');
+    back.location.reload();
+  }
+
+  // Reinitializes localStorage and the database
+  function reinitialize() {
+    console.debug('reinitialize');
+    if(confirm("All your TabSugar groups and tabs will be reinitialized.\nAre you sure?")) {
+      $("#reinit").attr("disabled", true);
+
+      // localStorage
+      localStorage.clear();
+      console.debug('- localStorage cleared!');
+
+      // database
+      db.transaction(function (tx) {
+        // drop all tables
+        tx.executeSql("DROP TABLE groups");
+        tx.executeSql("DROP TABLE tabs");
+        console.debug('- database cleared!');
+
+        // reload the extension
+        reloadTabSugar();
+      });
+    }
+  }
+
+  // Autoresize tabs inside a group
+  function autoresize() {
+    var checked = $("#autoresize").attr("checked");
+    if(checked) {
+      localStorage.feature_autoresize = true;
+    } else {
+      localStorage.feature_autoresize = false;
+    }
+  }
+
+  // Activates the debugger
+  function debug() {
+    var checked = $("#debug").attr("checked");
+    if(checked) {
+      localStorage.debug = true;
+    } else {
+      localStorage.debug = false;
+    }
+  }
+
+  // Set the shortcut key
+  function shortcut() {
+    var last_shortcut = localStorage.shortcut_key;
+    var ctrl = $("#shortcut_ctrl").attr("checked");
+    var shift = $("#shortcut_shift").attr("checked");
+    var key = $("#shortcut_key").val();
+    var shortcut = "";
+    if(ctrl) shortcut = "ctrl+"
+    if(shift) shortcut = shortcut + "shift+"
+    shortcut = shortcut + key
+    if(ctrl || shift) {
+      localStorage.shortcut_key = shortcut;
+      $(document).unbind('keydown', last_shortcut, requestActionOpen);
+      $(document).bind('keydown', shortcut, requestActionOpen);
+      chrome.browserAction.setTitle("Tab Sugar ("+shortcut+")");
+    } else {
+      // no way
+    }
+  }
+
+  $(function() {
+    $('#autoresize').attr('checked', localStorage.feature_autoresize=="true");
+    $('#debug').attr('checked', localStorage.debug=="true");
+    for(var i=0; i<26; i++) {
+      var key = String.fromCharCode(65+i);
+      $('#shortcut_key').append('<option value="'+key+'">'+key+'</option>');
+    }
+    $('#shortcut_ctrl').attr('checked', localStorage.shortcut_key.match('ctrl+'));
+    $('#shortcut_shift').attr('checked', localStorage.shortcut_key.match('shift+'));
+    var key = localStorage.shortcut_key.replace('ctrl+','').replace('shift+','');
+    $("#shortcut_key option[value='"+key+"']").attr('selected', 'selected');
+    $('#shortcut_key').attr('checked', localStorage.shortcut_key.match('ctrl+'));
+
+    // disable right-click contextual menu
+    $(document).bind("contextmenu", function(e) {
+      return false;
+    });
+  });
+  </script>
+</head>
+<body>
+  <header>
+    <img src="/ico/48.png" />
+    <h1>Tab Sugar Options</h1>
+  </header>
+  <div id="content">
+    <h2>Options</h2>
+    <div id="innercontent">
+      <label for="reinit">Reinitialize Tab Sugar:</label>
+      <button id="reinit" onclick="reinitialize()">Reinitialize</button>
+      <hr />
+      <label for="debug">Developer mode:</label>
+      <input type="checkbox" id="debug" onclick="debug()"><label for="debug">Activate</label></input>
+      <hr />
+      <label for="autoresize">Resize automatically tabs inside a group:</label>
+      <input type="checkbox" id="autoresize" onclick="autoresize()"><label for="autoresize">Activate <span class="experimental">(experimental)</span></label></input>
+      <hr />
+      <label>Keyboard shortcut:</label>
+      <input type="checkbox" id="shortcut_ctrl" onclick="shortcut()" disabled="disabled"><label for="shortcut_ctrl">Ctrl</label></input>
+      +<input type="checkbox" id="shortcut_shift" onclick="shortcut()"><label for="shortcut_shift">Shift</label></input>
+      +<select id="shortcut_key" onchange="shortcut()">
+        <option value="space">space</option>
+      </select>
+      <span class="experimental">(experimental)</span>
+    </div>
+  </div>
+</body>
+</html>

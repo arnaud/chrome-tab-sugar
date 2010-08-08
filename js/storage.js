@@ -22,15 +22,31 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
+var db_size = 50; // Database projected size (in MB)
 
-var shortcut = localStorage.shortcut_key;
-if(typeof(shortcut)=='undefined') {
-  localStorage.shortcut_key = 'ctrl+space';
-}
+var db = null; // Actual db reference
 
-function requestActionOpen() {
-  chrome.extension.sendRequest({action: "open"});
-}
-
-$(document).unbind('keydown', localStorage.shortcut_key, requestActionOpen);
-$(document).bind('keydown', localStorage.shortcut_key, requestActionOpen);
+$(function() {
+  // Database initialization
+  try {
+    if (window.openDatabase) {
+      db = openDatabase("TabSugar", "1.0", "Tab Sugar", db_size * 1024 * 1024);
+      if (db) {
+        db.transaction(function(tx) {
+          tx.executeSql("CREATE TABLE IF NOT EXISTS groups (id REAL UNIQUE, name TEXT, posX REAL, posY REAL, width REAL, height REAL)");
+          tx.executeSql("INSERT INTO groups (id,name) VALUES (0,'icebox')");
+          tx.executeSql("CREATE TABLE IF NOT EXISTS tabs (group_id REAL, zindex REAL, title TEXT, url TEXT, favIconUrl TEXT, preview TEXT)");
+          console.debug("Tab Sugar database is ready");
+          updateUI();
+        });
+      } else {
+        console.error("An error occurred trying to open the database");
+      }
+    } else {
+      console.error("The Web Databases technology is not supported by your browser");
+    }
+  } catch(err) {
+    db = null;
+    console.error("An error occurred during the database initialization", err);
+  }
+});

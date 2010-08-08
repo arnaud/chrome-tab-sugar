@@ -93,9 +93,9 @@ section>ul {
   width: inherit;
   height: 112px;
 }
-.tab .preview.empty,
-.tab .preview.empty:hover{
-  background: -webkit-gradient(linear, 0% 0%, 10% 100%, from(#fff), to(#cecece)) no-repeat;
+.tab .preview.empty{
+  /*background: -webkit-gradient(linear, 0% 0%, 10% 100%, from(#fff), to(#cecece)) no-repeat;*/
+  background: url(/ico/blank_preview.png);
 }
 .tab .title {
   height: 18px;
