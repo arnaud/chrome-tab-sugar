@@ -1,10 +1,17 @@
 /* 
-Totori - User Acceptance Testing Workbench
-http://totori.org/ - MIT License
+Tab Sugar
+http://tabsugar.com/ - MIT License
+*/
+
+/*
+Colors
+ dark: #394254
+ light: #9fbaed
+ ultra light: #dbe7ff
 */
 
 html {
-  background: #faf6f6;
+  background: #f6f6fa;
 }
 
 body {
@@ -17,30 +24,31 @@ body {
 }
 
 h1, h2, h3 {
-  color: #512;
-  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.3);
+  color: #394254;
+  text-shadow: 2px 2px 2px rgba(63, 74, 94, 0.3);
 }
 
 h1 {
   font-size: 4em;
-  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.5);
+  text-shadow: 2px 2px 2px rgba(63, 74, 94, 0.5);
 }
 
 h2 {
   font-size: 1.2em;
-  text-shadow: 2px 2px 1px rgba(95, 31, 47, 0.2);
+  text-shadow: 2px 2px 1px rgba(63, 74, 94, 0.2);
 }
 
 a {
-  color: #512;
+  color: #394254;
 }
 
 /* Title */
 
 #title {
   display: block;
-  padding: 5em 0 2em 1em;
+  padding: 5em 0 2em 10em;
   float: left;
+  background: url(/assets/img/logo.png) no-repeat left;
 }
 
 /* Menu */
@@ -57,7 +65,7 @@ a {
   background: #fff;
   width: 190px;
   padding-bottom: 5px;
-  border-bottom: 2px solid #eb7;
+  border-bottom: 2px solid #9fbaed;
 }
 #menu ul li a {
   display: block;
@@ -71,16 +79,16 @@ a {
   padding: 1px 1px 1px 5px;
 }
 #menu ul li span.info {
-  color: #512;
+  color: #394254;
   font-size: 0.7em;
   padding: 1px 1px 1px 5px;
 }
 #menu ul li:hover {
-  background: #fec;
-  border-bottom: 3px solid #512;
+  background: #dbe7ff;
+  border-bottom: 3px solid #394254;
 }
 #menu ul li:hover * {
-  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.5);
+  text-shadow: 2px 2px 2px rgba(63, 74, 94, 0.5);
 }
 
 /* Downloads */
@@ -90,24 +98,24 @@ a {
   right: 0;
   top: 6em;
   float: right;
-  background: #eb7;
+  background: #9fbaed;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   margin-right: 0.7em;
   width:16.6em;
 }
 #downloads .title {
-  color: #512;
+  color: #394254;
   font-weight: bold;
   padding: 0.3em 0.3em;
-  text-shadow: 2px 2px 2px rgba(95, 31, 47, 0.5);
+  text-shadow: 2px 2px 2px rgba(63, 74, 94, 0.5);
 }
 #downloads ul {
   
 }
 #downloads ul li {
   padding: 0.3em;
-  background: #fec url(/assets/img/bg-top.png) repeat-x top;
+  background: #dbe7ff url(/assets/img/bg-top.png) repeat-x top;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   margin: 0.3em;
@@ -201,8 +209,8 @@ p {
 
 footer {
   clear: both;
-  background: #fec;
-  border-top: 3px solid #eb7;
+  background: #dbe7ff;
+  border-top: 3px solid #9fbaed;
   padding: 0.5em 1em;
   margin-top: 2em;
 }
