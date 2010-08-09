@@ -89,6 +89,16 @@
     }
   }
 
+  // Activates the tab previews
+  function preview() {
+    var checked = $("#preview").attr("checked");
+    if(checked) {
+      localStorage.feature_tab_preview = true;
+    } else {
+      localStorage.feature_tab_preview = false;
+    }
+  }
+
   // Set the shortcut key
   function shortcut() {
     var last_shortcut = localStorage.shortcut_key;
@@ -111,6 +121,7 @@
 
   $(function() {
     $('#autoresize').attr('checked', localStorage.feature_autoresize=="true");
+    $('#preview').attr('checked', localStorage.feature_tab_preview=="true");
     $('#debug').attr('checked', localStorage.debug=="true");
     for(var i=0; i<26; i++) {
       var key = String.fromCharCode(65+i);
@@ -142,6 +153,9 @@
       <hr />
       <label for="debug">Developer mode:</label>
       <input type="checkbox" id="debug" onclick="debug()"><label for="debug">Activate</label></input>
+      <hr />
+      <label for="preview">Show tab previews:</label>
+      <input type="checkbox" id="preview" onclick="preview()"><label for="preview">Activate <span class="experimental">(experimental)</span></label></input>
       <hr />
       <label for="autoresize">Resize automatically tabs inside a group:</label>
       <input type="checkbox" id="autoresize" onclick="autoresize()"><label for="autoresize">Activate <span class="experimental">(experimental)</span></label></input>

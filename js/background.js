@@ -51,9 +51,14 @@ chrome.extension.onRequest.addListener(openTabSugar);
 
 function activate_listeners() {
 
-  // At first execution of Tab Sugar, initialize the extension by listing all the tabs of all the windows
+  // At first execution of Tab Sugar...
   var initialized = localStorage.initialized == "true";
   if(!initialized) {
+    // the extension has been initialized with all the already opened tabs
+    localStorage.initialized = "true";
+    // tab preview feature is ON by default
+    localStorage.feature_tab_preview = "true";
+    // initialize the extension by listing all the tabs of all the windows
     chrome.windows.getAll({populate:true}, function (windows) {
       console.debug('chrome.windows.getAll', windows);
       for(var w in windows) {
@@ -66,8 +71,6 @@ function activate_listeners() {
           }
         }
       }
-      // the extension has been initialized with all the already opened tabs
-      localStorage.initialized = "true";
     });
   }
 

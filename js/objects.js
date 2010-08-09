@@ -395,7 +395,7 @@ var SugarTab = new JS.Class({
   ui_create: function() {
     console.debug("Tab UI create");
     var preview;
-    if(this.preview==null) {
+    if(this.preview==null || localStorage.feature_tab_preview!="true") {
       preview = '<img class="preview empty" />';
     } else {
       preview = '<img class="preview" src="'+this.preview+'" />';
