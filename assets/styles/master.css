@@ -45,10 +45,11 @@ a {
 /* Title */
 
 #title {
+  background: url(/assets/img/logo.png) no-repeat left;
   display: block;
   padding: 5em 0 2em 10em;
+  margin-left: 2em;
   float: left;
-  background: url(/assets/img/logo.png) no-repeat left;
 }
 
 /* Menu */
