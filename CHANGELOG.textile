@@ -2,6 +2,11 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version
 
+h3. 0.9.1
+
+ * New icon set
+ * Tab previews feature is managed from the options page (doesn't work completely atm)
+
 h3. 0.9.0
 
  * Represent the windows and tabs with group and tab items
