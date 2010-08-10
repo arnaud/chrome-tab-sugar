@@ -2,6 +2,10 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version
 
+h3. 0.9.2
+
+ * The tabs resize accordingly to the group size (optional feature, activated by default)
+
 h3. 0.9.1
 
  * New icon set

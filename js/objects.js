@@ -195,7 +195,28 @@ var SugarGroup = new JS.Class({
 
   ui_get: function() {
     console.debug("Group UI get");
-    return $('#group-'+this.id);
+    if(this.id=="icebox") {
+      return $('#icebox');
+    } else {
+      return $('#group-'+this.id);
+    }
+  },
+
+  // resize the embedded tabs accordingly to the group size
+  ui_resize_tabs: function(gw, gh) {
+    if(localStorage.feature_autoresize=="true") {
+      var ui = this.ui_get();
+      var nb_tabs = ui.find('.tab').length;
+      var tabsize = tab_size(gw, gh, nb_tabs);
+      var mode = tabsize.mode;
+      var w_tab_preview = tabsize.width;
+      var h_tab_preview = tabsize.height - TAB_TITLE_HEIGHT;
+      $('.tab', ui).css("width", tabsize.width+"px").css("height", tabsize.height+"px");
+      $('.tab .preview', ui).css("width", w_tab_preview+"px").css("height", h_tab_preview+"px");
+      if(localStorage.debug=="true") {
+        $('.debug', ui).html('w: '+gw+' / h: '+gh+' / ntabx: '+tabsize.ntabx+' / ntaby: '+tabsize.ntaby);
+      }
+    }
   },
 
   // class methods

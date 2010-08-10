@@ -22,6 +22,11 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
+// disable console debugs when the developer mode is off
+if(localStorage.debug != "true") {
+  console.debug = function() {}
+}
+
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
@@ -41,20 +46,110 @@ function updateSugarUI() {
       var tab = ice.tabs[t];
       $('#icebox>ul').append( tab.ui_create() );
     }
+    new SugarGroup({id: 'icebox'}).ui_resize_tabs(ice.width, ice.height);
 
     // update the groups
     var groups = back.groups;
     for(var g in groups) {
       var group = groups[g];
       var group_ui = group.ui_create();
-      $('#dashboard').append( group_ui );
       for(var t in group.tabs) {
         var tab = group.tabs[t];
         group_ui.find('ul').append( tab.ui_create() );
       }
+      $('#dashboard').append( group_ui );
+      new SugarGroup(group).ui_resize_tabs(group.width, group.height);
     }
   });
 }
+
+
+/**
+ * Tabs resizing constants and methods
+ */
+
+var TAB_MIN_WIDTH = 100;
+var TAB_SCALE = 13 / 14;
+var TAB_MIN_HEIGHT = TAB_MIN_WIDTH * TAB_SCALE;
+var TAB_TITLE_HEIGHT = 18;
+var GROUP_MIN_WIDTH = 150;
+var GROUP_MIN_HEIGHT = 150;
+var GROUP_TAB_SPACING_X = 4;
+var GROUP_TAB_SPACING_Y = 4;
+var GROUP_PADDING_TOP = 5+12;
+var GROUP_PADDING_LEFT = 5+2+1;
+var GROUP_PADDING_RIGHT = 5+2+1;
+var GROUP_PADDING_BOTTOM = 5+18;
+
+function tab_width(gw, ntabx) {
+  var tw = ( gw - (ntabx - 1) * GROUP_TAB_SPACING_X ) / ntabx
+  return Math.max(tw, TAB_MIN_WIDTH);
+}
+
+function tab_height(tw) {
+  var th = tw * TAB_SCALE;
+  return th;
+}
+
+function max_tab_height(gh, ntaby) {
+  return ( gh - (ntaby - 1) * GROUP_TAB_SPACING_Y ) / ntaby;
+}
+
+/**
+ * Number of tabs per column
+ * @param ntabx Number of tabs per line
+ * @param th Tab height
+ * @returns [Number] Number of tabs per column
+ */
+function nb_tabs_per_column(t, ntabx) {
+  return Math.ceil( t / ntabx );
+}
+
+/**
+ * Determines the Tab size from the Group size
+ * @param gw Group width
+ * @param gh Group height
+ * @param t Number of tabs in the group
+ * @returns [Object]
+ * {
+ *  width: Width of the tab
+ *  height: Height of the tab
+ *  ntabx: Number of tabs per line
+ *  ntaby: Number of tabs per column
+ *  mode: "grid" | "grouped"
+ * }
+ */
+function tab_size(gw, gh, t) {
+  var mode = "grid";
+  var ntabx = 1;
+  gw = gw - GROUP_PADDING_LEFT - GROUP_PADDING_RIGHT;
+  gh = gh - GROUP_PADDING_TOP - GROUP_PADDING_BOTTOM;
+  var tw = tab_width(gw, ntabx);
+  var th = tab_height(tw);
+  var ntaby = nb_tabs_per_column(t, ntabx);
+  var th_max = max_tab_height(gh, ntaby);
+  while(th > th_max) {
+    ntabx++;
+    tw = tab_width(gw, ntabx);
+    th = tab_height(tw);
+    ntaby = nb_tabs_per_column(t, ntabx);
+    th_max = max_tab_height(gh, ntaby);
+    if(ntabx>50) {
+      mode = "grouped";
+      tw = gw;
+      th = gh;
+      break;
+    }
+  }
+  if(ntaby * th + (ntaby - 1) * GROUP_TAB_SPACING_Y > gh) {
+    mode = "grouped";
+  }
+  if(gw <= 200 && gh <= 200) {
+    mode = "grouped";
+  }
+  return {width: tw, height: th, ntabx: ntabx, ntaby: ntaby, mode: mode};
+}
+
 
 $(function() {
 
@@ -101,6 +196,12 @@ $(function() {
       var id = group.attr('id').replace('group-','');
       var group = new SugarGroup({id: id});
       group.db_delete();
+
+    // if the source group still has tabs, let's resize'em all
+    } else {
+      var gw = old_group.css('width');
+      var gh = old_group.css('height');
+      new SugarGroup({id: id}).ui_resize_tabs(group.width, group.height);
     }
 
     // prevent the tab clicking event to activate
@@ -184,6 +285,12 @@ $(function() {
           var id = group.attr('id').replace('group-','');
           var group = new SugarGroup({id: id});
           group.db_delete();
+
+        // if the source group still has tabs, let's resize'em all
+        } else {
+          var gw = old_group.css('width');
+          var gh = old_group.css('height');
+          new SugarGroup({id: id}).ui_resize_tabs(group.width, group.height);
         }
       }
     });
@@ -211,6 +318,7 @@ $(function() {
           // visual
           var new_group_ui = new_group.ui_create();
           $('#dashboard').append(new_group_ui);
+          new_group.ui_resize_tabs(new_group.width, new_group.height);
           new_group_ui.find('>ul').append(tab);
           tab.fadeIn();
 
@@ -246,6 +354,8 @@ $(function() {
     // groups are resizeable
     $('.group').resizable({
       // inner tabs are resized accordingly
+      minHeight: GROUP_MIN_HEIGHT,
+      minWidth: GROUP_MIN_WIDTH,
       stop: function(ev, ui) {
         var id = $(this).attr('id').replace('group-','');
         if(id=="icebox") id = 0;
@@ -256,31 +366,11 @@ $(function() {
         group.db_update('height', h);
       },
       resize: function(ev, ui) {
-        if(localStorage.feature_autoresize=="true") {
-          var nb_tabs = $(this).find('.tabs').length;
-          var _factor = 140.0 / 112.0;
-          var w = ui.size.width;
-          var h = ui.size.height;
-          var factor = w / h;
-          var columns = 5 * (factor / _factor);
-          var w_tab = 0;
-          var h_tab = 0;
-          var w_tab_preview = 0;
-          var h_tab_preview = 0;
-          //if(factor / _factor >= 0.9) { // normal grid
-            w_tab = w/columns - 20;
-            w_tab_preview = w_tab;
-            h_tab_preview = w_tab_preview / _factor;
-            h_tab = h_tab_preview + 20;
-          //} else { // ?
-          //  return false;
-          //}
-          $('.tab', this).css("width", w_tab+"px").css("height", h_tab+"px");
-          $('.tab .preview', this).css("width", w_tab_preview+"px").css("height", h_tab_preview+"px");
-          if(localStorage.debug=="true") {
-            $('.debug', this).html('w: '+w+' / h: '+h+' / col: '+parseInt(columns)+' / w_tab: '+parseInt(w_tab)+' / h_tab: '+parseInt(h_tab));
-          }
-        }
+        var w = ui.size.width;
+        var h = ui.size.height;
+        var id = $(this).attr('id').replace('group-','');
+        var group = new SugarGroup({id: id});
+        group.ui_resize_tabs(w, h);
       }
     });
 

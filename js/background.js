@@ -58,6 +58,8 @@ function activate_listeners() {
     localStorage.initialized = "true";
     // tab preview feature is ON by default
     localStorage.feature_tab_preview = "true";
+    // tabs resizing feature is ON by default
+    localStorage.feature_autoresize = "true";
     // initialize the extension by listing all the tabs of all the windows
     chrome.windows.getAll({populate:true}, function (windows) {
       console.debug('chrome.windows.getAll', windows);
