@@ -180,7 +180,9 @@ $(function() {
     var group = tab.parent().parent();
 
     // visually
-    tab.fadeOut();
+    tab.fadeOut(function() {
+      $(this).remove();
+    });
 
     // in the db
     var group_id = group.attr('id').replace('group-','');
@@ -194,7 +196,9 @@ $(function() {
     var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
     if(nb_tabs_in_old_group == 0) {
       // visually
-      group.fadeOut();
+      group.fadeOut(function() {
+        $(this).remove();
+      });
       // in the db
       var id = group.attr('id').replace('group-','');
       var group = new SugarGroup({id: id});
@@ -283,7 +287,9 @@ $(function() {
         var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
         if(nb_tabs_in_old_group == 0) {
           // visually
-          group.fadeOut();
+          group.fadeOut(function() {
+            $(this).remove();
+          });
           // in the db
           var id = group.attr('id').replace('group-','');
           var group = new SugarGroup({id: id});
@@ -397,7 +403,9 @@ $(function() {
       var group = $(this).parent();
 
       // visually
-      group.fadeOut();
+      group.fadeOut(function() {
+        $(this).remove();
+      });
 
       // in the db
       var id = $(this).parent().attr('id').replace('group-','');
@@ -445,7 +453,9 @@ function onGroupMouseUp() {
   //console.debug($(this), w, h);
   // minimal size in order to keep the group displayed
   if(h + w < 200) {
-    $(this).fadeOut();
+    $(this).fadeOut(function() {
+      $(this).remove();
+    });
   } else {
     if($(this).attr('status')=='new') { // new group
       // visual

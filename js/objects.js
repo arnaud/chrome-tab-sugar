@@ -235,6 +235,9 @@ var SugarGroup = new JS.Class({
             .css("width", w_tab_preview+"px")
             .css("height", h_tab_preview+"px")
             .css("margin", margin_top+"px 0 0 "+margin_left+"px");
+          if(i==1) {
+            bg.addClass("first");
+          }
           $('.tab.active', ui).parent().prepend(bg);
         }
         $('.tab.active', ui)

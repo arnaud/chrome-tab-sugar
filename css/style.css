@@ -155,6 +155,9 @@ section>ul {
 .stacked_tabs_bg_5 {
   -webkit-transform: rotate(20deg);
 }
+.stacked_tabs_bg.first {
+  background: #f8f8f8;
+}
 
 /* Groups */
 
