@@ -68,7 +68,7 @@ function updateSugarUI() {
  * Tabs resizing constants and methods
  */
 
-var TAB_MIN_WIDTH = 100;
+var TAB_MIN_WIDTH = 70;
 var TAB_SCALE = 13 / 14;
 var TAB_MIN_HEIGHT = TAB_MIN_WIDTH * TAB_SCALE;
 var TAB_TITLE_HEIGHT = 18;
