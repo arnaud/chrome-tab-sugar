@@ -211,8 +211,42 @@ var SugarGroup = new JS.Class({
       var mode = tabsize.mode;
       var w_tab_preview = tabsize.width;
       var h_tab_preview = tabsize.height - TAB_TITLE_HEIGHT;
-      $('.tab', ui).css("width", tabsize.width+"px").css("height", tabsize.height+"px");
-      $('.tab .preview', ui).css("width", w_tab_preview+"px").css("height", h_tab_preview+"px");
+      if(mode=="grid") {
+        $('.tab.active .title, .tab.active .close', ui).show();
+        $('.tab.active', ui).css("margin", "2px");
+        $('.tab.active', ui).parent().find('.stacked_tabs_bg').remove();
+        $('.tab', ui)
+          .css("width", tabsize.width+"px")
+          .css("height", tabsize.height+"px")
+          .removeClass("active").show();
+        $('.tab .preview', ui)
+          .css("width", w_tab_preview+"px")
+          .css("height", h_tab_preview+"px");
+      } else if(mode=="stacked") {
+        $('.tab:first-child', ui).addClass("active");
+        var margin_left = ( gw - tabsize.width - 8 ) / 2; // handle the centering of the stacked tabs
+        var margin_top = 10;
+        // delete the potentially already present background
+        $('.tab.active', ui).parent().find('.stacked_tabs_bg').remove();
+        // create the background
+        var nb_backgrounds = Math.min(nb_tabs-1, 5);
+        for(var i=1; i<=nb_backgrounds; i++) {
+          var bg = $('<div class="stacked_tabs_bg stacked_tabs_bg_'+i+'"></div>')
+            .css("width", w_tab_preview+"px")
+            .css("height", h_tab_preview+"px")
+            .css("margin", margin_top+"px 0 0 "+margin_left+"px");
+          $('.tab.active', ui).parent().prepend(bg);
+        }
+        $('.tab.active', ui)
+          .css("width", tabsize.width+"px")
+          .css("height", tabsize.height+"px")
+          .css("margin", margin_top+"px 0 0 "+margin_left+"px");
+        $('.tab.active .preview', ui)
+          .css("width", w_tab_preview+"px")
+          .css("height", h_tab_preview+"px");
+        $('.tab:not(.active)', ui).hide();
+        $('.tab.active .title, .tab.active .close', ui).hide();
+      }
       if(localStorage.debug=="true") {
         $('.debug', ui).html('w: '+gw+' / h: '+gh+' / ntabx: '+tabsize.ntabx+' / ntaby: '+tabsize.ntaby);
       }
@@ -300,7 +334,7 @@ var SugarGroup = new JS.Class({
 
 /**
  * @class SugarTab
- * @param item (Hash) -> { (id,) title, url, favIconUrl, index (, preview, group_id) }
+ * @param item (Hash) -> { (id,) title, url, favIconUrl, index (, preview, group_id, active) }
  */
 var SugarTab = new JS.Class({
   initialize: function(item) {
@@ -315,6 +349,8 @@ var SugarTab = new JS.Class({
     this.favIconUrl = item.favIconUrl;
     if(!this.favIconUrl) this.favIconUrl = "ico/blank_preview.png";
     this.preview = item.preview;
+    this.active = item.active;
+    if(typeof(this.active)!="boolean") this.active = item.selected;
   },
 
   to_s: function() {

@@ -128,6 +128,33 @@ section>ul {
 .tab .url {
   display: none;
 }
+.stacked_tabs_bg {
+  position: absolute;
+  top: 23px;
+  left: 4px;
+  border: 1px solid #bbb;
+  background: #fff;
+  /*background-image: url(/ico/blank_preview.png);
+  background-size: 112%;*/
+}
+.stacked_tabs_bg:first-child {
+  -webkit-box-shadow: 1px 1px 5px #777;
+}
+.stacked_tabs_bg_1 {
+  -webkit-transform: rotate(4deg);
+}
+.stacked_tabs_bg_2 {
+  -webkit-transform: rotate(8deg);
+}
+.stacked_tabs_bg_3 {
+  -webkit-transform: rotate(12deg);
+}
+.stacked_tabs_bg_4 {
+  -webkit-transform: rotate(16deg);
+}
+.stacked_tabs_bg_5 {
+  -webkit-transform: rotate(20deg);
+}
 
 /* Groups */
 

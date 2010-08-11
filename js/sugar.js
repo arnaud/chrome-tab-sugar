@@ -116,7 +116,7 @@ function nb_tabs_per_column(t, ntabx) {
  *  height: Height of the tab
  *  ntabx: Number of tabs per line
  *  ntaby: Number of tabs per column
- *  mode: "grid" | "grouped"
+ *  mode: "grid" | "stacked"
  * }
  */
 function tab_size(gw, gh, t) {
@@ -135,17 +135,20 @@ function tab_size(gw, gh, t) {
     ntaby = nb_tabs_per_column(t, ntabx);
     th_max = max_tab_height(gh, ntaby);
     if(ntabx>50) {
-      mode = "grouped";
+      mode = "stacked";
       tw = gw;
       th = gh;
       break;
     }
   }
-  if(ntaby * th + (ntaby - 1) * GROUP_TAB_SPACING_Y > gh) {
-    mode = "grouped";
-  }
-  if(gw <= 200 && gh <= 200) {
-    mode = "grouped";
+  if(tw == TAB_MIN_WIDTH) {
+    mode = "stacked";
+    tw = gw *.8; // *.8 is for border paddings
+    th = tab_height(tw);
+    if(th > gh) {
+      th = gh;
+      tw = th / TAB_SCALE;
+    }
   }
   return {width: tw, height: th, ntabx: ntabx, ntaby: ntaby, mode: mode};
 }
