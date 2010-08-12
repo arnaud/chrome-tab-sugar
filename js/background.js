@@ -22,6 +22,11 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
+// disable console debugs when the developer mode is off
+if(localStorage.debug != "true") {
+  console.debug = function() {}
+}
+
 var icebox;
 var groups = [];
 
