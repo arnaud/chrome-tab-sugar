@@ -119,6 +119,12 @@
     }
   }
 
+  // Define the opening behavior
+  function opening() {
+    //TODO
+    // chrome-extension://libokbfffpaopdjmeofdfpmlanaenaje/sugar.html
+  }
+
   $(function() {
     $('#autoresize').attr('checked', localStorage.feature_autoresize=="true");
     $('#preview').attr('checked', localStorage.feature_tab_preview=="true");
@@ -167,6 +173,16 @@
         <option value="space">space</option>
       </select>
       <span class="experimental">(experimental)</span>
+      <!--
+      <hr />
+      <label for="opening">Tab Sugar opens:</label>
+      <select id="opening" onchange="opening()">
+        <option value="new_tab">as a new tab in the current window</option>
+        <option value="new_window">as a new window</option>
+        <option value="every_new_tab">in every new tab</option>
+        <option value="startup">at Chrome startup</option>
+      </select>
+      -->
     </div>
   </div>
 </body>
