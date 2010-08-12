@@ -93,50 +93,36 @@ a {
 }
 
 /* Downloads */
-
 #downloads {
   position: absolute;
   right: 0;
-  top: 6em;
+  top: 7em;
   float: right;
-  background: #9fbaed;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
   margin-right: 0.7em;
   width:16.6em;
 }
-#downloads .title {
-  color: #394254;
+a.btn {
+  width: 250px;
+  padding: 10px 25px 10px 25px;
+  font-family: Arial;
+  font-size: 16px;
+  text-decoration: none;
   font-weight: bold;
-  padding: 0.3em 0.3em;
-  text-shadow: 2px 2px 2px rgba(63, 74, 94, 0.5);
+  color: #fff;
+  text-shadow: -1px -1px 2px #618926;
+  background: -moz-linear-gradient(#98ba40, #a6c250 35%, #618926);
+  background: -webkit-gradient(linear,left top,left bottom,color-stop(0, #98ba40),color-stop(.35, #a6c250),color-stop(1, #618926));
+  border: 1px solid #618926;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
 }
-#downloads ul {
-  
-}
-#downloads ul li {
-  padding: 0.3em;
-  background: #dbe7ff url(/assets/img/bg-top.png) repeat-x top;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  margin: 0.3em;
-}
-#downloads ul li a {
-}
-#downloads ul li span {
-  font-size: 0.7em;
-}
-#downloads ul li .size:before {
-  content: '(';
-}
-#downloads ul li .size:after {
-  content: ')';
-}
-#downloads ul li:hover {
-  background-position: right;
-}
-#downloads ul li:hover * {
-  color: #000;
+
+a.btn:hover {
+  text-shadow: -1px -1px 2px #465f97;
+  background: -moz-linear-gradient(#245192, #1e3b73 75%, #12295d);
+  background: -webkit-gradient(linear,left top,left bottom,color-stop(0, #245192),color-stop(.75, #1e3b73),color-stop(1, #12295d));
+  border: 1px solid #0f2557;
 }
 
 /* Body */
