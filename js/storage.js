@@ -34,7 +34,7 @@ $(function() {
       if (db) {
         db.transaction(function(tx) {
           tx.executeSql("CREATE TABLE IF NOT EXISTS groups (id REAL UNIQUE, name TEXT, posX REAL, posY REAL, width REAL, height REAL)");
-          tx.executeSql("INSERT INTO groups (id,name) VALUES (0,'icebox')");
+          tx.executeSql("INSERT INTO groups (id,name,width,height) VALUES (0,'icebox',586,150)");
           tx.executeSql("CREATE TABLE IF NOT EXISTS tabs (group_id REAL, zindex REAL, title TEXT, url TEXT, favIconUrl TEXT, preview TEXT)");
           console.debug("Tab Sugar database is ready");
           updateUI();
