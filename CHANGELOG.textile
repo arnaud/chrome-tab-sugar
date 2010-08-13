@@ -2,6 +2,10 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version
 
+h4. 0.9.4
+
+ * Fixes the visual artifact when content doesn't fit the icebox at first use
+
 h3. 0.9.3
 
  * When there isn't enough space in the groups for displaying all its tabs, the latter stacks up
