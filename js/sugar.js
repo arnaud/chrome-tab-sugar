@@ -271,6 +271,7 @@ $(function() {
         tab.fadeOut(function() {
           new_group.find('>ul').append(tab);
           // visual
+          tab.css('top',0).css('left',0); // reset its position
           tab.fadeIn();
           // db
           var group_id = old_group.attr('id').replace('group-','');
