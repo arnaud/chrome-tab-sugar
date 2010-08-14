@@ -38,25 +38,59 @@ header img {
   vertical-align: middle;
 }
 header h1 {
-  font-size: 20px;
+  font-size: 19px;
   display: inline;
   padding-left: 5px;
-}
-#content {
-  background: rgb(244, 246, 252);
 }
 #content>h2 {
   background: rgb(235, 239, 249);
   border-top: rgb(181, 199, 222) solid 1px;
   font-size: 13px;
-  padding: 2px 4px;
+  padding: 2px 4px 4px;
+  margin-bottom: 0;
+}
+#devmode {
+  font-size: 13px;
+  float: right;
+  text-decoration: none;
+  color: blue;
+  padding: 4px;
+  cursor: none;
+  padding-left: 18px;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9kKEBUKMVKQIVIAAADiSURBVBjTjZGxagJREEXvm2yRFJI62KUJ0Y+ws0gVBP0ELfyD/EH+IMHaRjBYWdjZGwKCQSz8AQt3I1l87LtvLN4qWxjJrS5zD3MZxmy2djT+nkzXOKd67f75qRIFYvDeOAu1Oh+L1QbN9lALAmbArDhptoeCi/LeA4guECSdczm0t9nN9bwYG/MZTJw8ABAAjvxrWYgiAFnGbfIoIgBuSwsAya5KkqTLjnXW2rwFJpg0Tb33JL3XHPpN93ROVU8tcfyjUFUVIwBMr/81ma5fulVHhoNPuhJ5fVuW70rmP285AJVgi6pOot+gAAAAAElFTkSuQmCC") left no-repeat;
+}
+#devmode.activated {
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9kKEBUKJtFDpJUAAADSSURBVBjTjZExTgJhEIXfjFtA4QGMHY1RD0FnYWVI8AhLwQ28gTfAUNuQYKwstuMEJiYSY8EFKBYKCH/2n3kUC4Ri2fC18715mYzM8/D5Nc0mM1Tx0G49Pd4lpTF661RKz72P3/85uumYtXTTsaIWdweQ1BhmFmPcSZtQNBs/ld5ieQNAAUSzU8vKUQKgKCxf3qqqu6vqocvMYrGvCyEcpwVC0N3NzJ07abXeWIwkRYQkAJIESaooABm+f2eT2Uv/PpqVBx+4UH0d/F1fXco5b9kCrJSRhFACKVsAAAAASUVORK5CYII=") left no-repeat;
 }
 #innercontent {
-  padding: 0 8px 8px;
-}
-hr {
-  border: 1px solid rgb(235, 239, 249);
 }
 .experimental {
   color: rgb(151, 158, 153);
+}
+label.main {
+  float: left;
+  width: 150px;
+}
+.item {
+  border-bottom: 1px solid #CDCDCD;
+  line-height: 28px;
+  padding: 0 8px;
+}
+.dev {
+  background: rgb(244, 246, 252);
+  padding: 8px;
+  border-bottom: 1px solid #EDEFF5;
+}
+#message {
+  -webkit-border-radius: 5px;
+  background: #fe9;
+  border: 1px solid #ee5;
+  padding: 1px 5px;
+  position: absolute;
+  top: 20px;
+  left: 300px;
+}
+#message a {
+  text-decoration: none;
+  color: blue;
 }

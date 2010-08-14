@@ -41,7 +41,9 @@ var SugarGroup = new JS.Class({
     this.posX = item.posX;
     this.posY = item.posY;
     this.width = item.width;
+    if(!this.width) this.width = 0;
     this.height = item.height;
+    if(!this.height) this.height = 0;
     this.tabs = [];
     //if(item.tabs) {
     //  for(var t in item.tabs) {
@@ -90,33 +92,10 @@ var SugarGroup = new JS.Class({
       }
       i++;
     }
-    this.db_save();
+    this.db_update();
   },
 
   // PERSISTABLE methods
-
-  db_save: function() {
-    console.debug("Group save", this);
-    var group = this;
-    db.transaction(function (tx) {
-      console.debug("Saving group into db");
-      if(group.id == null || group.id == -1) {
-        group.db_insert();
-      } else {
-        db.transaction(function(tx) {
-          tx.executeSql("SELECT * FROM groups WHERE id=?", [ group.id ], function(tx, res) {
-            if (res.rows && res.rows.length == 1) {
-              group.db_update();
-            } else {
-              group.db_insert();
-            }
-          }, function(tx, err) {
-            console.error("An error occurred while testing the presence of the group in the db", err);
-          });
-        });
-      }
-    });
-  },
 
   db_insert: function() {
     console.debug("Group insert", this);
@@ -126,7 +105,7 @@ var SugarGroup = new JS.Class({
                     [ group.id, group.name, group.posX, group.posY, group.width, group.height ],
                     function (tx, res) {
         if (!res.rowsAffected) {
-          console.error("An error occurred while inserting the group in the db");
+          console.error("An error occurred while inserting the group in the db (no rows affected)", res);
         }
         localStorage.group_last_index = group.id;
       }, function (tx, err) {
@@ -145,7 +124,7 @@ var SugarGroup = new JS.Class({
         if (res.rowsAffected) {
           group[key] = val;
         } else {
-          console.error("An error occurred while updating the group in the db", tx, res);
+          console.error("An error occurred while updating the group in the db (no rows affected)", res);
         }
       }, function (tx, err) {
         console.error("An error occurred while updating the group in the db", err);
@@ -159,18 +138,14 @@ var SugarGroup = new JS.Class({
     db.transaction(function (tx) {
       tx.executeSql("DELETE FROM tabs WHERE group_id=?",
                     [ group.id ],
-                    function (tx, res) {
-        if (!res.rowsAffected) {
-          console.error("An error occurred while deleting the tabs in the db", tx, res);
-        }
-      }, function (tx, err) {
+                    function (tx, err) {
         console.error("An error occurred while deleting the tabs in the db", err);
       });
       tx.executeSql("DELETE FROM groups WHERE id=?",
                     [ group.id ],
                     function (tx, res) {
         if (!res.rowsAffected) {
-          console.error("An error occurred while deleting the group in the db", tx, res);
+          console.error("An error occurred while deleting the group in the db (no rows affected)", res);
         }
       }, function (tx, err) {
         console.error("An error occurred while deleting the group in the db", err);
@@ -185,7 +160,7 @@ var SugarGroup = new JS.Class({
     //if(!this.id) this.id = Math.floor(Math.random()*1001);
     if(!this.name) this.name = "New group";
     var group = $('<section class="group" id="group-'+this.id+'"><span class="title">'+this.name+'</span><div class="close"></div><ul></ul><div class="debug" /><div class="clear" /></section>')
-      .css('width', this.width+'px').css('height', this.height+'px').css('position', 'absolute').css('top', this.posY+'px').css('left', this.posX+'px')
+      .width(this.width).height(this.height).css('position', 'absolute').css('top', this.posY+'px').css('left', this.posX+'px')
       .attr('obj', JSON.stringify(this));
     if(localStorage.debug=="true") {
       $('.debug', group).html('Group #'+this.id);
@@ -196,63 +171,9 @@ var SugarGroup = new JS.Class({
   ui_get: function() {
     console.debug("Group UI get");
     if(this.id=="icebox") {
-      return $('#icebox');
+      return $('#icebox ul');
     } else {
-      return $('#group-'+this.id);
-    }
-  },
-
-  // resize the embedded tabs accordingly to the group size
-  ui_resize_tabs: function(gw, gh) {
-    if(localStorage.feature_autoresize=="true") {
-      var ui = this.ui_get();
-      var nb_tabs = ui.find('.tab').length;
-      var tabsize = tab_size(gw, gh, nb_tabs);
-      var mode = tabsize.mode;
-      var w_tab_preview = tabsize.width;
-      var h_tab_preview = tabsize.height - TAB_TITLE_HEIGHT;
-      if(mode=="grid") {
-        $('.tab.active .title, .tab.active .close', ui).show();
-        $('.tab.active', ui).css("margin", "2px");
-        $('.tab.active', ui).parent().find('.stacked_tabs_bg').remove();
-        $('.tab', ui)
-          .css("width", tabsize.width+"px")
-          .css("height", tabsize.height+"px")
-          .removeClass("active").show();
-        $('.tab .preview', ui)
-          .css("width", w_tab_preview+"px")
-          .css("height", h_tab_preview+"px");
-      } else if(mode=="stacked") {
-        $('.tab:first-child', ui).addClass("active");
-        var margin_left = ( gw - tabsize.width - 8 ) / 2; // handle the centering of the stacked tabs
-        var margin_top = 10;
-        // delete the potentially already present background
-        $('.tab.active', ui).parent().find('.stacked_tabs_bg').remove();
-        // create the background
-        var nb_backgrounds = Math.min(nb_tabs-1, 5);
-        for(var i=1; i<=nb_backgrounds; i++) {
-          var bg = $('<div class="stacked_tabs_bg stacked_tabs_bg_'+i+'"></div>')
-            .css("width", w_tab_preview+"px")
-            .css("height", h_tab_preview+"px")
-            .css("margin", margin_top+"px 0 0 "+margin_left+"px");
-          if(i==1) {
-            bg.addClass("first");
-          }
-          $('.tab.active', ui).parent().prepend(bg);
-        }
-        $('.tab.active', ui)
-          .css("width", tabsize.width+"px")
-          .css("height", tabsize.height+"px")
-          .css("margin", margin_top+"px 0 0 "+margin_left+"px");
-        $('.tab.active .preview', ui)
-          .css("width", w_tab_preview+"px")
-          .css("height", h_tab_preview+"px");
-        $('.tab:not(.active)', ui).hide();
-        $('.tab.active .title, .tab.active .close', ui).hide();
-      }
-      if(localStorage.debug=="true") {
-        $('.debug', ui).html('w: '+gw+' / h: '+gh+' / ntabx: '+tabsize.ntabx+' / ntaby: '+tabsize.ntaby);
-      }
+      return $('#group-'+this.id+' ul');
     }
   },
 
@@ -363,24 +284,11 @@ var SugarTab = new JS.Class({
 
   update_preview: function(preview) {
     console.debug("Tab update_preview", parseInt(preview.length/1024)+"KB");
-    this.db_update("preview", preview);
+    //this.db_update("preview", preview);
+    localStorage["preview-"+this.url] = preview;
   },
 
   // PERSISTABLE methods
-
-  db_save: function() {
-    console.debug("Tab save", this);
-    var tab = this;
-    db.transaction(function (tx) {
-      console.debug("Saving tab into db");
-      if(tab.id == null || tab.id == -1) {
-        tab.db_insert();
-      } else {
-        console.error("TODO: db_save / update mode");
-        //tab.db_update(key, val);
-      }
-    });
-  },
 
   db_insert: function() {
     console.debug("Tab insert", this);
@@ -390,7 +298,7 @@ var SugarTab = new JS.Class({
                     [ tab.title, tab.url, tab.favIconUrl, tab.group_id, tab.index ],
                     function (tx, res) {
         if (!res.rowsAffected) {
-          console.error("An error occurred while inserting the tab in the db");
+          console.error("An error occurred while inserting the tab in the db (no rows affected)", res);
         }
         //tab.id = res.insertId;
       }, function (tx, err) {
@@ -404,7 +312,10 @@ var SugarTab = new JS.Class({
     var tab = this;
     if(key=="index") key = "zindex";
     db.transaction(function (tx) {
+      if(tab.group_id=="icebox") tab.group_id = 0;
+      if(key=="group_id" && val=="icebox") val = 0;
       if(typeof(tab.group_id)=="number" && typeof(tab.index)=="number") {
+        //console.warn("UPDATE tabs SET "+key+"=? WHERE group_id=? and zindex=?".replace('?',val).replace('?',tab.group_id).replace('?',tab.index))
         tx.executeSql("UPDATE tabs SET "+key+"=? WHERE group_id=? and zindex=?",
                       [ val, tab.group_id, tab.index ],
                       function (tx, res) {
@@ -412,7 +323,7 @@ var SugarTab = new JS.Class({
             if(key=="zindex") key = "index";
             tab[key] = val;
           } else {
-            console.error("An error occurred while updating the tab in the db");
+            console.error("An error occurred while updating the tab in the db (no rows affected)", res, tx);
           }
         }, function (tx, err) {
           console.error("An error occurred while updating the tab in the db", err);
@@ -425,7 +336,7 @@ var SugarTab = new JS.Class({
             if(key=="zindex") key = "index";
             tab[key] = val;
           } else {
-            console.error("An error occurred while updating the tab in the db");
+            console.error("An error occurred while updating the tab in the db (no rows affected)", res);
           }
         }, function (tx, err) {
           console.error("An error occurred while updating the tab in the db", err);
@@ -442,7 +353,7 @@ var SugarTab = new JS.Class({
                     [ tab.group_id, tab.index ],
                     function (tx, res) {
         if (!res.rowsAffected) {
-          console.error("An error occurred while deleting the tab in the db", tx, res);
+          console.error("An error occurred while deleting the tab in the db (no rows affected)", res);
         }
       }, function (tx, err) {
         console.error("An error occurred while deleting the tab in the db", err);
@@ -454,6 +365,7 @@ var SugarTab = new JS.Class({
 
   ui_create: function() {
     console.debug("Tab UI create");
+    this.preview = localStorage['preview-'+this.url];
     var preview;
     if(this.preview==null || localStorage.feature_tab_preview!="true") {
       preview = '<img class="preview empty" />';

@@ -41,125 +41,34 @@ function updateSugarUI() {
   $(function() {
     // update the icebox
     var ice = back.icebox;
-    $('#icebox').css('width', ice.width+'px').css('height', ice.height+'px').css('position', 'absolute').css('top', ice.posY+'px').css('left', ice.posX+'px').show();
+    $('#icebox').width(ice.width).height(ice.height).css('position', 'absolute').css('top', ice.posY+'px').css('left', ice.posX+'px').show();
     for(var t in ice.tabs) {
       var tab = ice.tabs[t];
       $('#icebox>ul').append( tab.ui_create() );
     }
-    new SugarGroup({id: 'icebox'}).ui_resize_tabs(ice.width, ice.height);
+    $('#icebox').autoFitTabs();
 
     // update the groups
     var groups = back.groups;
     for(var g in groups) {
       var group = groups[g];
       var group_ui = group.ui_create();
+      $('#dashboard').append( group_ui );
+      group_ui = $('#group-'+group.id);
       for(var t in group.tabs) {
         var tab = group.tabs[t];
-        group_ui.find('ul').append( tab.ui_create() );
+        group_ui.addTab( tab.ui_create() );
       }
-      $('#dashboard').append( group_ui );
-      new SugarGroup(group).ui_resize_tabs(group.width, group.height);
+      group_ui.autoFitTabs();
     }
   });
-}
-
-
-/**
- * Tabs resizing constants and methods
- */
-
-var TAB_MIN_WIDTH = 70;
-var TAB_SCALE = 13 / 14;
-var TAB_MIN_HEIGHT = TAB_MIN_WIDTH * TAB_SCALE;
-var TAB_TITLE_HEIGHT = 18;
-var GROUP_MIN_WIDTH = 150;
-var GROUP_MIN_HEIGHT = 150;
-var GROUP_TAB_SPACING_X = 4;
-var GROUP_TAB_SPACING_Y = 4;
-var GROUP_PADDING_TOP = 5+12;
-var GROUP_PADDING_LEFT = 5+2+1;
-var GROUP_PADDING_RIGHT = 5+2+1;
-var GROUP_PADDING_BOTTOM = 5+18;
-
-function tab_width(gw, ntabx) {
-  var tw = ( gw - (ntabx - 1) * GROUP_TAB_SPACING_X ) / ntabx
-  return Math.max(tw, TAB_MIN_WIDTH);
-}
-
-function tab_height(tw) {
-  var th = tw * TAB_SCALE;
-  return th;
-}
-
-function max_tab_height(gh, ntaby) {
-  return ( gh - (ntaby - 1) * GROUP_TAB_SPACING_Y ) / ntaby;
-}
-
-/**
- * Number of tabs per column
- * @param ntabx Number of tabs per line
- * @param th Tab height
- * @returns [Number] Number of tabs per column
- */
-function nb_tabs_per_column(t, ntabx) {
-  return Math.ceil( t / ntabx );
-}
-
-/**
- * Determines the Tab size from the Group size
- * @param gw Group width
- * @param gh Group height
- * @param t Number of tabs in the group
- * @returns [Object]
- * {
- *  width: Width of the tab
- *  height: Height of the tab
- *  ntabx: Number of tabs per line
- *  ntaby: Number of tabs per column
- *  mode: "grid" | "stacked"
- * }
- */
-function tab_size(gw, gh, t) {
-  var mode = "grid";
-  var ntabx = 1;
-  gw = gw - GROUP_PADDING_LEFT - GROUP_PADDING_RIGHT;
-  gh = gh - GROUP_PADDING_TOP - GROUP_PADDING_BOTTOM;
-  var tw = tab_width(gw, ntabx);
-  var th = tab_height(tw);
-  var ntaby = nb_tabs_per_column(t, ntabx);
-  var th_max = max_tab_height(gh, ntaby);
-  while(th > th_max) {
-    ntabx++;
-    tw = tab_width(gw, ntabx);
-    th = tab_height(tw);
-    ntaby = nb_tabs_per_column(t, ntabx);
-    th_max = max_tab_height(gh, ntaby);
-    if(ntabx>50) {
-      mode = "stacked";
-      tw = gw;
-      th = gh;
-      break;
-    }
-  }
-  if(tw == TAB_MIN_WIDTH) {
-    mode = "stacked";
-    tw = gw *.8; // *.8 is for border paddings
-    th = tab_height(tw);
-    if(th > gh) {
-      th = gh;
-      tw = th / TAB_SCALE;
-    }
-  }
-  return {width: tw, height: th, ntabx: ntabx, ntaby: ntaby, mode: mode};
 }
 
 
 $(function() {
 
   // disable right-click contextual menu
-  $(document).bind("contextmenu", function(e) {
-    return false;
-  });
+  $.disableContextMenu();
 
   // tabs are draggable inside the dashboard
   $('.tab').live("mouseover", function(e) {
@@ -168,7 +77,10 @@ $(function() {
       cursor: 'move',
       containment: '#dashboard',
       revert: 'valid',
-      cancel: 'a.ui-icon'
+      cancel: 'a.ui-icon',
+      start: function(ev, ui) {
+        //TODO $(this).effect('size', {to: {width: 100, height: 80}});
+      }
     })
     .sortable();
   });
@@ -177,7 +89,7 @@ $(function() {
   $('.tab .close').live("click", function(e) {
     console.debug('Event', 'tab close click', e);
     var tab = $(this).parent().parent();
-    var group = tab.parent().parent();
+    var group = tab.group();
 
     // visually
     tab.fadeOut(function() {
@@ -185,14 +97,14 @@ $(function() {
     });
 
     // in the db
-    var group_id = group.attr('id').replace('group-','');
+    var group_id = group.uid();
     if(group_id=="icebox") group_id = 0;
     var index = JSON.parse(tab.attr('obj')).index;
     var t = new SugarTab({group_id: group_id, index: index});
     t.db_delete();
 
     // when grabbing the last tab of a group, the initial group should disappear if empty
-    var old_group = $(tab).parent().parent();
+    var old_group = $(tab).group();
     var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
     if(nb_tabs_in_old_group == 0) {
       // visually
@@ -200,15 +112,13 @@ $(function() {
         $(this).remove();
       });
       // in the db
-      var id = group.attr('id').replace('group-','');
+      var id = group.uid();
       var group = new SugarGroup({id: id});
       group.db_delete();
 
     // if the source group still has tabs, let's resize'em all
     } else {
-      var gw = old_group.css('width');
-      var gh = old_group.css('height');
-      new SugarGroup({id: id}).ui_resize_tabs(group.width, group.height);
+      old_group.autoFitTabs();
     }
 
     // prevent the tab clicking event to activate
@@ -218,13 +128,13 @@ $(function() {
   // tabs are clickable
   $('.tab').live("click", function(e) {
     console.debug('Event', 'tab click', e);
-    var group = $(this).parent().parent();
+    var group = $(this).group();
     var selected_tab = $(this);
     var url = selected_tab.find('.url').html();
     // open a new window
     chrome.windows.create({ url: url }, function(window) {
       // with all its tabs
-      group.find('.tab').each(function(index) {
+      group.tabs().each(function(index) {
         // don't open the current tab (already opened with the window)
         if($(this).get(0) != selected_tab.get(0)) {
           var url = $(this).find('.url').html();
@@ -243,11 +153,13 @@ $(function() {
     $('.group').draggable({
       cursor: 'move',
       containment: '#dashboard',
+      snap: true,
+      snapMode: 'outer',
       stop: function(ev, ui) {
-        var id = $(this).attr('id').replace('group-','');
+        var id = $(this).uid();
         if(id=="icebox") id = 0;
-        var x = parseInt($(this).css('left').replace('px', ''));
-        var y = parseInt($(this).css('top').replace('px', ''));
+        var x = $(this).position().left;
+        var y = $(this).position().top;
         var group = new SugarGroup({id: id});
         group.db_update('posX', x);
         group.db_update('posY', y);
@@ -260,47 +172,46 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
-        var tab = ui.draggable;
-        var old_group = $(tab).parent().parent();
-        var new_group = $(this);
-        console.debug(old_group, new_group);
-        if(old_group.get(0) == new_group.get(0)) {
+        var tab_ui = ui.draggable;
+        var old_group_ui = $(tab_ui).group();
+        var new_group_ui = $(this);
+        console.debug(old_group_ui, new_group_ui);
+        if(old_group_ui.get(0) == new_group_ui.get(0)) {
           return false;
         }
         // the tab should fade out and appear in a newly created group
-        tab.fadeOut(function() {
-          new_group.find('>ul').append(tab);
-          // visual
-          tab.css('top',0).css('left',0); // reset its position
-          tab.fadeIn();
+        tab_ui.fadeOut(function() {
+          old_group_ui.autoFitTabs();
+          new_group_ui.addTab(tab_ui);
           // db
-          var group_id = old_group.attr('id').replace('group-','');
-          var index = JSON.parse(tab.attr('obj')).index;
+          var group_id = old_group_ui.uid();
+          var index = JSON.parse(tab_ui.attr('obj')).index;
           if(group_id=="icebox") group_id = 0;
-          var t = new SugarTab({group_id: group_id, index: index});
-          group_id = new_group.attr('id').replace('group-','');
-          index = $('.tab', new_group).length;
-          t.db_update('group_id', group_id);
-          t.db_update('index', index);
+          var tab = new SugarTab({group_id: group_id, index: index});
+          group_id = new_group_ui.uid();
+          index = new_group_ui.tabs().length;
+          tab.db_update('group_id', group_id);
+          tab.db_update('index', index);
+          // visual
+          tab_ui.css('top',0).css('left',0);
+          tab_ui.show();
+          new_group_ui.autoFitTabs();
         });
         // when grabbing the last tab of a group, the initial group should disappear if empty
-        var old_group = $(ui.helper.context.parentElement).parent();
-        var nb_tabs_in_old_group = old_group.find('.tab').not(tab).length;
+        var nb_tabs_in_old_group = old_group_ui.tabs().not(tab_ui).length;
         if(nb_tabs_in_old_group == 0) {
           // visually
-          group.fadeOut(function() {
+          old_group_ui.fadeOut(function() {
             $(this).remove();
           });
           // in the db
-          var id = group.attr('id').replace('group-','');
-          var group = new SugarGroup({id: id});
-          group.db_delete();
+          var id = old_group_ui.uid();
+          var old_group = new SugarGroup({id: id});
+          old_group.db_delete();
 
         // if the source group still has tabs, let's resize'em all
         } else {
-          var gw = old_group.css('width');
-          var gh = old_group.css('height');
-          new SugarGroup({id: id}).ui_resize_tabs(group.width, group.height);
+          old_group_ui.autoFitTabs();
         }
       }
     });
@@ -328,9 +239,9 @@ $(function() {
           // visual
           var new_group_ui = new_group.ui_create();
           $('#dashboard').append(new_group_ui);
-          new_group.ui_resize_tabs(new_group.width, new_group.height);
-          new_group_ui.find('>ul').append(tab);
-          tab.fadeIn();
+          new_group_ui.addTab(tab);
+          tab.show();
+          new_group_ui.autoFitTabs();
 
           // db
           new_group.db_insert();
@@ -339,7 +250,7 @@ $(function() {
           var t = new SugarTab({group_id: group_id, index: index});
           t.db_update('group_id', new_group.id);
           t.db_update('index', 0);
-          new_group_ui.find('>ul').append(tab);
+          new_group_ui.addTab(tab);
 
           // add it to the group list
           back.updateUI(true);
@@ -354,7 +265,7 @@ $(function() {
           // visually
           old_group.fadeOut();
           // in the db
-          var id = old_group.attr('id').replace('group-','');
+          var id = old_group.uid();
           var group = new SugarGroup({id: id});
           group.db_delete();
         }*/
@@ -364,29 +275,25 @@ $(function() {
     // groups are resizeable
     $('.group').resizable({
       // inner tabs are resized accordingly
-      minHeight: GROUP_MIN_HEIGHT,
-      minWidth: GROUP_MIN_WIDTH,
+      minHeight: 150, // GROUP_MIN_HEIGHT
+      minWidth: 150, // GROUP_MIN_WIDTH
       stop: function(ev, ui) {
-        var id = $(this).attr('id').replace('group-','');
+        var id = $(this).uid();
         if(id=="icebox") id = 0;
-        var w = parseInt($(this).css('width').replace('px', ''));
-        var h = parseInt($(this).css('height').replace('px', ''));
+        var w = $(this).width();
+        var h = $(this).height();
         var group = new SugarGroup({id: id});
         group.db_update('width', w);
         group.db_update('height', h);
       },
       resize: function(ev, ui) {
-        var w = ui.size.width;
-        var h = ui.size.height;
-        var id = $(this).attr('id').replace('group-','');
-        var group = new SugarGroup({id: id});
-        group.ui_resize_tabs(w, h);
+        $(this).autoFitTabs();
       }
     });
 
     // group titles are editable
     $('.group>.title').not('#icebox>.title').editable(function(value, settings) {
-      var id = $(this).parent().attr('id').replace('group-','');
+      var id = $(this).parent().uid();
       var group = new SugarGroup({id:id});
       group.db_update('name', value);
       if(localStorage.debug=="true") {
@@ -397,37 +304,59 @@ $(function() {
     {
       onblur: 'submit'
     });
+  });
 
-    // groups are closeable
-    $('.group>.close').live("click", function(e) {
-      console.debug('Event', 'group close click', e);
-      var group = $(this).parent();
+  // groups are closeable
+  $('.group>.close').live("click", function(e) {
+    console.debug('Event', 'group close click', e);
+    var group = $(this).parent();
 
-      // visually
-      group.fadeOut(function() {
-        $(this).remove();
-      });
-
-      // in the db
-      var id = $(this).parent().attr('id').replace('group-','');
-      var group = new SugarGroup({id: id});
-      group.db_delete();
+    // visually
+    group.fadeOut(function() {
+      $(this).remove();
     });
+
+    // in the db
+    var id = $(this).parent().uid();
+    var group = new SugarGroup({id: id});
+    group.db_delete();
+  });
+
+  // stacked tabs can be fanned out
+  $('.fan_icon').live("click", function(e) {
+    console.debug('Event', 'group fan out click', e);
+    var group = $(this).parent();
+    var tabs = group.tabs();
+    group.fanOut();
+  });
+
+  // fanned groups disappear when the mouse isn't hover anymore
+  $('.fangroup').live("mouseleave", function(e) {
+    console.debug('Event', 'group fan out mouseleave', e);
+    var group = $(this).parent();
+    var tabs = group.tabs();
+    group.fanOutHide();
   });
 
   // handle group creation with the mouse within the dashboard
-  $('#dashboard, .group').live("mousedown", function(e) {
+  $('#dashboard').live("mousedown", function(e) {
     console.debug('Event', 'dashboard/group mousedown', e.currentTarget, e.pageX, e.pageY, e);
+    // if there is already a group at this position, stop the event
+    if($(this).isGroupAtPosition(e.pageX, e.pageY)) {
+      console.debug('Event', 'dashboard/group mousedown', 'aborted: There is already a group at this position');
+      return;
+    }
+    // if not, then go create the group
     var id = SugarGroup.next_index();
     var group = new SugarGroup({id: id});
     var groupUI = group.ui_create();
-    groupUI.css('width', 30).css('height', 20).css('position', 'absolute').css('top', (e.pageY-10)+'px').css('left', (e.pageX-10)+'px').css('opacity', 0).find('.title').hide();
+    groupUI.width(30).height(20).css('position', 'absolute').css('top', (e.pageY-10)+'px').css('left', (e.pageX-10)+'px').css('opacity', 0).find('.title').hide();
     groupUI.mousemove(function(e){
       console.debug('mousemove');
-      var w = e.pageX - $(this).css('left').replace('px', '') + 20;
-      var h = e.pageY - $(this).css('top').replace('px', '') + 10;
+      var w = e.pageX - $(this).position().left + 20;
+      var h = e.pageY - $(this).position().top + 10;
       var opacity = (h + w < 200) ? 0.5 : 1;
-      $(this).css('width', w+'px').css('height', h+'px').css('opacity', opacity);
+      $(this).width(w).height(h).css('opacity', opacity);
     });
     groupUI.attr('status', 'new');
     groupUI.mouseup(onGroupMouseUp);
@@ -445,12 +374,12 @@ $(function() {
 function onGroupMouseUp() {
   console.debug('onGroupMouseUp', $(this).attr('status'));
   $(this).unbind('mousemove');
-  var id = $(this).attr('id').replace('group-','');
+  var id = $(this).uid();
   var title = $('.title', this).html();
-  var w = parseInt($(this).css('width').replace('px', ''));
-  var h = parseInt($(this).css('height').replace('px', ''));
-  var x = parseInt($(this).css('left').replace('px', ''));
-  var y = parseInt($(this).css('top').replace('px', ''));
+  var w = $(this).width();
+  var h = $(this).height();
+  var x = $(this).position().left;
+  var y = $(this).position().top;
   //console.debug($(this), w, h);
   // minimal size in order to keep the group displayed
   if(h + w < 200) {

@@ -30,9 +30,11 @@
   <title>Tab Sugar Options</title>
   <link href="css/options.css" media="screen" rel="stylesheet" type="text/css">
   <script src="js/lib/jquery.1.4.2.min.js" type="text/javascript"></script>
+  <script src="js/lib/jquery-ui.1.8.2.min.js" type="text/javascript"></script>
   <script src="js/lib/jquery.hotkeys-0.7.9.min.js" type="text/javascript"></script>
   <script src="js/hotkeys.js" type="text/javascript"></script>
   <script src="js/storage.js" type="text/javascript"></script>
+  <script src="js/jquery.tabsugar.utils.js" type="text/javascript"></script>
   <script type="text/javascript">
 
   // keep a reference of the background page
@@ -50,7 +52,7 @@
   function reinitialize() {
     console.debug('reinitialize');
     if(confirm("All your TabSugar groups and tabs will be reinitialized.\nAre you sure?")) {
-      $("#reinit").attr("disabled", true);
+      //$("#reinit").attr("disabled", true);
 
       // localStorage
       localStorage.clear();
@@ -65,6 +67,8 @@
 
         // reload the extension
         reloadTabSugar();
+
+        showMessage("Tab Sugar was reinitialized.");
       });
     }
   }
@@ -74,18 +78,22 @@
     var checked = $("#autoresize").attr("checked");
     if(checked) {
       localStorage.feature_autoresize = true;
+      showMessage("Feature 'auto rearrange' is now ON.");
     } else {
       localStorage.feature_autoresize = false;
+      showMessage("Feature 'auto rearrange' is now OFF.");
     }
   }
 
   // Activates the debugger
-  function debug() {
-    var checked = $("#debug").attr("checked");
+  function traces() {
+    var checked = $("#traces").attr("checked");
     if(checked) {
       localStorage.debug = true;
+      showMessage("Developer traces activated.");
     } else {
       localStorage.debug = false;
+      showMessage("Developer traces deactivated.");
     }
   }
 
@@ -94,8 +102,10 @@
     var checked = $("#preview").attr("checked");
     if(checked) {
       localStorage.feature_tab_preview = true;
+      showMessage("Feature 'tab preview' is now ON.");
     } else {
       localStorage.feature_tab_preview = false;
+      showMessage("Feature 'tab preview' is now OFF.");
     }
   }
 
@@ -113,6 +123,7 @@
       localStorage.shortcut_key = shortcut;
       $(document).unbind('keydown', last_shortcut, requestActionOpen);
       $(document).bind('keydown', shortcut, requestActionOpen);
+      showMessage("Tab Sugar can now be triggered with '"+shortcut+"'.");
       chrome.browserAction.setTitle("Tab Sugar ("+shortcut+")");
     } else {
       // no way
@@ -125,10 +136,69 @@
     // chrome-extension://libokbfffpaopdjmeofdfpmlanaenaje/sugar.html
   }
 
+  function remainingSpace(min, max) {
+    console.warn('remainingSpace', min, max);
+    if(min == max) return min;
+    var content = "";
+    var mid = min + Math.round((max - min) / 2);
+    for(var i=0; i<mid; i++) {
+      content += "m";
+    }
+    try {
+      localStorage.setItem("TEST_REMAINING_SPACE", content);
+    } catch(ex) {
+      // KO
+      console.debug("LIMIT REACHED: (" + i + ")");
+      console.debug(ex);
+      return remainingSpace(min, mid);
+    }
+    // OK
+    return remainingSpace(mid, max);
+  }
+
+  // Updates the 'storage used' UI
+  function updateStorageUseMeter() {
+    showMessage("Calculating the remaining storage space&hellip;");
+    setTimeout(function() {
+      var max = 5242880;
+      var remaining = remainingSpace(0, max);
+      var used = max - remaining;
+      $('#storageuse').attr('max', max).attr('value', used).show();
+      $('#storageuse_calculate').hide();
+      showMessage("Remaining storage space calculated successfully.");
+    }, 500);
+  }
+
+  var dev = false;
+
+  // Activate/deactivate the developer mode (advanced configuration)
+  function devmode() {
+    dev = !dev;
+    if(dev) {
+      // show advanced configuration
+      $('.advanced').show('blind', 'fast');
+      $('#devmode').addClass('activated');
+    } else {
+      // hide advanced configuration
+      $('.advanced').hide('blind', 'fast');
+      $('#devmode').removeClass('activated');
+    }
+  }
+
+  function showMessage(message) {
+    $('#message').hide().html(message+' <a href="#" onclick="hideMessage()">[x]</a>').show('drop');
+  }
+
+  function hideMessage() {
+    $('#message').hide('drop');
+  }
+
   $(function() {
+    hideMessage();
+    $('.advanced').hide();
     $('#autoresize').attr('checked', localStorage.feature_autoresize=="true");
     $('#preview').attr('checked', localStorage.feature_tab_preview=="true");
-    $('#debug').attr('checked', localStorage.debug=="true");
+    $('#traces').attr('checked', localStorage.debug=="true");
     for(var i=0; i<26; i++) {
       var key = String.fromCharCode(65+i);
       $('#shortcut_key').append('<option value="'+key+'">'+key+'</option>');
@@ -140,9 +210,7 @@
     $('#shortcut_key').attr('checked', localStorage.shortcut_key.match('ctrl+'));
 
     // disable right-click contextual menu
-    $(document).bind("contextmenu", function(e) {
-      return false;
-    });
+    $.disableContextMenu();
   });
   </script>
 </head>
@@ -150,31 +218,34 @@
   <header>
     <img src="/ico/48.png" />
     <h1>Tab Sugar Options</h1>
+    <span id="message"></span>
   </header>
   <div id="content">
+    <a id="devmode" href="#" onclick="devmode()">Developer mode</a>
     <h2>Options</h2>
+    <div class="dev advanced">
+      Developer mode:
+      <input type="button" id="reinit" href="#" onclick="reinitialize()" value="Reset Tab Sugar&hellip;"></input>
+    </div>
     <div id="innercontent">
-      <label for="reinit">Reinitialize Tab Sugar:</label>
-      <button id="reinit" onclick="reinitialize()">Reinitialize</button>
-      <hr />
-      <label for="debug">Developer mode:</label>
-      <input type="checkbox" id="debug" onclick="debug()"><label for="debug">Activate</label></input>
-      <hr />
-      <label for="preview">Show tab previews:</label>
-      <input type="checkbox" id="preview" onclick="preview()"><label for="preview">Activate <span class="experimental">(experimental)</span></label></input>
-      <hr />
-      <label for="autoresize">Resize automatically tabs inside a group:</label>
-      <input type="checkbox" id="autoresize" onclick="autoresize()"><label for="autoresize">Activate</label></input>
-      <hr />
-      <label>Keyboard shortcut:</label>
-      <input type="checkbox" id="shortcut_ctrl" onclick="shortcut()" disabled="disabled"><label for="shortcut_ctrl">Ctrl</label></input>
-      +<input type="checkbox" id="shortcut_shift" onclick="shortcut()"><label for="shortcut_shift">Shift</label></input>
-      +<select id="shortcut_key" onchange="shortcut()">
-        <option value="space">space</option>
-      </select>
-      <span class="experimental">(experimental)</span>
+      <div class="item">
+        <label for="preview" class="main">Show tab previews:</label>
+        <input type="checkbox" id="preview" onclick="preview()" /><label for="preview">Activate</label>
+      </div>
+      <div class="item">
+        <label for="autoresize" class="main">Auto rearrange group tabs:</label>
+        <input type="checkbox" id="autoresize" onclick="autoresize()" /><label for="autoresize">Activate</label>
+      </div>
+      <div class="item">
+        <label class="main">Keyboard shortcut:</label>
+        <input type="checkbox" id="shortcut_ctrl" onclick="shortcut()" disabled="disabled" /><label for="shortcut_ctrl">Ctrl</label>
+        +<input type="checkbox" id="shortcut_shift" onclick="shortcut()" /><label for="shortcut_shift">Shift</label>
+        +<select id="shortcut_key" onchange="shortcut()">
+          <option value="space">space</option>
+        </select>
+        <span class="experimental">(experimental)</span>
+      </div>
       <!--
-      <hr />
       <label for="opening">Tab Sugar opens:</label>
       <select id="opening" onchange="opening()">
         <option value="new_tab">as a new tab in the current window</option>
@@ -183,6 +254,16 @@
         <option value="startup">at Chrome startup</option>
       </select>
       -->
+      <div class="item advanced">
+        <label for="traces" class="main">Developer traces:</label>
+        <input type="checkbox" id="traces" onclick="traces()" /><label for="traces">Activate</label>
+      </div>
+      <div class="item advanced">
+        <label for="storageuse" class="main">Data storage use:</label>
+        <a id="storageuse_calculate" href="#" onclick="updateStorageUseMeter()">calculate</a>
+        <meter id="storageuse" value="0" max="5242880" style="display: none;"></meter>
+        <span class="experimental">(experimental)</span>
+      </div>
     </div>
   </div>
 </body>

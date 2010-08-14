@@ -106,14 +106,38 @@ function activate_listeners() {
 
 }
 
+// resizes an image to the desired size
+function resizeImage(url, width, height, callback) {
+  var sourceImage = new Image();
+  sourceImage.onload = function() {
+    // create a canvas with the desired dimensions
+    var canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    // scale and draw the source image to the canvas
+    canvas.getContext("2d").drawImage(sourceImage, 0, 0, width, height);
+
+    // convert the canvas to a data URL in PNG format
+    callback(canvas.toDataURL());
+  }
+  sourceImage.src = url;
+}
+
+// captures the current tab as a 200px-width PNG snapshot
 function captureCurrentTab() {
   console.debug('captureCurrentTab');
   chrome.windows.getCurrent(function(window) {
     chrome.tabs.getSelected(null, function(tab) {
       if(SugarTab.persistable(tab.url)) {
         chrome.tabs.captureVisibleTab(null, function (dataUrl) {
-          var tab = new SugarTab(tab);
-          tab.update_preview(dataUrl);
+          var factor = window.width / window.height;
+          var width = 200;
+          var height = Math.round(width / factor);
+          resizeImage(dataUrl, width, height, function(dataUrl) {
+            var tab2 = new SugarTab(tab);
+            tab2.update_preview(dataUrl);
+          });
         });
       }
     });
