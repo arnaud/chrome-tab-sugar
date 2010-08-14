@@ -70,7 +70,6 @@ section>ul {
   display: inline;
   float: left;
   margin: 2px;
-  z-index: 2;
   cursor: pointer;
 }
 .tab>div {
@@ -168,7 +167,6 @@ section>ul {
   background: #eee;
   padding-bottom: 18px;
   margin: 10px;
-  z-index: 1;
   float: left;
 }
 .group:before {
