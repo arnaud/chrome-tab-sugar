@@ -199,7 +199,7 @@ section>ul {
   font-weight: bold;
   text-shadow: 1px 1px 1px #fff;
 }
-.group>.title>span {
+.group>.title>* {
   display: inline;
 }
 .group>.title input {
