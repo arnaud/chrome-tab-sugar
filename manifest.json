@@ -32,6 +32,7 @@
     "tabs",
     "unlimited_storage",
     "chrome://favicon/",
-    "http://tabsugar.com/"
+    "http://tabsugar.com/",
+    "experimental"
   ]
 }

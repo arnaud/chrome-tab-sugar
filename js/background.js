@@ -190,3 +190,33 @@ function captureCurrentTab() {
     });
   });
 }
+
+/*
+function searchTabs(text) {
+  console.debug("searchTabs", text);
+  var matching = SugarTab.search(text);
+  console.error(matching.length);
+  var not_matching = $('.group>ul>.tab').not(matching);
+  matching.show();
+  not_matching.css('opacity', 0.5);
+}
+
+chrome.experimental.omnibox.onInputChanged.addListener(function(text, suggest) {
+  console.debug("onInputChanged");
+  var suggestions = [];
+  suggestions.push({ content: 'Coffee - Wikipedia', description: 'Coffee - Wikipedia' });
+  suggest(suggestions);
+});
+chrome.experimental.omnibox.onInputEntered.addListener(function(text) {
+  console.debug("onInputEntered");
+  searchTabs(text);
+});
+chrome.experimental.omnibox.onInputStarted.addListener(function() {
+  console.debug("onInputStarted");
+  searchTabs(text);
+});
+chrome.experimental.omnibox.onInputCancelled.addListener(function() {
+  console.debug("onInputCancelled");
+  searchTabs(text);
+});
+*/

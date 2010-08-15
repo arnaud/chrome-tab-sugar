@@ -212,6 +212,18 @@
     return $('#dashboard .group');
   },
 
+  // get the title of a group or a tab
+  $.fn.title = function() {
+    if(this.isGroup()) {
+      return this.find('>.title').html();
+    } else if(this.isTab()) {
+      return this.find('>div>.title>span').html();
+    } else {
+      console.error('The title method only applies to groups or tabs');
+      return "";
+    }
+  },
+
   // is there a group at the [x,y] position?
   $.fn.isGroupAtPosition = function(x, y) {
     var is_group = false;

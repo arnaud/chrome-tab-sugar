@@ -439,12 +439,6 @@ var SugarTab = new JS.Class({
   // CLASS METHODS
 
   extend: {
-    // find a tab by its id
-    find: function(id) {
-      console.debug("Tab find", id);
-      console.warn("TODO");
-    },
-
     // tests whether an url is persistable in the db
     // filters all the "chrome://*" special pages
     persistable: function(url) {
@@ -453,10 +447,17 @@ var SugarTab = new JS.Class({
       return rs;
     },
 
-    // search for tabs by title or url
+    // search for tabs by title
     search: function(text) {
       console.debug("Tab search", text);
-      console.warn("TODO");
+      var results = $('#nothing');
+      $('.group>ul>.tab').each(function() {
+        var tab = $(this);
+        if(tab.title().indexOf(text) != -1) {
+          results = results.add(tab);
+        }
+      });
+      return results;
     },
 
     // CONSTANTS
