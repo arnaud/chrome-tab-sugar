@@ -85,6 +85,11 @@ chrome.browserAction.onClicked.addListener(openTabSugar);
 // Enable the use of a shortcut key from within the tabs
 chrome.extension.onRequest.addListener(openTabSugar);
 
+// Show the shortcut key in the browser action's description
+if(localStorage.shortcut_key!=null) {
+  chrome.browserAction.setTitle({title: "Tab Sugar ("+localStorage.shortcut_key+")"});
+}
+
 function activate_listeners() {
 
   // At first execution of Tab Sugar...
@@ -113,8 +118,8 @@ function activate_listeners() {
     });
   } else { // already initialized
     track('Background', 'Developer traces', '', localStorage.debug=="true");
-    track('Background', 'Feature Tab preview', '', localStorage.feature_tab_preview=="true");
-    track('Background', 'Feature Auto resize', '', localStorage.feature_autoresize=="true");
+    track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
+    track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");
   }
 
   // Check for tab opening

@@ -25,12 +25,12 @@
 
 var shortcut = localStorage.shortcut_key;
 if(typeof(shortcut)=='undefined') {
-  localStorage.shortcut_key = 'ctrl+space';
+  localStorage.shortcut_key = 'esc';
 }
 
 function requestActionOpen() {
   chrome.extension.sendRequest({action: "open"});
 }
 
-$(document).unbind('keydown', localStorage.shortcut_key, requestActionOpen);
+//$(document).unbind('keydown', localStorage.shortcut_key, requestActionOpen);
 $(document).bind('keydown', localStorage.shortcut_key, requestActionOpen);

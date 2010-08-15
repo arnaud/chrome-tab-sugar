@@ -61,6 +61,9 @@
 
       //$("#reinit").attr("disabled", true);
 
+      // remove the shortcut key from the browser action's description
+      chrome.browserAction.setTitle({title: "Tab Sugar"});
+
       // localStorage
       localStorage.clear();
       console.debug('- localStorage cleared!');
@@ -123,6 +126,7 @@
 
   // Set the shortcut key
   function shortcut() {
+    track('Options', 'Shortcut key', 'Define the shortcut key');
     var last_shortcut = localStorage.shortcut_key;
     var ctrl = $("#shortcut_ctrl").attr("checked");
     var shift = $("#shortcut_shift").attr("checked");
@@ -131,16 +135,14 @@
     if(ctrl) shortcut = "ctrl+"
     if(shift) shortcut = shortcut + "shift+"
     shortcut = shortcut + key
-    if(ctrl || shift) {
-      track('Options', 'Shortcut key', 'Define the shortcut key');
-      localStorage.shortcut_key = shortcut;
+    localStorage.shortcut_key = shortcut;
+    if(last_shortcut!=null) {
       $(document).unbind('keydown', last_shortcut, requestActionOpen);
-      $(document).bind('keydown', shortcut, requestActionOpen);
-      showMessage("Tab Sugar can now be triggered with '"+shortcut+"'.");
-      chrome.browserAction.setTitle("Tab Sugar ("+shortcut+")");
-    } else {
-      // no way
     }
+    $(document).unbind('keydown', shortcut, requestActionOpen);
+    $(document).bind('keydown', shortcut, requestActionOpen);
+    showMessage("Tab Sugar can now be triggered with '"+shortcut+"'.");
+    chrome.browserAction.setTitle({title: "Tab Sugar ("+shortcut+")"});
   }
 
   // Define the opening behavior
@@ -220,7 +222,7 @@
     $('#shortcut_shift').attr('checked', localStorage.shortcut_key.match('shift+'));
     var key = localStorage.shortcut_key.replace('ctrl+','').replace('shift+','');
     $("#shortcut_key option[value='"+key+"']").attr('selected', 'selected');
-    $('#shortcut_key').attr('checked', localStorage.shortcut_key.match('ctrl+'));
+    $('#shortcut_key').attr('checked', localStorage.shortcut_key.length>0);
 
     // disable right-click contextual menu
     $.disableContextMenu();
@@ -249,9 +251,10 @@
       </div>
       <div class="item">
         <label class="main">Keyboard shortcut:</label>
-        <input type="checkbox" id="shortcut_ctrl" onclick="shortcut()" disabled="disabled" /><label for="shortcut_ctrl">Ctrl</label>
+        <input type="checkbox" id="shortcut_ctrl" onclick="shortcut()" /><label for="shortcut_ctrl">Ctrl</label>
         +<input type="checkbox" id="shortcut_shift" onclick="shortcut()" /><label for="shortcut_shift">Shift</label>
         +<select id="shortcut_key" onchange="shortcut()">
+          <option value="esc">esc</option>
           <option value="space">space</option>
         </select>
         <span class="experimental">(experimental)</span>
