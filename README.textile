@@ -2,7 +2,15 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Features
 
-Tab Sugar eases the use of browser tabs when juggling with plenty of them. It acts for Chrome as "Tab Candy":http://www.azarask.in/blog/post/tabcandy/ does for Firefox.
+"Tab Sugar":http://tabsugar.com/ is a Google Chrome extension that helps to manage all your tabs from a single page!
+
+Tab Sugar aims to be the "Tab Candy":http://www.azarask.in/blog/post/tabcandy/ equivalent to Chrome and regroup the following features:
+ * Regroup your tabs your way: create groups, resize and drag'em
+ * The state of your Tab Sugar dashboard is saved automatically
+ * Regroup 20+ tabs inside a unique group: they'll stack up
+ * Span out stacked-up tabs - get a quick look at a group content
+
+!https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_big/6001!
 
 h2. Install
 
@@ -15,8 +23,7 @@ Groups can be named, dragged, resized & closed
 
 h2. Status
 
-It really is a Work in progress - Pre-alpha.
-I only see it as a Proof of Concept at the moment.
+It really is a work in progress - alpha.
 
 h2. Contributors
 
