@@ -33,19 +33,48 @@ var groups = [];
 // @param no_listeners [optional] (boolean) Don't activate the listeners
 function updateUI(no_listeners) {
   console.debug("updateUI");
-  SugarGroup.load_icebox();
-  SugarGroup.load_groups();
-  if(typeof(no_listeners)=='undefined' || !no_listeners) {
-    setTimeout(activate_listeners, 1000);
-  }
+  SugarGroup.load_icebox({
+    success: function(rs) {
+      SugarGroup.load_groups({
+        success: function(rs) {
+          if(typeof(no_listeners)=='undefined' || !no_listeners) {
+            activate_listeners();
+          }
+        }
+      });
+    }
+  });
 }
 
 function openTabSugar(tab) {
   console.debug('chrome.browserAction.onClicked', tab);
+
+  // URL of the Sugar Tab dashboard
+  var sugar_url = chrome.extension.getURL("sugar.html");
+
+  var updated = false;
+
+  // check wether Sugar Tab is already opened in the current window
+  chrome.windows.getCurrent(function(window) {
+    for(var t in window.tabs) {
+      var tab = window.tabs[t];
+      console.error(tab, tab.id, tab.url);
+      if(tab.url == sugar_url) {
+        // reuse the last dashboard and reload it
+        chrome.tabs.update(tab.id, {url: sugar_url, selected: true});
+        updated = true;
+      }
+    }
+    if(!updated) {
+      // no dashboard were reused: let's create a new tab
+      //chrome.tabs.create({url: sugar_url});
+    }
+  });
+
   // opens Tab Sugar in a new window
   //chrome.windows.create({url:chrome.extension.getURL("sugar.html"), left:0, top:0});
   // opens Tab Sugar in a new tab
-  chrome.tabs.create({url:chrome.extension.getURL("sugar.html")});
+  chrome.tabs.create({url: sugar_url});
 }
 
 // Browser action

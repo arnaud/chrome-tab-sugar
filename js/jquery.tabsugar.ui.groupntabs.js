@@ -260,12 +260,13 @@
   // get the associated object (group or tab)
   $.fn.object = function() {
     var o = null;
-    var uid = this.uid();
     if(this.isGroup()) {
-      o = new SugarGroup({id: id});
+      o = new SugarGroup({id: this.uid()});
+      //o = JSON.parse(this.attr('obj'));
       //TODO load from db
     } else if(this.isTab()) {
-      o = new SugarTab({id: id});
+      o = new SugarTab({group_id: this.group().uid(), index: JSON.parse(this.attr('obj')).index});
+      //o = JSON.parse(this.attr('obj'));
       //TODO load from db
     } else {
       console.error('The object method only applies to groups or tabs');

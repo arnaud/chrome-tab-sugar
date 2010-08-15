@@ -79,7 +79,11 @@ var SugarGroup = new JS.Class({
 
     // 3. Persist the tab
     if(persist) {
-      tab.db_insert();
+      tab.db_insert({
+        success: function(rs) {
+          console.debug("Tab insertion was successfull", rs);
+        }
+      });
     }
   },
 
@@ -92,63 +96,79 @@ var SugarGroup = new JS.Class({
       }
       i++;
     }
-    this.db_update();
+    this.db_update({
+      success: function(rs) {
+        console.debug("Tab removal was successfull", rs);
+      }
+    });
   },
 
   // PERSISTABLE methods
 
-  db_insert: function() {
-    console.debug("Group insert", this);
+  db_insert: function(settings) {
+    console.debug("Group insert", this, settings);
+    if(settings == null) settings = {};
     var group = this;
     db.transaction(function (tx) {
       tx.executeSql("INSERT INTO groups (id,name,posX,posY,width,height) VALUES (?,?,?,?,?,?)",
                     [ group.id, group.name, group.posX, group.posY, group.width, group.height ],
-                    function (tx, res) {
-        if (!res.rowsAffected) {
-          console.error("An error occurred while inserting the group in the db (no rows affected)", res);
+                    function (tx, rs) {
+        if (!rs.rowsAffected) {
+          console.error("An error occurred while inserting the group in the db (no rows affected)", rs);
+          if(settings.error!=null) settings.error.call();
+        } else {
+          settings.success.call();
         }
         localStorage.group_last_index = group.id;
       }, function (tx, err) {
         console.error("An error occurred while inserting the group in the db", err);
+        if(settings.error!=null) settings.error.call();
       });
     });
   },
 
-  db_update: function(key, val) {
-    console.debug("Group update", this, key, val);
+  db_update: function(settings) {
+    console.debug("Group update", this, settings.key, settings.val, settings);
+    if(settings == null) settings = {};
+    var key = settings.key;
+    var val = settings.val;
     var group = this;
     db.transaction(function (tx) {
       tx.executeSql("UPDATE groups SET "+key+"=? WHERE id=?",
                     [ val, group.id ],
-                    function (tx, res) {
-        if (res.rowsAffected) {
+                    function (tx, rs) {
+        if (rs.rowsAffected) {
           group[key] = val;
+          settings.success.call();
         } else {
-          console.error("An error occurred while updating the group in the db (no rows affected)", res);
+          console.error("An error occurred while updating the group in the db (no rows affected)", rs);
+          if(settings.error!=null) settings.error.call();
         }
       }, function (tx, err) {
         console.error("An error occurred while updating the group in the db", err);
+        if(settings.error!=null) settings.error.call();
       });
     });
   },
 
-  db_delete: function() {
+  db_delete: function(settings) {
     console.debug("Group delete", this);
+    if(settings == null) settings = {};
     var group = this;
     db.transaction(function (tx) {
-      tx.executeSql("DELETE FROM tabs WHERE group_id=?",
-                    [ group.id ],
-                    function (tx, err) {
-        console.error("An error occurred while deleting the tabs in the db", err);
-      });
+      tx.executeSql("DELETE FROM tabs WHERE group_id=?", [ group.id ]);
       tx.executeSql("DELETE FROM groups WHERE id=?",
                     [ group.id ],
-                    function (tx, res) {
-        if (!res.rowsAffected) {
-          console.error("An error occurred while deleting the group in the db (no rows affected)", res);
+                    function (tx, rs) {
+        if (!rs.rowsAffected) {
+          console.error("An error occurred while deleting the group in the db (no rows affected)", rs);
+          if(settings.error!=null) settings.error.call();
+        } else {
+          settings.success.call();
         }
       }, function (tx, err) {
         console.error("An error occurred while deleting the group in the db", err);
+        if(settings.error!=null) settings.error.call();
       });
     });
   },
@@ -160,7 +180,11 @@ var SugarGroup = new JS.Class({
     //if(!this.id) this.id = Math.floor(Math.random()*1001);
     if(!this.name) this.name = "New group";
     var group = $('<section class="group" id="group-'+this.id+'"><span class="title">'+this.name+'</span><div class="close"></div><ul></ul><div class="debug" /><div class="clear" /></section>')
-      .width(this.width).height(this.height).css('position', 'absolute').css('top', this.posY+'px').css('left', this.posX+'px')
+      .width(this.width)
+      .height(this.height)
+      .css('position', 'absolute')
+      .css('top', this.posY+'px')
+      .css('left', this.posX+'px')
       .attr('obj', JSON.stringify(this));
     if(localStorage.debug=="true") {
       $('.debug', group).html('Group #'+this.id);
@@ -186,50 +210,59 @@ var SugarGroup = new JS.Class({
     },
 
     // loads the icebox
-    load_icebox: function() {
-      console.debug("Group load_icebox");
+    load_icebox: function(settings) {
+      console.debug("Group load_icebox", settings);
+      if(settings == null) settings = {};
       db.transaction(function (tx) {
-        tx.executeSql("SELECT * FROM groups WHERE id=0", [], function (tx, res) {
+        tx.executeSql("SELECT * FROM groups WHERE id=0", [], function (tx, rs) {
           console.debug("Loading the icebox from db");
-          if (res.rows && res.rows.length == 1) {
-            var icebox_item = res.rows.item(0);
+          if (rs.rows && rs.rows.length == 1) {
+            var icebox_item = rs.rows.item(0);
             icebox = new SugarGroup(icebox_item);
-            tx.executeSql("SELECT * FROM tabs WHERE group_id=0 ORDER BY zindex DESC", [], function (tx, res) {
-              console.debug("Loading "+(res.rows ? res.rows.length : 0)+" tabs from db");
-              if (res.rows && res.rows.length) {
-                for (var j = 0; j < res.rows.length; j++) {
-                  var tab_item = res.rows.item(j);
+            tx.executeSql("SELECT * FROM tabs WHERE group_id=0 ORDER BY zindex DESC", [], function (tx, rs) {
+              console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs from db");
+              if (rs.rows && rs.rows.length) {
+                for (var j = 0; j < rs.rows.length; j++) {
+                  var tab_item = rs.rows.item(j);
                   var tab = new SugarTab(tab_item);
                   icebox.add_tab(tab, false);
                 }
               }
+              settings.success.call();
             }, function (tx, err) {
               console.error("An error occurred while loading icebox from db", err);
+              if(settings.error!=null) settings.error.call();
             });
           }
         }, function (tx, err) {
           console.error("An error occurred while loading icebox from db", err);
+          if(settings.error!=null) settings.error.call();
         });
       });
     },
 
     // loads all groups
-    load_groups: function() {
-      console.debug("Group load_groups");
+    load_groups: function(settings) {
+      console.debug("Group load_groups", settings);
+      if(settings == null) settings = {};
       groups = [];
       db.transaction(function (tx) {
-        tx.executeSql("SELECT * FROM groups WHERE id<>0 ORDER BY id DESC", [], function (tx, res) {
-          console.debug("Loading "+(res.rows ? res.rows.length : 0)+" groups from db");
-          for(var r=0; r<res.rows.length; r++) {
+        tx.executeSql("SELECT * FROM groups WHERE id<>0 ORDER BY id DESC", [], function (tx, rs) {
+          console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" groups from db");
+          if(rs.rows.length==0) {
+            settings.success.call();
+          }
+          for(var r=0; r<rs.rows.length; r++) {
+            var last_group = r==(rs.rows.length-1);
             // groups
-            var group_item = res.rows.item(r);
+            var group_item = rs.rows.item(r);
             var group = new SugarGroup(group_item);
             groups.push(group);
             // tabs
-            tx.executeSql("SELECT * FROM tabs WHERE group_id=? ORDER BY zindex DESC", [ group.id ], function (tx, res) {
-              console.debug("Loading "+(res.rows ? res.rows.length : 0)+" tabs for group "+group.id+" from db");
-              for(var r=0; r<res.rows.length; r++) {
-                var tab_item = res.rows.item(r);
+            tx.executeSql("SELECT * FROM tabs WHERE group_id=? ORDER BY zindex DESC", [ group.id ], function (tx, rs) {
+              console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs for group "+group.id+" from db");
+              for(var r=0; r<rs.rows.length; r++) {
+                var tab_item = rs.rows.item(r);
                 var tab = new SugarTab(tab_item);
                 for(var g in groups) {
                   var grp = groups[g];
@@ -238,8 +271,12 @@ var SugarGroup = new JS.Class({
                   }
                 }
               }
+              if(last_group) {
+                settings.success.call();
+              }
             }, function (tx, err) {
               console.error("An error occurred while loading groups from db", err);
+              if(settings.error!=null) settings.error.call();
             });
           }
         });
@@ -284,31 +321,43 @@ var SugarTab = new JS.Class({
 
   update_preview: function(preview) {
     console.debug("Tab update_preview", parseInt(preview.length/1024)+"KB");
-    //this.db_update("preview", preview);
+    /*this.db_update("preview", preview, {
+      success: function(rs) {
+        console.debug("Tab update was successfull", rs);
+      }
+    });*/
     localStorage["preview-"+this.url] = preview;
   },
 
   // PERSISTABLE methods
 
-  db_insert: function() {
-    console.debug("Tab insert", this);
+  db_insert: function(settings) {
+    console.debug("Tab insert", this, settings);
+    if(settings == null) settings = {};
     var tab = this;
     db.transaction(function (tx) {
       tx.executeSql("INSERT INTO tabs (title,url,favIconUrl,group_id,zindex) VALUES (?,?,?,?,?)",
                     [ tab.title, tab.url, tab.favIconUrl, tab.group_id, tab.index ],
-                    function (tx, res) {
-        if (!res.rowsAffected) {
-          console.error("An error occurred while inserting the tab in the db (no rows affected)", res);
+                    function (tx, rs) {
+        if (!rs.rowsAffected) {
+          console.error("An error occurred while inserting the tab in the db (no rows affected)", rs);
+          if(settings.error!=null) settings.error.call();
+        } else {
+          settings.success.call(rs);
         }
-        //tab.id = res.insertId;
+        //tab.id = rs.insertId;
       }, function (tx, err) {
         console.error("An error occurred while inserting the tab in the db", err);
+        if(settings.error!=null) settings.error.call();
       });
     });
   },
 
-  db_update: function(key, val) {
-    console.debug("Tab update", this, key, shorten_text(val));
+  db_update: function(settings) {
+    console.debug("Tab update", this, settings, settings.key, shorten_text(settings.val));
+    if(settings == null) settings = {};
+    var key = settings.key;
+    var val = settings.val;
     var tab = this;
     if(key=="index") key = "zindex";
     db.transaction(function (tx) {
@@ -318,45 +367,56 @@ var SugarTab = new JS.Class({
         //console.warn("UPDATE tabs SET "+key+"=? WHERE group_id=? and zindex=?".replace('?',val).replace('?',tab.group_id).replace('?',tab.index))
         tx.executeSql("UPDATE tabs SET "+key+"=? WHERE group_id=? and zindex=?",
                       [ val, tab.group_id, tab.index ],
-                      function (tx, res) {
-          if (res.rowsAffected) {
+                      function (tx, rs) {
+          if (rs.rowsAffected) {
             if(key=="zindex") key = "index";
             tab[key] = val;
+            settings.success.call(rs);
           } else {
-            console.error("An error occurred while updating the tab in the db (no rows affected)", res, tx);
+            console.error("An error occurred while updating the tab in the db (no rows affected)", rs, tx);
+            if(settings.error!=null) settings.error.call();
           }
         }, function (tx, err) {
           console.error("An error occurred while updating the tab in the db", err);
+          if(settings.error!=null) settings.error.call();
         });
       } else {
         tx.executeSql("UPDATE tabs SET "+key+"=? WHERE url=?",
                       [ val, tab.url ],
-                      function (tx, res) {
-          if (res.rowsAffected) {
+                      function (tx, rs) {
+          if (rs.rowsAffected) {
             if(key=="zindex") key = "index";
             tab[key] = val;
+            settings.success.call(rs);
           } else {
-            console.error("An error occurred while updating the tab in the db (no rows affected)", res);
+            console.error("An error occurred while updating the tab in the db (no rows affected)", rs);
+            if(settings.error!=null) settings.error.call();
           }
         }, function (tx, err) {
           console.error("An error occurred while updating the tab in the db", err);
+          if(settings.error!=null) settings.error.call();
         });
       }
     });
   },
 
-  db_delete: function() {
-    console.debug("Tab delete", this);
+  db_delete: function(settings) {
+    console.debug("Tab delete", this, settings);
+    if(settings == null) settings = {};
     var tab = this;
     db.transaction(function (tx) {
       tx.executeSql("DELETE FROM tabs WHERE group_id=? and zindex=?",
                     [ tab.group_id, tab.index ],
-                    function (tx, res) {
-        if (!res.rowsAffected) {
-          console.error("An error occurred while deleting the tab in the db (no rows affected)", res);
+                    function (tx, rs) {
+        if (!rs.rowsAffected) {
+          console.error("An error occurred while deleting the tab in the db (no rows affected)", rs);
+          if(settings.error!=null) settings.error.call();
+        } else {
+          settings.success.call();
         }
       }, function (tx, err) {
         console.error("An error occurred while deleting the tab in the db", err);
+        if(settings.error!=null) settings.error.call();
       });
     });
   },
@@ -388,9 +448,9 @@ var SugarTab = new JS.Class({
     // tests whether an url is persistable in the db
     // filters all the "chrome://*" special pages
     persistable: function(url) {
-      var res = !SugarTab.CHROME_PAGE.exec(url);
-      console.debug("Tab persistable", res, shorten_text(url));
-      return res;
+      var rs = !SugarTab.CHROME_PAGE.exec(url);
+      console.debug("Tab persistable", rs, shorten_text(url));
+      return rs;
     },
 
     // search for tabs by title or url
