@@ -328,6 +328,7 @@ $(function() {
     var group = $(this).parent();
     var tabs = group.tabs();
     group.fanOut();
+    group.tabs().find('.close').hide();
   });
 
   // fanned groups disappear when the mouse isn't hover anymore
