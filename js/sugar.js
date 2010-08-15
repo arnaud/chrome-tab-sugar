@@ -27,6 +27,8 @@ if(localStorage.debug != "true") {
   console.debug = function() {}
 }
 
+track('Sugar', 'Start', 'The dashboard starts');
+
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
@@ -79,6 +81,7 @@ $(function() {
       revert: 'valid',
       cancel: 'a.ui-icon',
       start: function(ev, ui) {
+        track('Sugar', 'Drag a tab');
         //TODO $(this).effect('size', {to: {width: 100, height: 80}});
       }
     })
@@ -88,6 +91,8 @@ $(function() {
   // tabs are closeable
   $('.tab .close').live("click", function(e) {
     console.debug('Event', 'tab close click', e);
+    track('Sugar', 'Close a tab');
+
     var tab = $(this).parent().parent();
     var group = tab.group();
 
@@ -133,6 +138,7 @@ $(function() {
   $('.tab').live("click", function(e) {
     console.debug('Event', 'tab click', e);
     var group = $(this).group();
+    track('Sugar', 'Click a tab', '', group.tabs().length);
     var selected_tab = $(this);
     var url = selected_tab.find('.url').html();
     // open a new window
@@ -159,6 +165,9 @@ $(function() {
       containment: '#dashboard',
       snap: true,
       snapMode: 'outer',
+      start: function(ev, ui) {
+        track('Sugar', 'Drag a group', '', $(this).tabs().length);
+      },
       stop: function(ev, ui) {
         var id = $(this).uid();
         if(id=="icebox") id = 0;
@@ -185,6 +194,7 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
+        track('Sugar', 'Drop a tab in a group', 'Drop a tab in an existing group', $(this).tabs().length);
         var tab_ui = ui.draggable;
         var old_group_ui = $(tab_ui).group();
         var new_group_ui = $(this);
@@ -279,6 +289,7 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
+        track('Sugar', 'Drop a tab in a new group', 'Drop a tab in a new group');
         var tab_ui = ui.draggable;
         var tab = tab_ui.object();
 
@@ -347,6 +358,7 @@ $(function() {
       minHeight: 150, // GROUP_MIN_HEIGHT
       minWidth: 150, // GROUP_MIN_WIDTH
       stop: function(ev, ui) {
+        track('Sugar', 'Resize a group', '', $(this).tabs().length);
         var id = $(this).uid();
         if(id=="icebox") id = 0;
         var w = $(this).width();
@@ -371,6 +383,7 @@ $(function() {
 
     // group titles are editable
     $('.group>.title').not('#icebox>.title').editable(function(value, settings) {
+      track('Sugar', 'Rename a group', '', $(this).parent().tabs().length);
       var id = $(this).parent().uid();
       var group = new SugarGroup({id:id});
       group.db_update({
@@ -391,6 +404,7 @@ $(function() {
   // groups are closeable
   $('.group>.close').live("click", function(e) {
     console.debug('Event', 'group close click', e);
+    track('Sugar', 'Close a group', '', $(this).parent().tabs().length);
     var group = $(this).parent();
 
     // visually
@@ -410,7 +424,7 @@ $(function() {
   $('.fan_icon').live("click", function(e) {
     console.debug('Event', 'group fan out click', e);
     var group = $(this).parent();
-    var tabs = group.tabs();
+    track('Sugar', 'Fan out tabs', 'Fan out tabs of a group', group.tabs().length);
     group.fanOut();
     group.tabs().find('.close').hide();
   });
@@ -419,7 +433,7 @@ $(function() {
   $('.fangroup').live("mouseleave", function(e) {
     console.debug('Event', 'group fan out mouseleave', e);
     var group = $(this).parent();
-    var tabs = group.tabs();
+    track('Sugar', 'Unfan out tabs', 'Unfan out tabs of a group', group.tabs().length);
     group.fanOutHide();
   });
 
@@ -468,11 +482,13 @@ function onGroupMouseUp() {
   //console.debug($(this), w, h);
   // minimal size in order to keep the group displayed
   if(h + w < 200) {
+    track('Sugar', 'Create a group', 'Create a group with mousedown', false);
     $(this).fadeOut(function() {
       $(this).remove();
     });
   } else {
     if($(this).attr('status')=='new') { // new group
+      track('Sugar', 'Create a group', 'Create a group with mousedown', true);
       // visual
       $('.title', this).show();
       // db

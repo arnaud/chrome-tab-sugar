@@ -22,6 +22,8 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
+track('Background', 'Start', 'The extension starts');
+
 // disable console debugs when the developer mode is off
 if(localStorage.debug != "true") {
   console.debug = function() {}
@@ -107,7 +109,12 @@ function activate_listeners() {
           }
         }
       }
+      track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
     });
+  } else { // already initialized
+    track('Background', 'Developer traces', '', localStorage.debug=="true");
+    track('Background', 'Feature Tab preview', '', localStorage.feature_tab_preview=="true");
+    track('Background', 'Feature Auto resize', '', localStorage.feature_autoresize=="true");
   }
 
   // Check for tab opening

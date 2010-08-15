@@ -32,10 +32,15 @@
   <script src="js/lib/jquery.1.4.2.min.js" type="text/javascript"></script>
   <script src="js/lib/jquery-ui.1.8.2.min.js" type="text/javascript"></script>
   <script src="js/lib/jquery.hotkeys-0.7.9.min.js" type="text/javascript"></script>
+</head>
+<body id="options">
+  <script src="js/ga.js" type="text/javascript"></script>
   <script src="js/hotkeys.js" type="text/javascript"></script>
   <script src="js/storage.js" type="text/javascript"></script>
   <script src="js/jquery.tabsugar.utils.js" type="text/javascript"></script>
   <script type="text/javascript">
+
+  track('Options', 'Start', 'The options page has opened');
 
   // keep a reference of the background page
   var back = chrome.extension.getBackgroundPage();
@@ -52,6 +57,8 @@
   function reinitialize() {
     console.debug('reinitialize');
     if(confirm("All your TabSugar groups and tabs will be reinitialized.\nAre you sure?")) {
+      track('Options', 'Reset', 'Reinitialize the extension', true);
+
       //$("#reinit").attr("disabled", true);
 
       // localStorage
@@ -70,12 +77,15 @@
 
         showMessage("Tab Sugar was reinitialized.");
       });
+    } else {
+      track('Options', 'Reset', 'Reinitialize the extension', false);
     }
   }
 
   // Autoresize tabs inside a group
   function autoresize() {
     var checked = $("#autoresize").attr("checked");
+    track('Options', 'Autoresize', 'Auto resize feature', checked);
     if(checked) {
       localStorage.feature_autoresize = true;
       showMessage("Feature 'auto rearrange' is now ON.");
@@ -88,6 +98,7 @@
   // Activates the debugger
   function traces() {
     var checked = $("#traces").attr("checked");
+    track('Options', 'Developer traces', 'Developer traces', checked);
     if(checked) {
       localStorage.debug = true;
       showMessage("Developer traces activated.");
@@ -100,6 +111,7 @@
   // Activates the tab previews
   function preview() {
     var checked = $("#preview").attr("checked");
+    track('Options', 'Tab preview', 'Tab preview feature', checked);
     if(checked) {
       localStorage.feature_tab_preview = true;
       showMessage("Feature 'tab preview' is now ON.");
@@ -120,6 +132,7 @@
     if(shift) shortcut = shortcut + "shift+"
     shortcut = shortcut + key
     if(ctrl || shift) {
+      track('Options', 'Shortcut key', 'Define the shortcut key');
       localStorage.shortcut_key = shortcut;
       $(document).unbind('keydown', last_shortcut, requestActionOpen);
       $(document).bind('keydown', shortcut, requestActionOpen);
@@ -137,7 +150,6 @@
   }
 
   function remainingSpace(min, max) {
-    console.warn('remainingSpace', min, max);
     if(min == max) return min;
     var content = "";
     var mid = min + Math.round((max - min) / 2);
@@ -158,6 +170,7 @@
 
   // Updates the 'storage used' UI
   function updateStorageUseMeter() {
+    track('Options', 'Storage used', 'Display the local storage usage');
     showMessage("Calculating the remaining storage space&hellip;");
     setTimeout(function() {
       var max = 5242880;
@@ -175,6 +188,7 @@
   function devmode() {
     dev = !dev;
     if(dev) {
+      track('Options', 'Advanced configuration', 'Show the advanced configuration');
       // show advanced configuration
       $('.advanced').show('blind', 'fast');
       $('#devmode').addClass('activated');
@@ -213,8 +227,6 @@
     $.disableContextMenu();
   });
   </script>
-</head>
-<body>
   <header>
     <img src="/ico/48.png" />
     <h1>Tab Sugar Options</h1>

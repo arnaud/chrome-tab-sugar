@@ -190,7 +190,7 @@
       console.error('The tabs method only applies to groups');
       return;
     }
-    return this.find('.tab');
+    return this.find('>ul>.tab');
   },
 
   // get the group of a tab
