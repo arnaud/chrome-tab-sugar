@@ -218,7 +218,7 @@ $(function() {
             success: function(rs) {
               t.db_update({
                 key: 'index',
-                val: 0,
+                val: new_group_ui.tabs().length, // the new index corresponds to the number of tabs already owned by the new group
                 success: function(rs) {
                   // visual
                   new_group_ui.addTab(tab_ui);
@@ -325,7 +325,7 @@ $(function() {
                 success: function(rs) {
                   t.db_update({
                     key: 'index',
-                    val: 0,
+                    val: new_group_ui.tabs().length, // the new index corresponds to the number of tabs already owned by the new group
                     success: function(rs) {
                       // when grabbing the last tab of a group, the initial group should disappear if empty
                       var nb_tabs_in_old_group = old_group_ui.tabs().not(tab_ui).length;

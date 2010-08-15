@@ -2,6 +2,11 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version
 
+h4. 0.9.7
+
+ * Fixed the shortcut key - also, the default shortcut key is now "Escape"
+ * Bug fixes and UI tweaks
+
 h4. 0.9.6
 
  * Transaction calls are now asynchronous

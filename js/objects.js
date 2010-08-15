@@ -219,7 +219,7 @@ var SugarGroup = new JS.Class({
           if (rs.rows && rs.rows.length == 1) {
             var icebox_item = rs.rows.item(0);
             icebox = new SugarGroup(icebox_item);
-            tx.executeSql("SELECT * FROM tabs WHERE group_id=0 ORDER BY zindex DESC", [], function (tx, rs) {
+            tx.executeSql("SELECT * FROM tabs WHERE group_id=0 ORDER BY zindex ASC", [], function (tx, rs) {
               console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs from db");
               if (rs.rows && rs.rows.length) {
                 for (var j = 0; j < rs.rows.length; j++) {
@@ -247,7 +247,7 @@ var SugarGroup = new JS.Class({
       if(settings == null) settings = {};
       groups = [];
       db.transaction(function (tx) {
-        tx.executeSql("SELECT * FROM groups WHERE id<>0 ORDER BY id DESC", [], function (tx, rs) {
+        tx.executeSql("SELECT * FROM groups WHERE id<>0 ORDER BY id ASC", [], function (tx, rs) {
           console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" groups from db");
           if(rs.rows.length==0) {
             settings.success.call();
@@ -259,7 +259,7 @@ var SugarGroup = new JS.Class({
             var group = new SugarGroup(group_item);
             groups.push(group);
             // tabs
-            tx.executeSql("SELECT * FROM tabs WHERE group_id=? ORDER BY zindex DESC", [ group.id ], function (tx, rs) {
+            tx.executeSql("SELECT * FROM tabs WHERE group_id=? ORDER BY zindex ASC", [ group.id ], function (tx, rs) {
               console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs for group "+group.id+" from db");
               for(var r=0; r<rs.rows.length; r++) {
                 var tab_item = rs.rows.item(r);
