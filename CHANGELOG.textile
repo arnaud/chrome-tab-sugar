@@ -2,13 +2,24 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version
 
+h4. 0.9.6
+
+ * Transaction calls are now asynchronous
+ * Nicer fan out
+
 h4. 0.9.5
 
- * Smoother animations, groups snapping, tab preview is back, fan out feature, lots of refactoring
+ * Fixed the superposition issues between groups and tabs
+ * Fixed the weird positioning of tabs when dropped into an other group
+ * Smoother animations
+ * Groups snapping
+ * Tab preview
+ * Fan out feature
+ * Lots of refactoring
 
 h4. 0.9.4
 
- * Fixes the visual artifact when content doesn't fit the icebox at first use
+ * Fixed the visual artifact when content doesn't fit the icebox at first use
 
 h3. 0.9.3
 
