@@ -107,6 +107,8 @@ function activate_listeners() {
     localStorage.feature_tab_preview = "true";
     // tabs resizing feature is ON by default
     localStorage.feature_autoresize = "true";
+    // snap groups feature is OFF by default
+    localStorage.feature_snapgroups = "false";
     // initialize the extension by listing all the tabs of all the windows
     chrome.windows.getAll({populate:true}, function (windows) {
       console.debug('chrome.windows.getAll', windows);

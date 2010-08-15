@@ -179,13 +179,24 @@ var SugarGroup = new JS.Class({
     console.debug("Group UI create");
     //if(!this.id) this.id = Math.floor(Math.random()*1001);
     if(!this.name) this.name = "New group";
-    var group = $('<section class="group" id="group-'+this.id+'"><span class="title">'+this.name+'</span><div class="close"></div><ul></ul><div class="debug" /><div class="clear" /></section>')
+    var group = $('<section class="group" id="group-'+this.id+'"><span class="title">'+this.name+'</span><div class="close"></div></section>')
       .width(this.width)
       .height(this.height)
       .css('position', 'absolute')
       .css('top', this.posY+'px')
       .css('left', this.posX+'px')
-      .attr('obj', JSON.stringify(this));
+      .attr('obj', JSON.stringify(this))
+      .append($('<ul></ul>'))
+      .append($('<div class="debug" />'))
+      .append($('<div class="clear" />'));
+    if(localStorage.feature_snapgroups=="true") {
+      group
+        .append($('<div class="snapper main"></div>'))
+        .append($('<div class="snapper top"></div>'))
+        .append($('<div class="snapper left"></div>'))
+        .append($('<div class="snapper right"></div>'))
+        .append($('<div class="snapper bottom"></div>'));
+    }
     if(localStorage.debug=="true") {
       $('.debug', group).html('Group #'+this.id);
     }

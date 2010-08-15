@@ -73,10 +73,10 @@ function autoresize() {
   track('Options', 'Autoresize', 'Auto resize feature', checked);
   if(checked) {
     localStorage.feature_autoresize = true;
-    showMessage("Feature 'auto rearrange' is now ON.");
+    showMessage("Feature 'auto rearrange' enabled.");
   } else {
     localStorage.feature_autoresize = false;
-    showMessage("Feature 'auto rearrange' is now OFF.");
+    showMessage("Feature 'auto rearrange' disabled.");
   }
 }
 
@@ -99,10 +99,10 @@ function preview() {
   track('Options', 'Tab preview', 'Tab preview feature', checked);
   if(checked) {
     localStorage.feature_tab_preview = true;
-    showMessage("Feature 'tab preview' is now ON.");
+    showMessage("Feature 'tab preview' enabled.");
   } else {
     localStorage.feature_tab_preview = false;
-    showMessage("Feature 'tab preview' is now OFF.");
+    showMessage("Feature 'tab preview' disabled.");
   }
 }
 
@@ -125,6 +125,19 @@ function shortcut() {
   $(document).bind('keydown', shortcut, requestActionOpen);
   showMessage("Tab Sugar can now be triggered with '"+shortcut+"'.");
   chrome.browserAction.setTitle({title: "Tab Sugar ("+shortcut+")"});
+}
+
+// Activates the group snapping feature (while dragging a group next to another)
+function snapgroups() {
+  var checked = $("#snapgroups").attr("checked");
+  track('Options', 'Snap groups', 'Snap groups feature', checked);
+  if(checked) {
+    localStorage.feature_snapgroups = true;
+    showMessage("Feature 'snap groups' enabled.");
+  } else {
+    localStorage.feature_snapgroups = false;
+    showMessage("Feature 'snap groups' disabled.");
+  }
 }
 
 // Define the opening behavior
@@ -196,15 +209,18 @@ $(function() {
   $('#autoresize').attr('checked', localStorage.feature_autoresize=="true");
   $('#preview').attr('checked', localStorage.feature_tab_preview=="true");
   $('#traces').attr('checked', localStorage.debug=="true");
+  $('#snapgroups').attr('checked', localStorage.feature_snapgroups=="true");
   for(var i=0; i<26; i++) {
     var key = String.fromCharCode(65+i);
     $('#shortcut_key').append('<option value="'+key+'">'+key+'</option>');
   }
-  $('#shortcut_ctrl').attr('checked', localStorage.shortcut_key.match('ctrl+'));
-  $('#shortcut_shift').attr('checked', localStorage.shortcut_key.match('shift+'));
-  var key = localStorage.shortcut_key.replace('ctrl+','').replace('shift+','');
-  $("#shortcut_key option[value='"+key+"']").attr('selected', 'selected');
-  $('#shortcut_key').attr('checked', localStorage.shortcut_key.length>0);
+  if(localStorage.shortcut_key!=null) {
+    $('#shortcut_ctrl').attr('checked', localStorage.shortcut_key.match('ctrl+'));
+    $('#shortcut_shift').attr('checked', localStorage.shortcut_key.match('shift+'));
+    var key = localStorage.shortcut_key.replace('ctrl+','').replace('shift+','');
+    $("#shortcut_key option[value='"+key+"']").attr('selected', 'selected');
+    $('#shortcut_key').attr('checked', localStorage.shortcut_key.length>0);
+  }
 
   // disable right-click contextual menu
   $.disableContextMenu();

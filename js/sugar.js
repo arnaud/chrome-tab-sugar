@@ -155,16 +155,26 @@ $(function() {
     });
   });
 
+  if(localStorage.feature_snapgroups=="true") {
+    $('#icebox')
+      .append($('<div class="snapper main"></div>'))
+      .append($('<div class="snapper top"></div>'))
+      .append($('<div class="snapper left"></div>'))
+      .append($('<div class="snapper right"></div>'))
+      .append($('<div class="snapper bottom"></div>'));
+  }
+
   // groups are draggable, droppable and resizable
   $('.group').live("mouseover", function(e) {
     console.debug('Event', 'group mouseover');
 
     // groups are draggable inside the dashboard
-    $('.group').draggable({
+    $('.group, .snapper').draggable({
       cursor: 'move',
       containment: '#dashboard',
       snap: true,
       snapMode: 'outer',
+      snapTolerance: 10,
       start: function(ev, ui) {
         track('Sugar', 'Drag a group', '', $(this).tabs().length);
       },

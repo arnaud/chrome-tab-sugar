@@ -188,7 +188,7 @@
   $.fn.tabs = function() {
     if(!this.isGroup()) {
       console.error('The tabs method only applies to groups');
-      return;
+      return $('#nothing');
     }
     return this.find('>ul>.tab');
   },

@@ -2,6 +2,11 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version
 
+h4. 0.9.8
+
+ * Groups snap next to each others when dragging'em (deactivated feature by default)
+ * Minor bug fixes
+
 h4. 0.9.7
 
  * Fixed the shortcut key - also, the default shortcut key is now "Escape"
