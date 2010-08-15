@@ -83,7 +83,13 @@ function openTabSugar(tab) {
 chrome.browserAction.onClicked.addListener(openTabSugar);
 
 // Enable the use of a shortcut key from within the tabs
-chrome.extension.onRequest.addListener(openTabSugar);
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  if(request.action == "open") {
+    openTabSugar();
+  } else if(request.action == "gimme the shortcut key") {
+    sendResponse({shortcut_key: localStorage.shortcut_key});
+  }
+});
 
 // Show the shortcut key in the browser action's description
 if(localStorage.shortcut_key!=null) {
