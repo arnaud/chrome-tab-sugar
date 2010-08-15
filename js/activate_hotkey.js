@@ -27,10 +27,8 @@ function requestActionOpen() {
 }
 
 $(document).ready(function() {
-  console.error("gooo");
   chrome.extension.sendRequest({action: "gimme the shortcut key"}, function(response) {
     var shortcut_key = response.shortcut_key;
-    console.error("key:", shortcut_key);
     //$(document).unbind('keydown', shortcut_key, requestActionOpen);
     $(document).bind('keydown', shortcut_key, requestActionOpen);
   });
