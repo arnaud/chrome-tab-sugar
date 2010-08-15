@@ -208,7 +208,6 @@
   }
 
   $(function() {
-    hideMessage();
     $('.advanced').hide();
     $('#autoresize').attr('checked', localStorage.feature_autoresize=="true");
     $('#preview').attr('checked', localStorage.feature_tab_preview=="true");
@@ -230,7 +229,7 @@
   <header>
     <img src="/ico/48.png" />
     <h1>Tab Sugar Options</h1>
-    <span id="message"></span>
+    <span id="message" style="display: none"></span>
   </header>
   <div id="content">
     <a id="devmode" href="#" onclick="devmode()">Developer mode</a>
