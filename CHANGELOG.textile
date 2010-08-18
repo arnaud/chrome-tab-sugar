@@ -1,25 +1,23 @@
 h1. Tab Sugar - the Google Chrome extension
 
-h2. Current version
+h2. Current version: 0.9.x
 
-h3. 0.9.x
-
-h4. 0.9.8
+h3. 0.9.8
 
  * Groups snap next to each others when dragging'em (deactivated feature by default)
  * Minor bug fixes
 
-h4. 0.9.7
+h3. 0.9.7
 
  * Fixed the shortcut key - also, the default shortcut key is now "Escape"
  * Bug fixes and UI tweaks
 
-h4. 0.9.6
+h3. 0.9.6
 
  * Transaction calls are now asynchronous
  * Nicer fan out
 
-h4. 0.9.5
+h3. 0.9.5
 
  * Fixed the superposition issues between groups and tabs
  * Fixed the weird positioning of tabs when dropped into an other group
@@ -29,24 +27,24 @@ h4. 0.9.5
  * Fan out feature
  * Lots of refactoring
 
-h4. 0.9.4
+h3. 0.9.4
 
  * Fixed the visual artifact when content doesn't fit the icebox at first use
 
-h4. 0.9.3
+h3. 0.9.3
 
  * When there isn't enough space in the groups for displaying all its tabs, the latter stacks up
 
-h4. 0.9.2
+h3. 0.9.2
 
  * The tabs resize accordingly to the group size (optional feature, activated by default)
 
-h4. 0.9.1
+h3. 0.9.1
 
  * New icon set
  * Tab previews feature is managed from the options page (doesn't work completely atm)
 
-h4. 0.9.0
+h3. 0.9.0
 
  * Represent the windows and tabs with group and tab items
  * Make these tabs draggeable and droppable into groups
@@ -55,25 +53,6 @@ h4. 0.9.0
  * Click on a tab opens it within a new window, with all the other tabs of the group
  * Access Tab Sugar with a shortcut key
  * Persist the dashboard with its groups &amp; tabs
-
-
-h2. Upcoming features
-
-h3. 1.0
-
- * Display a preview for each tabs
-
-h3. 1.1
-
- * Resizing a group resizes its content incidentally
- * Options page:
-   * Choose the shortcut key for accessing Tab Sugar from within any webpage
-   * Choose the behavior of how Tab Sugar opens (specific new tab, new window, any new tab)
-
-h3. 1.2
-
- * Global search feature
-
 
 h2. Early versions
 
