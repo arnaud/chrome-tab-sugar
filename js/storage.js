@@ -22,31 +22,175 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
-var db_size = 50; // Database projected size (in MB)
+/**
+ * @class Storage
+ */
+var Storage = new JS.Class({
 
-var db = null; // Actual db reference
+  // Database projected size (in MB)
+  DB_SIZE: 50,
 
-$(function() {
-  // Database initialization
-  try {
-    if (window.openDatabase) {
-      db = openDatabase("TabSugar", "1.0", "Tab Sugar", db_size * 1024 * 1024);
-      if (db) {
-        db.transaction(function(tx) {
-          tx.executeSql("CREATE TABLE IF NOT EXISTS groups (id REAL UNIQUE, name TEXT, posX REAL, posY REAL, width REAL, height REAL)");
-          tx.executeSql("INSERT INTO groups (id,name,width,height) VALUES (0,'icebox',586,150)");
-          tx.executeSql("CREATE TABLE IF NOT EXISTS tabs (group_id REAL, zindex REAL, title TEXT, url TEXT, favIconUrl TEXT, preview TEXT)");
-          console.debug("Tab Sugar database is ready");
-          updateUI();
+  // Actual db reference
+  db: openDatabase("TabSugar", "1.0", "Tab Sugar", this.DB_SIZE * 1024 * 1024),
+
+  initialize: function() {
+  },
+
+  // class methods
+  extend: {
+    // initializes the database for the first time: isnert tables
+    init: function(settings) {
+      console.debug("Storage init");
+      var storage = new Storage();
+      storage.db.transaction(function(tx) {
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `groups` (`id` REAL UNIQUE, `name` TEXT, `posX` REAL, `posY` REAL, `width` REAL, `height` REAL)");
+        tx.executeSql("INSERT INTO `groups` (`id`,`name`,`width`,`height`) VALUES (0,'icebox',586,150)");
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT, `preview` TEXT)");
+        console.debug("Tab Sugar database is ready");
+        if(settings && settings.success) settings.success.call();
+      });
+    },
+
+    // resets the database by dropping all of its tables
+    reset: function(settings) {
+      console.debug("Storage reset", settings);
+      var storage = new Storage();
+      storage.db.transaction(function (tx) {
+        tx.executeSql("DROP TABLE groups");
+        tx.executeSql("DROP TABLE tabs");
+        if(settings && settings.success) settings.success.call();
+      });
+    },
+
+    // executes a query to the db
+    execute_sql: function(settings) {
+      var query = settings.query;
+      var success = settings.success;
+      var error = settings.error;
+      console.debug("Storage execute_sql", query, settings);
+      var storage = new Storage();
+      storage.db.transaction(function (tx) {
+        tx.executeSql(query, [], function (tx, rs) {
+          if(query.indexOf("INSERT")==0) {
+            if (!rs.rowsAffected) {
+              console.error("An error occurred while inserting the object in the db (no rows affected)", rs);
+              if(error!=null) error.call();
+            } else {
+              success(tx, rs);
+            }
+          } else {
+            success(tx, rs);
+          }
+        }, function (tx, err) {
+          console.error("An error occurred while querying the db", query, err);
+          if(error!=null) error.call();
         });
-      } else {
-        console.error("An error occurred trying to open the database");
+      });
+    },
+
+    // query a SELECT
+    select: function(settings) {
+      console.debug("Storage select", settings);
+      var what = settings.what;
+      if(what == null) what = "*";
+      var table = settings.table;
+      var conditions = settings.conditions;
+      var query = "SELECT "+what+" FROM `"+table+"`";
+      if(conditions) {
+        query += " WHERE "+conditions;
       }
-    } else {
-      console.error("The Web Databases technology is not supported by your browser");
-    }
-  } catch(err) {
-    db = null;
-    console.error("An error occurred during the database initialization", err);
+      Storage.execute_sql({
+        query: query,
+        success: settings.success,
+        error: settings.error
+      });
+    },
+
+    // query an INSERT
+    insert: function(settings) {
+      console.debug("Storage insert", settings);
+      var table = settings.table;
+      var object = settings.object;
+      var attributes = "";
+      var values = "";
+      for(var attr in object) {
+        if(attr=="constructor") break;
+        var val = object[attr];
+        var type = typeof(val);
+        if(type=="number" && val >= 0) {
+          // do nothing
+        } else if(type=="number") { // NaN case
+          val = "NULL";
+        } else if(type=="string") {
+          val = "'" + val.replace("'",("\'")) + "'";
+        } else if(type=="undefined") {
+          val = "NULL";
+        } else {
+          continue;
+        }
+        if(attributes.length > 0) {
+          attributes += ", ";
+          values += ", ";
+        }
+        attributes += "`"+attr+"`";
+        values += val;
+      }
+      var query = "INSERT INTO "+table+" ("+attributes+") VALUES ("+values+")";
+      Storage.execute_sql({
+        query: query,
+        success: settings.success,
+        error: settings.error
+      });
+    },
+
+    // query an UPDATE
+    update: function(settings) {
+      console.debug("Storage update", settings);
+      var table = settings.table;
+      var conditions = settings.conditions;
+      var changes = settings.changes;
+      var changes_raw = "";
+      for(var attr in changes) {
+        var val = changes[attr];
+        var type = typeof(val);
+        if(type=="number" && val >= 0) {
+          // do nothing
+        } else if(type=="number") { // NaN case
+          val = "NULL";
+        } else if(type=="string") {
+          val = "'" + val.replace("'",("\'")) + "'";
+        } else if(type=="undefined") {
+          val = "NULL";
+        } else {
+          continue;
+        }
+        if(changes_raw.length > 0) {
+          changes_raw += ", ";
+        }
+        changes_raw += "`"+attr+"`="+val;
+      }
+      var query = "UPDATE `"+table+"` SET "+changes_raw;
+      if(conditions) {
+        query += " WHERE "+conditions;
+      }
+      Storage.execute_sql({
+        query: query,
+        success: settings.success,
+        error: settings.error
+      });
+    },
+
+    // query a DELETE
+    delete: function(settings) {
+      console.debug("Storage delete", settings);
+      var table = settings.table;
+      var conditions = settings.conditions;
+      var query = "DELETE FROM `"+table+"` WHERE "+conditions;
+      Storage.execute_sql({
+        query: query,
+        success: settings.success,
+        error: settings.error
+      });
+    },
   }
 });

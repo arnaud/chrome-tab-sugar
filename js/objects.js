@@ -108,22 +108,13 @@ var SugarGroup = new JS.Class({
   db_insert: function(settings) {
     console.debug("Group insert", this, settings);
     if(settings == null) settings = {};
-    var group = this;
-    db.transaction(function (tx) {
-      tx.executeSql("INSERT INTO groups (id,name,posX,posY,width,height) VALUES (?,?,?,?,?,?)",
-                    [ group.id, group.name, group.posX, group.posY, group.width, group.height ],
-                    function (tx, rs) {
-        if (!rs.rowsAffected) {
-          console.error("An error occurred while inserting the group in the db (no rows affected)", rs);
-          if(settings.error!=null) settings.error.call();
-        } else {
-          settings.success.call();
-        }
-        localStorage.group_last_index = group.id;
-      }, function (tx, err) {
-        console.error("An error occurred while inserting the group in the db", err);
-        if(settings.error!=null) settings.error.call();
-      });
+    Storage.insert({
+      table: "groups",
+      object: this,
+      success: function() {
+        localStorage.group_last_index++;
+        settings.success.call();
+      }
     });
   },
 
@@ -132,44 +123,29 @@ var SugarGroup = new JS.Class({
     if(settings == null) settings = {};
     var key = settings.key;
     var val = settings.val;
-    var group = this;
-    db.transaction(function (tx) {
-      tx.executeSql("UPDATE groups SET "+key+"=? WHERE id=?",
-                    [ val, group.id ],
-                    function (tx, rs) {
-        if (rs.rowsAffected) {
-          group[key] = val;
-          settings.success.call();
-        } else {
-          console.error("An error occurred while updating the group in the db (no rows affected)", rs);
-          if(settings.error!=null) settings.error.call();
-        }
-      }, function (tx, err) {
-        console.error("An error occurred while updating the group in the db", err);
-        if(settings.error!=null) settings.error.call();
-      });
+    Storage.update({
+      table: "groups",
+      conditions: "`id`="+this.id,
+      changes: {key: val},
+      success: function() {
+        this[key] = val;
+        settings.success.call();
+      }
     });
   },
 
   db_delete: function(settings) {
     console.debug("Group delete", this);
     if(settings == null) settings = {};
-    var group = this;
-    db.transaction(function (tx) {
-      tx.executeSql("DELETE FROM tabs WHERE group_id=?", [ group.id ]);
-      tx.executeSql("DELETE FROM groups WHERE id=?",
-                    [ group.id ],
-                    function (tx, rs) {
-        if (!rs.rowsAffected) {
-          console.error("An error occurred while deleting the group in the db (no rows affected)", rs);
-          if(settings.error!=null) settings.error.call();
-        } else {
-          settings.success.call();
-        }
-      }, function (tx, err) {
-        console.error("An error occurred while deleting the group in the db", err);
-        if(settings.error!=null) settings.error.call();
-      });
+    Storage.delete({
+      table: "tabs",
+      conditions: {group_id: this.id},
+      success: function() {}
+    });
+    Storage.delete({
+      table: "groups",
+      conditions: {id: this.id},
+      success: settings.success
     });
   },
 
@@ -224,31 +200,29 @@ var SugarGroup = new JS.Class({
     load_icebox: function(settings) {
       console.debug("Group load_icebox", settings);
       if(settings == null) settings = {};
-      db.transaction(function (tx) {
-        tx.executeSql("SELECT * FROM groups WHERE id=0", [], function (tx, rs) {
-          console.debug("Loading the icebox from db");
+      Storage.select({
+        table: "groups",
+        conditions: "`id`=0",
+        success: function(tx ,rs) {
           if (rs.rows && rs.rows.length == 1) {
             var icebox_item = rs.rows.item(0);
             icebox = new SugarGroup(icebox_item);
-            tx.executeSql("SELECT * FROM tabs WHERE group_id=0 ORDER BY zindex ASC", [], function (tx, rs) {
-              console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs from db");
-              if (rs.rows && rs.rows.length) {
-                for (var j = 0; j < rs.rows.length; j++) {
-                  var tab_item = rs.rows.item(j);
-                  var tab = new SugarTab(tab_item);
-                  icebox.add_tab(tab, false);
+            Storage.select({
+              table: "tabs",
+              conditions: "`group_id`=0 ORDER BY `index` ASC",
+              success: function(tx, rs) {
+                if (rs.rows && rs.rows.length) {
+                  for (var j = 0; j < rs.rows.length; j++) {
+                    var tab_item = rs.rows.item(j);
+                    var tab = new SugarTab(tab_item);
+                    icebox.add_tab(tab, false);
+                  }
                 }
+                settings.success.call();
               }
-              settings.success.call();
-            }, function (tx, err) {
-              console.error("An error occurred while loading icebox from db", err);
-              if(settings.error!=null) settings.error.call();
             });
           }
-        }, function (tx, err) {
-          console.error("An error occurred while loading icebox from db", err);
-          if(settings.error!=null) settings.error.call();
-        });
+        }
       });
     },
 
@@ -257,11 +231,14 @@ var SugarGroup = new JS.Class({
       console.debug("Group load_groups", settings);
       if(settings == null) settings = {};
       groups = [];
-      db.transaction(function (tx) {
-        tx.executeSql("SELECT * FROM groups WHERE id<>0 ORDER BY id ASC", [], function (tx, rs) {
+      Storage.select({
+        table: "groups",
+        conditions: "`id`<>0 ORDER BY `id` ASC",
+        success: function(tx ,rs) {
           console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" groups from db");
           if(rs.rows.length==0) {
             settings.success.call();
+            return;
           }
           for(var r=0; r<rs.rows.length; r++) {
             var last_group = r==(rs.rows.length-1);
@@ -270,27 +247,28 @@ var SugarGroup = new JS.Class({
             var group = new SugarGroup(group_item);
             groups.push(group);
             // tabs
-            tx.executeSql("SELECT * FROM tabs WHERE group_id=? ORDER BY zindex ASC", [ group.id ], function (tx, rs) {
-              console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs for group "+group.id+" from db");
-              for(var r=0; r<rs.rows.length; r++) {
-                var tab_item = rs.rows.item(r);
-                var tab = new SugarTab(tab_item);
-                for(var g in groups) {
-                  var grp = groups[g];
-                  if(grp.id == tab.group_id) {
-                    groups[g].add_tab(tab, false);
+            Storage.select({
+              table: "tabs",
+              conditions: "`group_id`="+group.id+" ORDER BY `index` ASC",
+              success: function(tx, rs) {
+                console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" tabs for group "+group.id+" from db");
+                for(var r=0; r<rs.rows.length; r++) {
+                  var tab_item = rs.rows.item(r);
+                  var tab = new SugarTab(tab_item);
+                  for(var g in groups) {
+                    var grp = groups[g];
+                    if(grp.id == tab.group_id) {
+                      groups[g].add_tab(tab, false);
+                    }
                   }
                 }
+                if(last_group) {
+                  settings.success.call();
+                }
               }
-              if(last_group) {
-                settings.success.call();
-              }
-            }, function (tx, err) {
-              console.error("An error occurred while loading groups from db", err);
-              if(settings.error!=null) settings.error.call();
             });
           }
-        });
+        }
       });
     },
 
@@ -315,14 +293,13 @@ var SugarTab = new JS.Class({
     this.group_id = item.group_id;
     if(typeof(this.group_id)!="number") this.group_id = 0;
     this.index = item.index;
-    if(typeof(this.index)!="number") this.index = item.zindex;
     this.title = item.title;
     this.url = item.url;
     this.favIconUrl = item.favIconUrl;
     if(!this.favIconUrl) this.favIconUrl = "ico/blank_preview.png";
     this.preview = item.preview;
-    this.active = item.active;
-    if(typeof(this.active)!="boolean") this.active = item.selected;
+    //this.active = item.active;
+    //if(typeof(this.active)!="boolean") this.active = item.selected;
   },
 
   to_s: function() {
@@ -345,22 +322,10 @@ var SugarTab = new JS.Class({
   db_insert: function(settings) {
     console.debug("Tab insert", this, settings);
     if(settings == null) settings = {};
-    var tab = this;
-    db.transaction(function (tx) {
-      tx.executeSql("INSERT INTO tabs (title,url,favIconUrl,group_id,zindex) VALUES (?,?,?,?,?)",
-                    [ tab.title, tab.url, tab.favIconUrl, tab.group_id, tab.index ],
-                    function (tx, rs) {
-        if (!rs.rowsAffected) {
-          console.error("An error occurred while inserting the tab in the db (no rows affected)", rs);
-          if(settings.error!=null) settings.error.call();
-        } else {
-          settings.success.call(rs);
-        }
-        //tab.id = rs.insertId;
-      }, function (tx, err) {
-        console.error("An error occurred while inserting the tab in the db", err);
-        if(settings.error!=null) settings.error.call();
-      });
+    Storage.insert({
+      table: "tabs",
+      object: this,
+      success: settings.success
     });
   },
 
@@ -369,44 +334,13 @@ var SugarTab = new JS.Class({
     if(settings == null) settings = {};
     var key = settings.key;
     var val = settings.val;
-    var tab = this;
-    if(key=="index") key = "zindex";
-    db.transaction(function (tx) {
-      if(tab.group_id=="icebox") tab.group_id = 0;
-      if(key=="group_id" && val=="icebox") val = 0;
-      if(typeof(tab.group_id)=="number" && typeof(tab.index)=="number") {
-        //console.warn("UPDATE tabs SET "+key+"=? WHERE group_id=? and zindex=?".replace('?',val).replace('?',tab.group_id).replace('?',tab.index))
-        tx.executeSql("UPDATE tabs SET "+key+"=? WHERE group_id=? and zindex=?",
-                      [ val, tab.group_id, tab.index ],
-                      function (tx, rs) {
-          if (rs.rowsAffected) {
-            if(key=="zindex") key = "index";
-            tab[key] = val;
-            settings.success.call(rs);
-          } else {
-            console.error("An error occurred while updating the tab in the db (no rows affected)", rs, tx);
-            if(settings.error!=null) settings.error.call();
-          }
-        }, function (tx, err) {
-          console.error("An error occurred while updating the tab in the db", err);
-          if(settings.error!=null) settings.error.call();
-        });
-      } else {
-        tx.executeSql("UPDATE tabs SET "+key+"=? WHERE url=?",
-                      [ val, tab.url ],
-                      function (tx, rs) {
-          if (rs.rowsAffected) {
-            if(key=="zindex") key = "index";
-            tab[key] = val;
-            settings.success.call(rs);
-          } else {
-            console.error("An error occurred while updating the tab in the db (no rows affected)", rs);
-            if(settings.error!=null) settings.error.call();
-          }
-        }, function (tx, err) {
-          console.error("An error occurred while updating the tab in the db", err);
-          if(settings.error!=null) settings.error.call();
-        });
+    Storage.update({
+      table: "tabs",
+      conditions: "`group_id`="+this.group_id+"`index`="+this.index,
+      changes: {key: val},
+      success: function() {
+        this[key] = val;
+        settings.success.call();
       }
     });
   },
@@ -414,21 +348,13 @@ var SugarTab = new JS.Class({
   db_delete: function(settings) {
     console.debug("Tab delete", this, settings);
     if(settings == null) settings = {};
-    var tab = this;
-    db.transaction(function (tx) {
-      tx.executeSql("DELETE FROM tabs WHERE group_id=? and zindex=?",
-                    [ tab.group_id, tab.index ],
-                    function (tx, rs) {
-        if (!rs.rowsAffected) {
-          console.error("An error occurred while deleting the tab in the db (no rows affected)", rs);
-          if(settings.error!=null) settings.error.call();
-        } else {
-          settings.success.call();
-        }
-      }, function (tx, err) {
-        console.error("An error occurred while deleting the tab in the db", err);
-        if(settings.error!=null) settings.error.call();
-      });
+    Storage.delete({
+      table: "tabs",
+      conditions: {
+        group_id: this.group_id,
+        index: this.index
+      },
+      success: settings.success
     });
   },
 

@@ -27,9 +27,6 @@ track('Options', 'Start', 'The options page has opened');
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
-// needed for storage.js to work with this page
-function updateUI() {}
-
 function reloadTabSugar() {
   console.debug('reloadTabSugar');
   back.location.reload();
@@ -51,16 +48,13 @@ function reinitialize() {
     console.debug('- localStorage cleared!');
 
     // database
-    db.transaction(function (tx) {
-      // drop all tables
-      tx.executeSql("DROP TABLE groups");
-      tx.executeSql("DROP TABLE tabs");
-      console.debug('- database cleared!');
-
-      // reload the extension
-      reloadTabSugar();
-
-      showMessage("Tab Sugar was reinitialized.");
+    Storage.reset({
+      success: function () {
+        // reload the extension
+        reloadTabSugar();
+        // display a success message
+        showMessage("Tab Sugar was reinitialized.");
+      }
     });
   } else {
     track('Options', 'Reset', 'Reinitialize the extension', false);

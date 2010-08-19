@@ -29,24 +29,18 @@ if(localStorage.debug != "true") {
   console.debug = function() {}
 }
 
+// Show the shortcut key in the browser action's description
+if(localStorage.shortcut_key!=null) {
+  chrome.browserAction.setTitle({title: "Tab Sugar ("+localStorage.shortcut_key+")"});
+}
+
 var icebox;
 var groups = [];
 
-// @param no_listeners [optional] (boolean) Don't activate the listeners
-function updateUI(no_listeners) {
-  console.debug("updateUI");
-  SugarGroup.load_icebox({
-    success: function(rs) {
-      SugarGroup.load_groups({
-        success: function(rs) {
-          if(typeof(no_listeners)=='undefined' || !no_listeners) {
-            activate_listeners();
-          }
-        }
-      });
-    }
-  });
-}
+
+/**
+ * FUNCTIONS
+ */
 
 function openTabSugar(tab) {
   console.debug('chrome.browserAction.onClicked', tab);
@@ -79,82 +73,6 @@ function openTabSugar(tab) {
   chrome.tabs.create({url: sugar_url});
 }
 
-// Browser action
-chrome.browserAction.onClicked.addListener(openTabSugar);
-
-// Enable the use of a shortcut key from within the tabs
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-  if(request.action == "open") {
-    openTabSugar();
-  } else if(request.action == "gimme the shortcut key") {
-    sendResponse({shortcut_key: localStorage.shortcut_key});
-  }
-});
-
-// Show the shortcut key in the browser action's description
-if(localStorage.shortcut_key!=null) {
-  chrome.browserAction.setTitle({title: "Tab Sugar ("+localStorage.shortcut_key+")"});
-}
-
-function activate_listeners() {
-
-  // At first execution of Tab Sugar...
-  var initialized = localStorage.initialized == "true";
-  if(!initialized) {
-    // the extension has been initialized with all the already opened tabs
-    localStorage.initialized = "true";
-    // tab preview feature is ON by default
-    localStorage.feature_tab_preview = "true";
-    // tabs resizing feature is ON by default
-    localStorage.feature_autoresize = "true";
-    // snap groups feature is OFF by default
-    localStorage.feature_snapgroups = "false";
-    // initialize the extension by listing all the tabs of all the windows
-    chrome.windows.getAll({populate:true}, function (windows) {
-      console.debug('chrome.windows.getAll', windows);
-      for(var w in windows) {
-        var tabs = windows[w].tabs;
-        for(var t in tabs) {
-          var tab = tabs[t];
-          if(SugarTab.persistable(tab.url)) {
-            var tab = new SugarTab(tab);
-            icebox.add_tab(tab, true);
-          }
-        }
-      }
-      track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
-    });
-  } else { // already initialized
-    track('Background', 'Developer traces', '', localStorage.debug=="true");
-    track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
-    track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");
-  }
-
-  // Check for tab opening
-  //chrome.tabs.onCreated.addListener(function(tab) {
-  //  console.debug('chrome.tabs.onCreated', tab);
-  //  chrome.tabs.getSelected(null, function(t2) {
-  //    console.log('created tab ' + tab.id + ', selected tab is ' + t2.id);
-  //    tabs.unshift(tab);//TODO ??
-  //  });
-  //});
-
-  // Check for tab URL change
-  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if(changeInfo.status == "complete") {
-      console.debug('chrome.tabs.onUpdated', tabId, changeInfo, tab);
-      captureCurrentTab();
-    }
-  });
-
-  // Check for tab closing
-  chrome.tabs.onRemoved.addListener(function(tabId) {
-    console.debug('chrome.tabs.onRemoved', tabId);
-    //TODO tabs.unshift(tab);
-  });
-
-}
-
 // resizes an image to the desired size
 function resizeImage(url, width, height, callback) {
   var sourceImage = new Image();
@@ -184,14 +102,185 @@ function captureCurrentTab() {
           var width = 200;
           var height = Math.round(width / factor);
           resizeImage(dataUrl, width, height, function(dataUrl) {
-            var tab2 = new SugarTab(tab);
-            tab2.update_preview(dataUrl);
+            var t = new SugarTab(tab);
+            t.update_preview(dataUrl);
+            // let's request the extension to update the preview accordingly
+            chrome.extension.sendRequest({action: "update tab preview", tab: tab, preview: dataUrl});
           });
         });
       }
     });
   });
 }
+
+
+/**
+ * MESSAGE PASSING with both the dashboard and the options pages
+ */
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  console.debug('Request', request.sender, request.action, request);
+  // sender: dashboard
+  if(request.action == "open") {
+    openTabSugar();
+  } else if(request.action == "gimme the shortcut key") {
+    // BI12 – Use the extension shortcut key
+    sendResponse({shortcut_key: localStorage.shortcut_key});
+  } else if(request.action == "DI01") {
+    // DI01 – Create a new group
+    // 3. The background page inserts the new group in the database
+    var group = new SugarGroup(request.group);
+    group.db_insert({
+      success: function(rs) {
+        // add it to the group list
+        groups.push( group );
+        sendResponse({status: "OK"});
+      }
+    });
+  } else if(request.action == "DI02") {
+    // DI02 – Rename a group
+    // 3. The background page renames the group in the database
+    var gid = request.gid;
+    var name = request.name;
+    Storage.update({
+      table: "groups",
+      conditions: "`id`="+gid,
+      changes: {name: name},
+      success: function() {
+        // update the right group in the groups array
+        for(var g in groups) {
+          var group = groups[g];
+          if(group.id == gid) {
+            group.name = name;
+          }
+        }
+      }
+    });
+  }
+});
+
+
+/**
+ * INITIALIZE THE EXTENSION
+ */
+
+// At first execution of Tab Sugar...
+var initialized = localStorage.initialized == "true";
+if(!initialized) {
+  // initialize the database
+  Storage.init({
+    success: function() {
+      // load the icebox
+      SugarGroup.load_icebox({
+        success: function(rs) {
+          // the extension has been initialized with all the already opened tabs
+          localStorage.initialized = "true";
+          // tab preview feature is ON by default
+          localStorage.feature_tab_preview = "true";
+          // tabs resizing feature is ON by default
+          localStorage.feature_autoresize = "true";
+          // snap groups feature is OFF by default
+          localStorage.feature_snapgroups = "false";
+          // the next group will be identified as "group 1"
+          localStorage.group_last_index = 0;
+          // initialize the extension by listing all the tabs of all the windows
+          chrome.windows.getAll({populate:true}, function (windows) {
+            console.debug('chrome.windows.getAll', windows);
+            for(var w in windows) {
+              var tabs = windows[w].tabs;
+              for(var t in tabs) {
+                var tab = tabs[t];
+                if(SugarTab.persistable(tab.url)) {
+                  var tab = new SugarTab(tab);
+                  icebox.add_tab(tab, true);
+                }
+              }
+            }
+            track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
+          });
+        }
+      });
+    }
+  });
+} else { // already initialized
+  // load the icebox
+  SugarGroup.load_icebox({
+    success: function(rs) {
+      // load the other groups
+      SugarGroup.load_groups({
+        success: function(rs) {
+        }
+      });
+    }
+  });
+  track('Background', 'Developer traces', '', localStorage.debug=="true");
+  track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
+  track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");
+}
+
+
+/**
+ * BROWSER INTERACTIONS
+ * @see http://github.com/arnaud/chrome-tab-sugar/wiki/Interactions
+ */
+
+// BI01 – Create a window
+//TODO
+
+// BI02 – Focus a window
+//TODO
+
+// BI03 – Close a window
+//TODO
+
+// BI04 – Attach a tab to a window
+//TODO
+
+// BI05 – Create a tab
+chrome.tabs.onCreated.addListener(function(tab) {
+  console.debug('chrome.tabs.onCreated', tab);
+  chrome.tabs.getSelected(null, function(t2) {
+    chrome.windows.getCurrent(function(window) {
+      chrome.extension.sendRequest({action: "new tab", wid: window.id, tab: tab});
+    });
+  });
+});
+
+// BI06 – Detach a tab from a window
+//TODO
+
+// BI07 – Move a tab within a window
+//TODO
+
+// BI08 – Close a tab
+chrome.tabs.onRemoved.addListener(function(tabId) {
+  console.debug('chrome.tabs.onRemoved', tabId);
+  chrome.windows.getCurrent(function(window) {
+    chrome.extension.sendRequest({action: "close tab", window: window.id, tid: tabId});
+  });
+  //TODO tabs.unshift(tab);
+});
+
+// BI09 – Select a tab
+chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+  console.debug('chrome.tabs.onSelectionChanged', tabId, selectInfo);
+  captureCurrentTab();
+});
+
+// BI10 – Update a tab
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if(changeInfo.status == "complete") {
+    console.debug('chrome.tabs.onUpdated', tabId, changeInfo, tab);
+    chrome.windows.getCurrent(function(window) {
+      chrome.extension.sendRequest({action: "update tab", wid: window.id, tab: tab});
+      captureCurrentTab();
+    });
+  }
+});
+
+// BI11 – Click on the extension action button
+chrome.browserAction.onClicked.addListener(openTabSugar);
+
 
 /*
 function searchTabs(text) {

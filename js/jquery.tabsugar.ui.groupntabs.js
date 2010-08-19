@@ -186,6 +186,7 @@
   
   // get the tabs of a group
   $.fn.tabs = function() {
+    if(this == null || this.length == 0) return $('#nothing');
     if(!this.isGroup()) {
       console.error('The tabs method only applies to groups');
       return $('#nothing');
@@ -208,8 +209,8 @@
   },
 
   // get all the dashboard groups
-  $.fn.groups = function() {
-    return $('#dashboard .group');
+  $.groups = function() {
+    return $('#dashboard .group').not('.fangroup');
   },
 
   // get the title of a group or a tab
@@ -227,7 +228,7 @@
   // is there a group at the [x,y] position?
   $.fn.isGroupAtPosition = function(x, y) {
     var is_group = false;
-    $(this).groups().each(function() {
+    $.groups().each(function() {
       var x1 = $(this).position().left + 10;
       var y1 = $(this).position().top + 10;
       var x2 = x1 + $(this).width() + 10;
@@ -319,6 +320,16 @@
     $('.fangroup', this).hide('puff', function() {
       $(this).remove();
     });
+  },
+
+  // find a group by its window id
+  $.findGroup = function(wid) {
+    return $('.group.window-'+wid);
+  },
+
+  // find a tab by its window id and its own data
+  $.findTab = function(wid, tab) {
+    return $.findGroup(wid).tabs().filter(':eq('+tab.index+')');
   }
   
 })(jQuery);

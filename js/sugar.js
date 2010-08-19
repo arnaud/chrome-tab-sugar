@@ -32,13 +32,6 @@ track('Sugar', 'Start', 'The dashboard starts');
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
-// needed for storage.js to work with sugar.js
-function updateUI() {
-  console.debug("updateUI", back.icebox, back.groups);
-  back.updateUI(true);
-  setTimeout(updateSugarUI, 200);
-}
-
 function updateSugarUI() {
   $(function() {
     // update the icebox
@@ -65,6 +58,7 @@ function updateSugarUI() {
     }
   });
 }
+updateSugarUI();
 
 
 $(function() {
@@ -392,19 +386,24 @@ $(function() {
     });
 
     // group titles are editable
-    $('.group>.title').not('#icebox>.title').editable(function(value, settings) {
-      track('Sugar', 'Rename a group', '', $(this).parent().tabs().length);
-      var id = $(this).parent().uid();
-      var group = new SugarGroup({id:id});
-      group.db_update({
-        key: 'name',
-        val: value,
-        success: function(rs) {}
+    $('.group>.title').not('#icebox>.title').editable(function(name, settings) {
+      // DI02 – Rename a group
+      track('Sugar', 'Rename a group', name, $(this).parent().tabs().length);
+      // 1. The user renames a group in the dashboard (already done)
+      // 2. The dashboard sends a request to the background page
+      var gid = $(this).parent().uid();
+      chrome.extension.sendRequest({
+        action: 'DI02', // Rename a group
+        gid: gid,
+        name: name
+      },
+      function(response) {
       });
+
       if(localStorage.debug=="true") {
-        $('.debug', $(this).parent()).html('#'+id+' / '+value);
+        $('.debug', $(this).parent()).html('#'+gid+' / '+name);
       }
-      return value;
+      return name;
     },
     {
       onblur: 'submit'
@@ -498,10 +497,8 @@ function onGroupMouseUp() {
     });
   } else {
     if($(this).attr('status')=='new') { // new group
+      // DI01 – Create a new group
       track('Sugar', 'Create a group', 'Create a group with mousedown', true);
-      // visual
-      $('.title', this).show();
-      // db
       var group = new SugarGroup({
         id: SugarGroup.next_index(),
         name: title,
@@ -510,16 +507,17 @@ function onGroupMouseUp() {
         width: w,
         height: h
       });
-      group.db_insert({
-        success: function(rs) {
-          // add it to the group list
-          //back.groups.push( group );
-          back.updateUI(true);
-          // keep references between the group object and the group UI
-          $(this).attr('id', 'group-'+group.id);
-          // change the status of the group ui
-          $(this).attr('status', 'update');
-        }
+      // 1. The user creates a new group in the dashboard
+      $(this).attr('id', 'group-'+group.id);
+      $('.title', this).show();
+      // 2. The dashboard sends a request to the background page
+      chrome.extension.sendRequest({
+        action: 'DI01', // Create a new group
+        group: group
+      },
+      function(response) {
+        // change the status of the group ui
+        $(this).attr('status', 'update');
       });
     } else { // existing group
       var group = new SugarGroup({id: id});
@@ -549,3 +547,43 @@ function onGroupMouseUp() {
     }
   }
 }
+
+// live interactions to the dashboard which responds to actual browser events
+// see background.js for events requests sendings
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  console.debug('Live interaction:', request.action, request);
+  var action = request.action;
+  if(action == "update tab preview") {
+    // update tab previews
+    var tab = request.tab;
+    var preview = request.preview;
+    $.groups().tabs().find(".url:contains('"+tab.url+"')").parent().find('>.preview')
+      .removeClass('empty')
+      .attr('src', preview);
+  } else if(action == "new tab") {
+    // create a new tab
+    var wid = request.wid;
+    var group_ui = $.findGroup(wid);
+    group_ui = $('#icebox'); //TODO remove me
+    var tab = request.tab;
+    var t = new SugarTab(tab);
+    var tab_ui = t.ui_create();
+    group_ui.addTab(tab_ui);
+    group_ui.autoFitTabs();
+  } else if(action == "update tab") {
+    // update a tab URL
+    var wid = request.wid;
+    var group_ui = $.findGroup(window.id);
+    var tab = request.tab;
+    var t = new SugarTab(tab);
+    var tab_ui = $.findTab(wid, t);
+    tab_ui.find('.title>span').html(t.title);
+    tab_ui.find('.url').html(t.url);
+    tab_ui.find('.favicon').html(t.favIconUrl);
+    tab_ui.find('.preview').addClass('empty').attr('src','');
+  } else if(action == "close tab") {
+    var wid = request.wid;
+    var tid = request.tid;
+    //TODO
+  }
+});
