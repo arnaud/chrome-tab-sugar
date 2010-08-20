@@ -45,7 +45,8 @@ var Storage = new JS.Class({
       storage.db.transaction(function(tx) {
         tx.executeSql("CREATE TABLE IF NOT EXISTS `groups` (`id` REAL UNIQUE, `name` TEXT, `posX` REAL, `posY` REAL, `width` REAL, `height` REAL)");
         tx.executeSql("INSERT INTO `groups` (`id`,`name`,`width`,`height`) VALUES (0,'icebox',586,150)");
-        tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT, `preview` TEXT)");
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT)");
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` (`url` TEXT, `preview` TEXT)");
         console.debug("Tab Sugar database is ready");
         if(settings && settings.success) settings.success.call();
       });
@@ -74,6 +75,8 @@ var Storage = new JS.Class({
           // do nothing
         } else if(type=="number") { // NaN case
           val = "NULL";
+        } else if(attr.indexOf("raw_sql_") != -1) {
+          attr = attr.replace('raw_sql_','');
         } else if(type=="string") {
           val = "'" + val.replace("'",("\'")) + "'";
         } else if(type=="undefined") {

@@ -173,6 +173,31 @@ function getWindowFromGid(gid, callback) {
   }
 }
 
+// finds out which tab corresponds to a group id and index
+function getTabFromTid(gid, index, callback) {
+  console.debug('getTabFromTid', gid, index);
+  getWindowFromGid(gid, function(window) {
+    var tab_found = false;
+    var tab = null;
+    var idx = 0;
+    for(var t in window.tabs) {
+      tab = window.tabs[t];
+      if(SugarTab.persistable(t.url)) {
+        idx++;
+      }
+      if(idx == index) {
+        tab_found = true;
+        break;
+      }
+    }
+    if(tab_found) {
+      callback(tab);
+    } else {
+      console.error('Couldn\'t find a match for the tab', gid, index)
+    }
+  });
+}
+
 
 /**
  * MESSAGE PASSING with both the dashboard and the options pages
@@ -292,7 +317,46 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
           var group = groups[g];
           if(group.id == gid) {
             delete groups[g];
-            break;
+            return;
+          }
+        }
+      }
+    });
+  } else if(request.action == "DI09") {
+    // DI09 – Close a tab
+    // 3. The background page sends a request to the browser to close the corresponding tab
+    var gid = request.gid;
+    var index = request.index;
+    getTabFromTid(gid, index, function(tab) {
+      var tid = tab.id;
+      chrome.tabs.remove(tid);
+    });
+    // 4. -On success-, the background page deletes the tab from the database
+    Storage.delete({
+      table: "tabs",
+      conditions: "`group_id`="+gid+" AND `index`="+index,
+      success: function() {
+        // decrement other tabs indexes for the same group
+        Storage.update({
+          table: "tabs",
+          conditions: "`group_id`="+gid+" AND `index`>"+index,
+          changes: {
+            raw_sql_index: "`index`-1"
+          },
+          success: function() {
+          }
+        });
+        // remove the right tab in the groups array
+        for(var g in groups) {
+          var group = groups[g];
+          if(group.id == gid) {
+            for(var t in group.tabs) {
+              var tab = group.tabs[t];
+              if(t == index) {
+                delete groups[g].tabs[t];
+                return;
+              }
+            }
           }
         }
       }

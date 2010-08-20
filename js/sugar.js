@@ -85,27 +85,29 @@ $(function() {
   // tabs are closeable
   $('.tab .close').live("click", function(e) {
     console.debug('Event', 'tab close click', e);
+    // DI09 – Close a tab
     track('Sugar', 'Close a tab');
 
-    var tab = $(this).parent().parent();
-    var group = tab.group();
-
-    // visually
-    tab.fadeOut(function() {
+    // 1. The user closes a tab
+    var tab_ui = $(this).parent().parent();
+    tab_ui.fadeOut(function() {
       $(this).remove();
     });
 
-    // in the db
-    var group_id = group.uid();
-    if(group_id=="icebox") group_id = 0;
-    var index = JSON.parse(tab.attr('obj')).index;
-    var t = new SugarTab({group_id: group_id, index: index});
-    t.db_delete({
-      success: function(rs) {}
+    // 2. The dashboard sends a request to the background page
+    var gid = tab_ui.group().uid();
+    if(gid=="icebox") gid = 0;
+    var index = tab_ui.parent().children().index(tab_ui);
+    chrome.extension.sendRequest({
+      action: 'DI09', // Close a tab
+      gid: gid,
+      index: index
+    },
+    function(response) {
     });
 
     // when grabbing the last tab of a group, the initial group should disappear if empty
-    var old_group = $(tab).group();
+    /*var old_group = $(tab).group();
     var nb_tabs_in_old_group = old_group.tabs().not(tab).length;
     if(nb_tabs_in_old_group == 0) {
       // visually
@@ -122,7 +124,7 @@ $(function() {
     // if the source group still has tabs, let's resize'em all
     } else {
       old_group.autoFitTabs();
-    }
+    }*/
 
     // prevent the tab clicking event to activate
     return false;
@@ -416,7 +418,6 @@ $(function() {
 
     // 1. The user closes a group in the dashboard
     var group_ui = $(this).parent();
-    // visually
     group_ui.fadeOut(function() {
       $(this).remove();
     });
