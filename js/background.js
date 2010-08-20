@@ -185,6 +185,35 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
+  } else if(request.action == "DI04") {
+    // DI04 – Move a group
+    // 3. The background page updates the group coordinates in the database
+    var gid = request.gid;
+    var posX = request.posX;
+    var posY = request.posY;
+    Storage.update({
+      table: "groups",
+      conditions: "`id`="+gid,
+      changes: {
+        posX: posX,
+        posY: posY
+      },
+      success: function() {
+        // update the right group in the groups array
+        if(gid==0) {
+          icebox.posX = posX;
+          icebox.posY = posY;
+        } else {
+          for(var g in groups) {
+            var group = groups[g];
+            if(group.id == gid) {
+              group.posX = posX;
+              group.posY = posY;
+            }
+          }
+        }
+      }
+    });
   }
 });
 

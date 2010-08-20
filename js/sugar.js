@@ -170,24 +170,23 @@ $(function() {
       snapMode: 'outer',
       snapTolerance: 10,
       start: function(ev, ui) {
+        // DI03 – Resize a group
         track('Sugar', 'Drag a group', '', $(this).tabs().length);
       },
       stop: function(ev, ui) {
-        var id = $(this).uid();
-        if(id=="icebox") id = 0;
-        var x = $(this).position().left;
-        var y = $(this).position().top;
-        var group = new SugarGroup({id: id});
-        group.db_update({
-          key: 'posX',
-          val: x,
-          success: function(rs) {
-            group.db_update({
-              key: 'posY',
-              val: y,
-              success: function(rs) {}
-            });
-          }
+        // 1. The user moves a group in the dashboard (already done)
+        // 2. The dashboard sends a request to the background page
+        var gid = $(this).uid();
+        if(gid=="icebox") gid = 0;
+        var posX = $(this).position().left;
+        var posY = $(this).position().top;
+        chrome.extension.sendRequest({
+          action: 'DI04', // Move a group
+          gid: gid,
+          posX: posX,
+          posY: posY
+        },
+        function(response) {
         });
       }
     });
