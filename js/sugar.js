@@ -362,22 +362,21 @@ $(function() {
       minHeight: 150, // GROUP_MIN_HEIGHT
       minWidth: 150, // GROUP_MIN_WIDTH
       stop: function(ev, ui) {
+        // DI03 – Resize a group
         track('Sugar', 'Resize a group', '', $(this).tabs().length);
-        var id = $(this).uid();
-        if(id=="icebox") id = 0;
-        var w = $(this).width();
-        var h = $(this).height();
-        var group = new SugarGroup({id: id});
-        group.db_update({
-          key: 'width',
-          val: w,
-          success: function(rs) {
-            group.db_update({
-              key: 'height',
-              val: h,
-              success: function(rs) {}
-            });
-          }
+        // 1. The user resizes a group in the dashboard (already done)
+        // 2. The dashboard sends a request to the background page
+        var gid = $(this).uid();
+        if(gid=="icebox") gid = 0;
+        var width = $(this).width();
+        var height = $(this).height();
+        chrome.extension.sendRequest({
+          action: 'DI03', // Resize a group
+          gid: gid,
+          width: width,
+          height: height
+        },
+        function(response) {
         });
       },
       resize: function(ev, ui) {

@@ -156,6 +156,35 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
+  } else if(request.action == "DI03") {
+    // DI03 – Resize a group
+    // 3. The background page updates the group sizes in the database
+    var gid = request.gid;
+    var width = request.width;
+    var height = request.height;
+    Storage.update({
+      table: "groups",
+      conditions: "`id`="+gid,
+      changes: {
+        width: width,
+        height: height
+      },
+      success: function() {
+        // update the right group in the groups array
+        if(gid==0) {
+          icebox.width = width;
+          icebox.height = height;
+        } else {
+          for(var g in groups) {
+            var group = groups[g];
+            if(group.id == gid) {
+              group.width = width;
+              group.height = height;
+            }
+          }
+        }
+      }
+    });
   }
 });
 
