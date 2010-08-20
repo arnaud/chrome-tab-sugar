@@ -411,19 +411,23 @@ $(function() {
   // groups are closeable
   $('.group>.close').live("click", function(e) {
     console.debug('Event', 'group close click', e);
+    // DI04 – Close a group
     track('Sugar', 'Close a group', '', $(this).parent().tabs().length);
-    var group = $(this).parent();
 
+    // 1. The user closes a group in the dashboard
+    var group_ui = $(this).parent();
     // visually
-    group.fadeOut(function() {
+    group_ui.fadeOut(function() {
       $(this).remove();
     });
 
-    // in the db
-    var id = $(this).parent().uid();
-    var group = new SugarGroup({id: id});
-    group.db_delete({
-      success: function(rs) {}
+    // 2. The dashboard sends a request to the background page
+    var gid = group_ui.uid();
+    chrome.extension.sendRequest({
+      action: 'DI05', // Close a group
+      gid: gid
+    },
+    function(response) {
     });
   });
 

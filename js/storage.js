@@ -62,6 +62,30 @@ var Storage = new JS.Class({
       });
     },
 
+    // returns only the appropriate attributes of an object and
+    // correctly format its values
+    _parse: function(object) {
+      var o = {};
+      for(var attr in object) {
+        if(attr=="constructor") break;
+        var val = object[attr];
+        var type = typeof(val);
+        if(type=="number" && val >= 0) {
+          // do nothing
+        } else if(type=="number") { // NaN case
+          val = "NULL";
+        } else if(type=="string") {
+          val = "'" + val.replace("'",("\'")) + "'";
+        } else if(type=="undefined") {
+          val = "NULL";
+        } else {
+          continue;
+        }
+        o[attr] = val;
+      }
+      return o;
+    },
+
     // executes a query to the db
     execute_sql: function(settings) {
       var query = settings.query;
@@ -113,21 +137,9 @@ var Storage = new JS.Class({
       var object = settings.object;
       var attributes = "";
       var values = "";
+      object = Storage._parse(object);
       for(var attr in object) {
-        if(attr=="constructor") break;
         var val = object[attr];
-        var type = typeof(val);
-        if(type=="number" && val >= 0) {
-          // do nothing
-        } else if(type=="number") { // NaN case
-          val = "NULL";
-        } else if(type=="string") {
-          val = "'" + val.replace("'",("\'")) + "'";
-        } else if(type=="undefined") {
-          val = "NULL";
-        } else {
-          continue;
-        }
         if(attributes.length > 0) {
           attributes += ", ";
           values += ", ";
@@ -150,20 +162,9 @@ var Storage = new JS.Class({
       var conditions = settings.conditions;
       var changes = settings.changes;
       var changes_raw = "";
+      changes = Storage._parse(changes);
       for(var attr in changes) {
         var val = changes[attr];
-        var type = typeof(val);
-        if(type=="number" && val >= 0) {
-          // do nothing
-        } else if(type=="number") { // NaN case
-          val = "NULL";
-        } else if(type=="string") {
-          val = "'" + val.replace("'",("\'")) + "'";
-        } else if(type=="undefined") {
-          val = "NULL";
-        } else {
-          continue;
-        }
         if(changes_raw.length > 0) {
           changes_raw += ", ";
         }

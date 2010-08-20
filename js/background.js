@@ -113,6 +113,66 @@ function captureCurrentTab() {
   });
 }
 
+// finds out which window corresponds to a group id
+function getWindowFromGid(gid, callback) {
+  console.debug('getWindowFromGid', gid);
+  // 1. Find the group object
+  var group_found = false;
+  var group = null;
+  for(var g in groups) {
+    group = groups[g];
+    if(group.id == gid) {
+      group_found = true;
+      break;
+    }
+  }
+  if(!group_found) {
+    // the group couldn't be found :-|
+    console.error('The group #'+gid+' could not be found');
+    callback(null);
+  } else {
+    // the group was found, let's check the actual windows now for comparison
+    chrome.windows.getAll({populate:true}, function(windows) {
+      for(var w in windows) {
+        var window = windows[w];
+        console.debug('Window', '#'+w, window);
+        var tabs = window.tabs;
+        var window_tabs = [];
+        for(var t in tabs) {
+          if(SugarTab.persistable(t.url)) {
+            window_tabs.push(t);
+          }
+        }
+        console.debug('...has', window_tabs.length, 'tabs');
+        console.debug('...whereas the group has', group.tabs.length, 'tabs');
+        if(window_tabs.length == group.tabs.length) {
+          console.debug('=> OK!');
+          // 1st test is OK: the group and the window have the same tabs count
+          var same_tabs = true;
+          for(var t in window_tabs) {
+            var wtab = window_tabs[t];
+            var gtab = group.tabs[t];
+            console.debug(' tabs', '#'+t, wtab, gtab);
+            same_tabs = (wtab.title == gtab.title) && (wtab.url == gtab.url);
+            if(!same_tabs) {
+              console.debug(' ... are not the same');
+              break;
+            }
+          }
+          if(same_tabs) {
+            // 2nd test is OK: the group tabs and the window tabs share the same characteristics
+            console.debug('===> OK!');
+            callback(window);
+            return;
+          }
+        } else {
+          console.debug('=> KO');
+        }
+      }
+    });
+  }
+}
+
 
 /**
  * MESSAGE PASSING with both the dashboard and the options pages
@@ -199,7 +259,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         posY: posY
       },
       success: function() {
-        // update the right group in the groups array
+        // update the icebox or the right group in the groups array
         if(gid==0) {
           icebox.posX = posX;
           icebox.posY = posY;
@@ -210,6 +270,29 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
               group.posX = posX;
               group.posY = posY;
             }
+          }
+        }
+      }
+    });
+  } else if(request.action == "DI05") {
+    // DI05 – Close a group
+    // 3. The background page sends a request to the browser to close the corresponding window
+    var gid = request.gid;
+    getWindowFromGid(gid, function(window) {
+      var wid = window.id;
+      chrome.windows.remove(wid);
+    });
+    // 4. -On success-, the background page deletes the group from the database
+    Storage.delete({
+      table: "groups",
+      conditions: "`id`="+gid,
+      success: function() {
+        // remove the right group in the groups array
+        for(var g in groups) {
+          var group = groups[g];
+          if(group.id == gid) {
+            delete groups[g];
+            break;
           }
         }
       }
