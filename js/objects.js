@@ -168,7 +168,6 @@ var SugarGroup = new JS.Class({
       .css('position', 'absolute')
       .css('top', this.posY+'px')
       .css('left', this.posX+'px')
-      .attr('obj', JSON.stringify(this))
       .append($('<ul></ul>'))
       .append($('<div class="debug" />'))
       .append($('<div class="clear" />'));
@@ -401,8 +400,7 @@ var SugarTab = new JS.Class({
     } else {
       preview = '<img class="preview" src="'+this.preview+'" />';
     }
-    return $('<li class="tab"><div>'+preview+'<img class="favicon" src="'+this.favIconUrl+'" /><span class="title"><span>'+this.title+'</span></span><span class="url" url="'+this.url+'">'+this.url+'</span><div class="close"></div></div></li>')
-      .attr('obj', JSON.stringify(this));
+    return $('<li class="tab"><div>'+preview+'<img class="favicon" src="'+this.favIconUrl+'" /><span class="title"><span>'+this.title+'</span></span><span class="url" url="'+this.url+'">'+this.url+'</span><div class="close"></div></div></li>');
   },
 
   // CLASS METHODS

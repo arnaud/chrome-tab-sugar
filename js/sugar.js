@@ -321,10 +321,10 @@ $(function() {
       drop: function(ev, ui) {
         track('Sugar', 'Drop a tab in a new group', 'Drop a tab in a new group');
         var tab_ui = ui.draggable;
-        var tab = tab_ui.object();
+        //var tab = tab_ui.object();
 
         var old_group_ui = tab_ui.group();
-        var old_group = old_group_ui.object();
+        //var old_group = old_group_ui.object();
 
         var new_group = new SugarGroup({
           id: SugarGroup.next_index(),

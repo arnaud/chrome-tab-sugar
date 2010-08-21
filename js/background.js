@@ -465,6 +465,15 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             syncGroupsFromDb(function() {
               sendResponse({status: "OK"});
             });
+          },
+          error: function() {
+            // having an error here doesn't mean this is wrong: it just means
+            // that the removed tab was the last one
+            
+            // refresh the icebox and the groups
+            syncGroupsFromDb(function() {
+              sendResponse({status: "OK"});
+            });
           }
         });
         // remove the right tab in the groups array

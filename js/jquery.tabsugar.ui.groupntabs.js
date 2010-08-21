@@ -275,23 +275,6 @@
     return uid;
   },
 
-  // get the associated object (group or tab)
-  $.fn.object = function() {
-    var o = null;
-    if(this.isGroup()) {
-      o = new SugarGroup({id: this.uid()});
-      //o = JSON.parse(this.attr('obj'));
-      //TODO load from db
-    } else if(this.isTab()) {
-      o = new SugarTab({group_id: this.group().uid(), index: JSON.parse(this.attr('obj')).index});
-      //o = JSON.parse(this.attr('obj'));
-      //TODO load from db
-    } else {
-      console.error('The object method only applies to groups or tabs');
-    }
-    return o;
-  },
-
   // normalizes a tab
   $.fn.normalizeTab = function(width, height) {
     this.each(function() {
