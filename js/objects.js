@@ -117,7 +117,8 @@ var SugarGroup = new JS.Class({
       success: function() {
         localStorage.group_last_index++;
         settings.success.call();
-      }
+      },
+      error: settings.error
     });
   },
 
@@ -133,7 +134,8 @@ var SugarGroup = new JS.Class({
       success: function() {
         this[key] = val;
         settings.success.call();
-      }
+      },
+      error: settings.error
     });
   },
 
@@ -143,12 +145,14 @@ var SugarGroup = new JS.Class({
     Storage.delete({
       table: "tabs",
       conditions: {group_id: this.id},
-      success: function() {}
+      success: function() {},
+      error: function() {}
     });
     Storage.delete({
       table: "groups",
       conditions: {id: this.id},
-      success: settings.success
+      success: settings.success,
+      error: settings.error
     });
   },
 
@@ -268,10 +272,12 @@ var SugarGroup = new JS.Class({
                 if(last_group) {
                   settings.success.call();
                 }
-              }
+              },
+              error: settings.error
             });
           }
-        }
+        },
+        error: settings.error
       });
     },
 
@@ -348,7 +354,8 @@ var SugarTab = new JS.Class({
     Storage.insert({
       table: "tabs",
       object: this,
-      success: settings.success
+      success: settings.success,
+      error: settings.error
     });
   },
 
@@ -364,7 +371,8 @@ var SugarTab = new JS.Class({
       success: function() {
         this[key] = val;
         settings.success.call();
-      }
+      },
+      error: settings.error
     });
   },
 
@@ -377,7 +385,8 @@ var SugarTab = new JS.Class({
         group_id: this.group_id,
         index: this.index
       },
-      success: settings.success
+      success: settings.success,
+      error: settings.error
     });
   },
 

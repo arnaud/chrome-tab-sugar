@@ -32,9 +32,22 @@ track('Sugar', 'Start', 'The dashboard starts');
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
+
+/**
+ * FUNCTIONS
+ */
+
+// initializes the dashboard with the icebox and groups
 function initUI() {
-  // update the icebox
   var ice = back.icebox;
+  // handle the situation where Tab Sugar isn't ready: the background page didn't do its work
+  if(ice==null) {
+    //showMessage('Tab Sugar isn\'t ready to rock just now. Please either reload the extension or restart Chrome.');
+    chrome.extension.getBackgroundPage().location.reload();
+    setTimeout(function() { this.location.reload() }, 500);
+    return;
+  }
+  // update the icebox
   $('#icebox')
     .width(ice.width)
     .height(ice.height)
@@ -63,6 +76,18 @@ function initUI() {
   }
 }
 
+function showMessage(message) {
+  $('#message').hide().html('<span>'+message+' <a href="#" onclick="hideMessage()">[x]</a></span>').show('clip');
+}
+
+function hideMessage() {
+  $('#message').hide('clip');
+}
+
+
+/**
+ * UI INITIALIZATION
+ */
 
 $(function() {
 
@@ -588,5 +613,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var wid = request.wid;
     var tid = request.tid;
     //TODO
+  } else if(action == "error") {
+    var message = request.message;
+    showMessage('Oops! '+message);
   }
 });

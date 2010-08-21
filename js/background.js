@@ -204,6 +204,18 @@ function getTabFromTid(gid, index, callback) {
   });
 }
 
+// syncs the the 'icebox' and 'groups' variables with the ones from the database
+function syncGroupsFromDb(callback) {
+  SugarGroup.load_icebox({
+    success: function(rs) {
+      // load the other groups
+      SugarGroup.load_groups({
+        success: callback
+      });
+    }
+  });
+}
+
 
 /**
  * MESSAGE PASSING with both the dashboard and the options pages
@@ -225,8 +237,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     group.db_insert({
       success: function(rs) {
         // add it to the group list
-        groups.push( group );
-        sendResponse({status: "OK"});
+        //groups.push( group );
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while storing the group in the db'});
       }
     });
   } else if(interaction == "DI02") {
@@ -239,13 +256,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       conditions: "`id`="+gid,
       changes: {name: name},
       success: function() {
-        // update the right group in the groups array
-        for(var g in groups) {
-          var group = groups[g];
-          if(group.id == gid) {
-            group.name = name;
-          }
-        }
+        // refresh the icebox and the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while renaming the group in the db'});
       }
     });
   } else if(interaction == "DI03") {
@@ -263,7 +280,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       },
       success: function() {
         // update the right group in the groups array
-        if(gid==0) {
+        /*if(gid==0) {
           icebox.width = width;
           icebox.height = height;
         } else {
@@ -274,7 +291,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
               group.height = height;
             }
           }
-        }
+        }*/
+        // refresh the icebox and the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while updating the group sizes in the db'});
       }
     });
   } else if(interaction == "DI04") {
@@ -292,7 +316,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       },
       success: function() {
         // update the icebox or the right group in the groups array
-        if(gid==0) {
+        /*if(gid==0) {
           icebox.posX = posX;
           icebox.posY = posY;
         } else {
@@ -303,7 +327,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
               group.posY = posY;
             }
           }
-        }
+        }*/
+        // refresh the icebox and the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
     });
   } else if(interaction == "DI05") {
@@ -320,13 +351,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       conditions: "`id`="+gid,
       success: function() {
         // remove the right group in the groups array
-        for(var g in groups) {
+        /*for(var g in groups) {
           var group = groups[g];
           if(group.id == gid) {
             delete groups[g];
             return;
           }
-        }
+        }*/
+        // refresh the icebox and the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the group in the db'});
       }
     });
   } else if(interaction == "DI08") {
@@ -352,7 +390,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       },
       success: function() {
         // find the source tab ad delete it from the source group
-        var src_tab;
+        /*var src_tab;
         if(src_gid==0) {
           for(var t in icebox.tabs) {
             var tab = icebox.tabs[t];
@@ -391,7 +429,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
               groups[g].tabs.push(src_tab);
             }
           }
-        }
+        }*/
+        // refresh the icebox and the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
     });
   } else if(interaction == "DI09") {
@@ -416,10 +461,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             raw_sql_index: "`index`-1"
           },
           success: function() {
+            // refresh the icebox and the groups
+            syncGroupsFromDb(function() {
+              sendResponse({status: "OK"});
+            });
           }
         });
         // remove the right tab in the groups array
-        for(var g in groups) {
+        /*for(var g in groups) {
           var group = groups[g];
           if(group.id == gid) {
             for(var t in group.tabs) {
@@ -430,7 +479,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
               }
             }
           }
-        }
+        }*/
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the tab in the db'});
       }
     });
   }
@@ -494,16 +546,8 @@ if(!initialized) {
     }
   });
 } else { // already initialized
-  // load the icebox
-  SugarGroup.load_icebox({
-    success: function(rs) {
-      // load the other groups
-      SugarGroup.load_groups({
-        success: function(rs) {
-        }
-      });
-    }
-  });
+  // let's sync with the db
+  syncGroupsFromDb(function() {});
   track('Background', 'Developer traces', '', localStorage.debug=="true");
   track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
   track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");

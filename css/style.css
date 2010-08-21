@@ -290,3 +290,22 @@ section>ul {
 .clear {
   clear: left;
 }
+
+#message {
+  position: fixed;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+}
+#message>span {
+  -webkit-border-radius: 3px;
+  background: #f99;
+  border: 1px solid #e55;
+  padding: 1px 5px;
+  font-weight: bold;
+  font-size: 12px;
+}
+#message a {
+  text-decoration: none;
+  color: blue;
+}
