@@ -510,6 +510,7 @@ $(function() {
 function onGroupMouseUp() {
   console.debug('onGroupMouseUp', $(this).attr('status'));
   $(this).unbind('mousemove');
+  $(this).unbind('mouseup');
   var id = $(this).uid();
   var title = $('.title', this).html();
   var w = $(this).width();
