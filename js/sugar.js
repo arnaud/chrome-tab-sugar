@@ -560,7 +560,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     // update tab previews
     var tab = request.tab;
     var preview = request.preview;
-    $.groups().tabs().find(".url:contains('"+tab.url+"')").parent().find('>.preview')
+    $.groups().tabs().find(".url[url='"+tab.url+"']").parent().find('>.preview')
       .removeClass('empty')
       .attr('src', preview);
   } else if(action == "new tab") {

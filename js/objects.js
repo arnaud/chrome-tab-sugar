@@ -392,7 +392,7 @@ var SugarTab = new JS.Class({
     } else {
       preview = '<img class="preview" src="'+this.preview+'" />';
     }
-    return $('<li class="tab"><div>'+preview+'<img class="favicon" src="'+this.favIconUrl+'" /><span class="title"><span>'+this.title+'</span></span><span class="url">'+this.url+'</span><div class="close"></div></div></li>')
+    return $('<li class="tab"><div>'+preview+'<img class="favicon" src="'+this.favIconUrl+'" /><span class="title"><span>'+this.title+'</span></span><span class="url" url="'+this.url+'">'+this.url+'</span><div class="close"></div></div></li>')
       .attr('obj', JSON.stringify(this));
   },
 
