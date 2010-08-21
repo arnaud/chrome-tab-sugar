@@ -32,6 +32,9 @@ function shorten_text(text) {
  * @param item (Hash) -> { (id,) name, (posX, posY, width, height) }
  */
 var SugarGroup = new JS.Class({
+
+  tabs: [],
+
   initialize: function(item) {
     console.debug("Group initialize", item);
     if(typeof(item)=='undefined') return;

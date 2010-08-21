@@ -463,17 +463,31 @@ if(!initialized) {
           // initialize the extension by listing all the tabs of all the windows
           chrome.windows.getAll({populate:true}, function (windows) {
             console.debug('chrome.windows.getAll', windows);
-            for(var w in windows) {
-              var tabs = windows[w].tabs;
-              for(var t in tabs) {
-                var tab = tabs[t];
-                if(SugarTab.persistable(tab.url)) {
-                  var tab = new SugarTab(tab);
-                  icebox.add_tab(tab, true);
+            chrome.windows.getCurrent(function(current_window) {
+              var gid = 1;
+              for(var w in windows) {
+                var group = icebox;
+                if(current_window.id != w.id) {
+                  group = new SugarGroup({id: gid, width: 400, height: 150, posX: 10, posY: 10+gid*180});
+                }
+                var tabs = windows[w].tabs;
+                for(var t in tabs) {
+                  var tab = tabs[t];
+                  if(SugarTab.persistable(tab.url)) {
+                    var tab = new SugarTab(tab);
+                    group.add_tab(tab, true);
+                  }
+                }
+                if(current_window.id != w.id && group.tabs.length > 0) {
+                  group.db_insert({
+                    success: function() {}
+                  });
+                  groups.push(group);
+                  gid++;
                 }
               }
-            }
-            track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
+              track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
+            });
           });
         }
       });

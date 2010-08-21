@@ -33,41 +33,40 @@ track('Sugar', 'Start', 'The dashboard starts');
 var back = chrome.extension.getBackgroundPage();
 
 function initUI() {
-  $(function() {
-    // update the icebox
-    var ice = back.icebox;
-    $('#icebox')
-      .width(ice.width)
-      .height(ice.height)
-      .css('position', 'absolute')
-      .css('top', ice.posY)
-      .css('left', ice.posX)
-      .show();
-    for(var t in ice.tabs) {
-      var tab = ice.tabs[t];
-      $('#icebox').addTab( tab.ui_create() );
-    }
-    $('#icebox').autoFitTabs();
+  // update the icebox
+  var ice = back.icebox;
+  $('#icebox')
+    .width(ice.width)
+    .height(ice.height)
+    .css('position', 'absolute')
+    .css('top', ice.posY)
+    .css('left', ice.posX)
+    .show();
+  for(var t in ice.tabs) {
+    var tab = ice.tabs[t];
+    $('#icebox').addTab( tab.ui_create() );
+  }
+  $('#icebox').autoFitTabs();
 
-    // update the groups
-    var groups = back.groups;
-    for(var g in groups) {
-      var group = groups[g];
-      var group_ui = group.ui_create();
-      $('#dashboard').append( group_ui );
-      group_ui = $('#group-'+group.id);
-      for(var t in group.tabs) {
-        var tab = group.tabs[t];
-        group_ui.addTab( tab.ui_create() );
-      }
-      group_ui.autoFitTabs();
+  // update the groups
+  var groups = back.groups;
+  for(var g in groups) {
+    var group = groups[g];
+    var group_ui = group.ui_create();
+    $('#dashboard').append( group_ui );
+    group_ui = $('#group-'+group.id);
+    for(var t in group.tabs) {
+      var tab = group.tabs[t];
+      group_ui.addTab( tab.ui_create() );
     }
-  });
+    group_ui.autoFitTabs();
+  }
 }
-initUI();
 
 
 $(function() {
+
+  initUI();
 
   // disable right-click contextual menu
   $.disableContextMenu();
