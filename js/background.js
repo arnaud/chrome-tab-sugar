@@ -99,7 +99,7 @@ function captureCurrentTab() {
       if(SugarTab.persistable(tab.url)) {
         chrome.tabs.captureVisibleTab(null, function (dataUrl) {
           var factor = window.width / window.height;
-          var width = 200;
+          var width = 500;
           var height = Math.round(width / factor);
           resizeImage(dataUrl, width, height, function(dataUrl) {
             var t = new SugarTab(tab);
@@ -119,11 +119,17 @@ function getWindowFromGid(gid, callback) {
   // 1. Find the group object
   var group_found = false;
   var group = null;
-  for(var g in groups) {
-    group = groups[g];
-    if(group.id == gid) {
-      group_found = true;
-      break;
+  if(gid==0) {
+    group_found = true;
+    group = icebox;
+  }
+  if(!group_found) {
+    for(var g in groups) {
+      group = groups[g];
+      if(group.id == gid) {
+        group_found = true;
+        break;
+      }
     }
   }
   if(!group_found) {
@@ -153,7 +159,7 @@ function getWindowFromGid(gid, callback) {
             var wtab = window_tabs[t];
             var gtab = group.tabs[t];
             console.debug(' tabs', '#'+t, wtab, gtab);
-            same_tabs = (wtab.title == gtab.title) && (wtab.url == gtab.url);
+            same_tabs = wtab.url == gtab.url;
             if(!same_tabs) {
               console.debug(' ... are not the same');
               break;
@@ -191,7 +197,7 @@ function getTabFromTid(gid, index, callback) {
       }
     }
     if(tab_found) {
-      callback(tab);
+      callback(window, tab);
     } else {
       console.error('Couldn\'t find a match for the tab', gid, index)
     }
@@ -205,16 +211,17 @@ function getTabFromTid(gid, index, callback) {
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   console.debug('Request', request.sender, request.action, request);
+  var interaction = request.action;
   // sender: dashboard
-  if(request.action == "open") {
+  if(interaction == "open") {
     openTabSugar();
   } else if(request.action == "gimme the shortcut key") {
     // BI12 – Use the extension shortcut key
     sendResponse({shortcut_key: localStorage.shortcut_key});
   } else if(request.action == "DI01") {
     // DI01 – Create a new group
-    // 3. The background page inserts the new group in the database
     var group = new SugarGroup(request.group);
+    // 3. The background page inserts the new group in the database
     group.db_insert({
       success: function(rs) {
         // add it to the group list
@@ -222,11 +229,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         sendResponse({status: "OK"});
       }
     });
-  } else if(request.action == "DI02") {
+  } else if(interaction == "DI02") {
     // DI02 – Rename a group
-    // 3. The background page renames the group in the database
     var gid = request.gid;
     var name = request.name;
+    // 3. The background page renames the group in the database
     Storage.update({
       table: "groups",
       conditions: "`id`="+gid,
@@ -241,12 +248,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
-  } else if(request.action == "DI03") {
+  } else if(interaction == "DI03") {
     // DI03 – Resize a group
-    // 3. The background page updates the group sizes in the database
     var gid = request.gid;
     var width = request.width;
     var height = request.height;
+    // 3. The background page updates the group sizes in the database
     Storage.update({
       table: "groups",
       conditions: "`id`="+gid,
@@ -270,12 +277,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
-  } else if(request.action == "DI04") {
+  } else if(interaction == "DI04") {
     // DI04 – Move a group
-    // 3. The background page updates the group coordinates in the database
     var gid = request.gid;
     var posX = request.posX;
     var posY = request.posY;
+    // 3. The background page updates the group coordinates in the database
     Storage.update({
       table: "groups",
       conditions: "`id`="+gid,
@@ -299,10 +306,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
-  } else if(request.action == "DI05") {
+  } else if(interaction == "DI05") {
     // DI05 – Close a group
-    // 3. The background page sends a request to the browser to close the corresponding window
     var gid = request.gid;
+    // 3. The background page sends a request to the browser to close the corresponding window
     getWindowFromGid(gid, function(window) {
       var wid = window.id;
       chrome.windows.remove(wid);
@@ -322,12 +329,77 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
-  } else if(request.action == "DI09") {
+  } else if(interaction == "DI08") {
+    // DI08 – Move a tab to an existing group
+    var src_gid = request.src_gid;
+    var src_index = request.src_index;
+    var dest_gid = request.dest_gid;
+    var dest_index = request.dest_index;
+    // 3. The background page sends a request to the browser to move the
+    //    corresponding tab from its current window to the destination window
+    getTabFromTid(src_gid, src_index, function(src_window, src_tab) {
+      getWindowFromGid(dest_gid, function(dest_window) {
+        chrome.tabs.move(src_tab.id, {windowId: dest_window.id, index: dest_index})
+      });
+    });
+    // 4. -On success-, the background page updates the tab’s group id in the database
+    Storage.update({
+      table: "tabs",
+      conditions: "`group_id`="+src_gid+" AND `index`="+src_index,
+      changes: {
+        group_id: dest_gid,
+        index: dest_index
+      },
+      success: function() {
+        // find the source tab ad delete it from the source group
+        var src_tab;
+        if(src_gid==0) {
+          for(var t in icebox.tabs) {
+            var tab = icebox.tabs[t];
+            if(tab.index == src_index) {
+              src_tab = tab;
+              delete icebox.tabs[t];
+              break;
+            }
+          }
+        } else {
+          for(var g in groups) {
+            var group = groups[g];
+            if(group.id == src_gid) {
+              for(var t in group.tabs) {
+                var tab = group.tabs[y];
+                if(tab.index == src_index) {
+                  src_tab = tab;
+                  delete groups[g].tabs[t];
+                  break;
+                }
+              }
+            }
+          }
+        }
+        if(src_tab==null) {
+          console.error('DI08 - Couldn\'t locate the source tab', src_gid, src_index);
+          return;
+        }
+        // add it to the destination group
+        if(gid==0) {
+          icebox.tabs.push(src_tab);
+        } else {
+          for(var g in groups) {
+            var group = groups[g];
+            if(group.id == dest_gid) {
+              groups[g].tabs.push(src_tab);
+            }
+          }
+        }
+      }
+    });
+  } else if(interaction == "DI09") {
     // DI09 – Close a tab
     // 3. The background page sends a request to the browser to close the corresponding tab
     var gid = request.gid;
     var index = request.index;
-    getTabFromTid(gid, index, function(tab) {
+    getTabFromTid(gid, index, function(window, tab) {
       var tid = tab.id;
       chrome.tabs.remove(tid);
     });

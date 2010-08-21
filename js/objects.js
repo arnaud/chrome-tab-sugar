@@ -284,7 +284,7 @@ var SugarGroup = new JS.Class({
 
 /**
  * @class SugarTab
- * @param item (Hash) -> { (id,) title, url, favIconUrl, index (, preview, group_id, active) }
+ * @param item (Hash) -> { (id,) title, url, favIconUrl, index (, group_id, active) }
  */
 var SugarTab = new JS.Class({
   initialize: function(item) {
@@ -297,7 +297,6 @@ var SugarTab = new JS.Class({
     this.url = item.url;
     this.favIconUrl = item.favIconUrl;
     if(!this.favIconUrl) this.favIconUrl = "ico/blank_preview.png";
-    this.preview = item.preview;
     //this.active = item.active;
     //if(typeof(this.active)!="boolean") this.active = item.selected;
   },
@@ -309,12 +308,33 @@ var SugarTab = new JS.Class({
 
   update_preview: function(preview) {
     console.debug("Tab update_preview", parseInt(preview.length/1024)+"KB");
+    var url = this.url;
+    Storage.update({
+      table: "previews",
+      conditions: "`url`='"+this.url+"'",
+      changes: {
+        preview: preview
+      },
+      success: function() {
+      },
+      error: function() {
+        Storage.insert({
+          table: "previews",
+          object: {
+            url: url,
+            preview: preview
+          },
+          success: function() {
+          }
+        });
+      }
+    });
     /*this.db_update("preview", preview, {
       success: function(rs) {
         console.debug("Tab update was successfull", rs);
       }
     });*/
-    localStorage["preview-"+this.url] = preview;
+    //localStorage["preview-"+this.url] = preview;
   },
 
   // PERSISTABLE methods

@@ -46,7 +46,7 @@ var Storage = new JS.Class({
         tx.executeSql("CREATE TABLE IF NOT EXISTS `groups` (`id` REAL UNIQUE, `name` TEXT, `posX` REAL, `posY` REAL, `width` REAL, `height` REAL)");
         tx.executeSql("INSERT INTO `groups` (`id`,`name`,`width`,`height`) VALUES (0,'icebox',586,150)");
         tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT)");
-        tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` (`url` TEXT, `preview` TEXT)");
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` (`url` TEXT UNIQUE, `preview` TEXT)");
         console.debug("Tab Sugar database is ready");
         if(settings && settings.success) settings.success.call();
       });
@@ -59,6 +59,7 @@ var Storage = new JS.Class({
       storage.db.transaction(function (tx) {
         tx.executeSql("DROP TABLE groups");
         tx.executeSql("DROP TABLE tabs");
+        tx.executeSql("DROP TABLE previews");
         if(settings && settings.success) settings.success.call();
       });
     },
@@ -98,9 +99,9 @@ var Storage = new JS.Class({
       var storage = new Storage();
       storage.db.transaction(function (tx) {
         tx.executeSql(query, [], function (tx, rs) {
-          if(query.indexOf("INSERT")==0) {
+          if(query.indexOf("INSERT")==0 || query.indexOf("UPDATE")==0) {
             if (!rs.rowsAffected) {
-              console.error("An error occurred while inserting the object in the db (no rows affected)", rs);
+              console.error("An error occurred while querying the db (no rows affected)", rs);
               if(error!=null) error.call();
             } else {
               success(tx, rs);

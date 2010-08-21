@@ -208,6 +208,11 @@
     return g
   },
 
+  // get the position of the element relative to its siblings elements
+  $.fn.indexWithinParent = function() {
+    return this.parent().children().index(this);
+  },
+
   // get all the dashboard groups
   $.groups = function() {
     return $('#dashboard .group').not('.fangroup');

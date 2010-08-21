@@ -32,14 +32,20 @@ track('Sugar', 'Start', 'The dashboard starts');
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
-function updateSugarUI() {
+function initUI() {
   $(function() {
     // update the icebox
     var ice = back.icebox;
-    $('#icebox').width(ice.width).height(ice.height).css('position', 'absolute').css('top', ice.posY+'px').css('left', ice.posX+'px').show();
+    $('#icebox')
+      .width(ice.width)
+      .height(ice.height)
+      .css('position', 'absolute')
+      .css('top', ice.posY)
+      .css('left', ice.posX)
+      .show();
     for(var t in ice.tabs) {
       var tab = ice.tabs[t];
-      $('#icebox>ul').append( tab.ui_create() );
+      $('#icebox').addTab( tab.ui_create() );
     }
     $('#icebox').autoFitTabs();
 
@@ -58,7 +64,7 @@ function updateSugarUI() {
     }
   });
 }
-updateSugarUI();
+initUI();
 
 
 $(function() {
@@ -97,7 +103,7 @@ $(function() {
     // 2. The dashboard sends a request to the background page
     var gid = tab_ui.group().uid();
     if(gid=="icebox") gid = 0;
-    var index = tab_ui.parent().children().index(tab_ui);
+    var index = tab_ui.indexWithinParent();
     chrome.extension.sendRequest({
       action: 'DI09', // Close a tab
       gid: gid,
@@ -199,7 +205,10 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
+        // DI08 – Move a tab to an existing group
         track('Sugar', 'Drop a tab in a group', 'Drop a tab in an existing group', $(this).tabs().length);
+
+        // 1. The user moves a tab to an existing group
         var tab_ui = ui.draggable;
         var old_group_ui = $(tab_ui).group();
         var new_group_ui = $(this);
@@ -211,53 +220,45 @@ $(function() {
         if(old_group_ui.get(0) == new_group_ui.get(0)) {
           return false;
         }
+        var old_index = tab_ui.indexWithinParent();
         // the tab should fade out and appear in a newly created group
         tab_ui.fadeOut(function() {
+          new_group_ui.addTab(tab_ui);
+          tab_ui.show();
+          new_group_ui.autoFitTabs();
 
-          // db
-          var index = JSON.parse(tab_ui.attr('obj')).index;
-          var t = new SugarTab({group_id: old_group_id, index: index});
-          t.db_update({
-            key: 'group_id',
-            val: new_group_id,
-            success: function(rs) {
-              t.db_update({
-                key: 'index',
-                val: new_group_ui.tabs().length, // the new index corresponds to the number of tabs already owned by the new group
-                success: function(rs) {
-                  // visual
-                  new_group_ui.addTab(tab_ui);
-                  tab_ui.show();
-                  new_group_ui.autoFitTabs();
-
-                  // add it to the group list
-                  back.updateUI(true);
-
-                  // when grabbing the last tab of a group, the initial group should disappear if empty
-                  var nb_tabs_in_old_group = old_group_ui.tabs().not(tab_ui).length;
-                  if(nb_tabs_in_old_group == 0) {
-                    // visually
-                    old_group_ui.fadeOut(function() {
-                      $(this).remove();
-                    });
-                    // in the db
-                    var id = old_group_ui.uid();
-                    var old_group = new SugarGroup({id: id});
-                    old_group.db_delete({
-                      success: function(rs) {
-                        console.debug('Removal of group was succesful', rs);
-                      }
-                    });
-
-                  // if the source group still has tabs, let's resize'em all
-                  } else {
-                    old_group_ui.autoFitTabs();
-                  }
-                }
-              });
-            }
+          // 2. The dashboard sends a request to the background page
+          var new_index = tab_ui.indexWithinParent();
+          chrome.extension.sendRequest({
+            action: 'DI08', // Move a tab to an existing group
+            src_gid: old_group_id,
+            src_index: old_index,
+            dest_gid: new_group_id,
+            dest_index: new_index
+          },
+          function(response) {
           });
 
+          // when grabbing the last tab of a group, the initial group should disappear if empty
+          /*var nb_tabs_in_old_group = old_group_ui.tabs().not(tab_ui).length;
+          if(nb_tabs_in_old_group == 0) {
+            // visually
+            old_group_ui.fadeOut(function() {
+              $(this).remove();
+            });
+            // in the db
+            var id = old_group_ui.uid();
+            var old_group = new SugarGroup({id: id});
+            old_group.db_delete({
+              success: function(rs) {
+                console.debug('Removal of group was succesful', rs);
+              }
+            });
+
+          // if the source group still has tabs, let's resize'em all
+          } else {
+            old_group_ui.autoFitTabs();
+          }*/
 
           /*old_group_ui.autoFitTabs();
           new_group_ui.addTab(tab_ui);
