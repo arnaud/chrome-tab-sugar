@@ -77,11 +77,13 @@ var Storage = new JS.Class({
       console.debug("Storage reset", settings);
       var storage = new Storage();
       storage.db.transaction(function (tx) {
-        tx.executeSql("DROP TABLE groups");
-        tx.executeSql("DROP TABLE tabs");
-        if(settings && settings.success) settings.success.call();
-        tx.executeSql("DROP TABLE previews");
+        tx.executeSql("DROP TABLE IF EXISTS `groups`");
+        tx.executeSql("DROP TABLE IF EXISTS `tabs`");
+        tx.executeSql("DROP TABLE IF EXISTS `previews`");
       });
+      if(settings && settings.success) {
+        setTimeout(settings.success, 300);
+      }
     },
 
     // returns only the appropriate attributes of an object and
