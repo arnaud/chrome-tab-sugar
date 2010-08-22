@@ -210,7 +210,7 @@
 
   // get the position of the element relative to its siblings elements
   $.fn.indexWithinParent = function() {
-    return this.parent().children().index(this);
+    return this.parent().find('>.tab').index(this);
   },
 
   // get all the dashboard groups

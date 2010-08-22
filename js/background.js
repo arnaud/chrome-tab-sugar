@@ -381,6 +381,17 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       });
     });
     // 4. -On success-, the background page updates the tab’s group id in the database
+    // 4.1. increment the index of the above tabs in the destination group
+    Storage.update({
+      table: "tabs",
+      conditions: "`group_id`="+dest_gid+" AND `index`>="+dest_index,
+      changes: {
+        raw_sql_index: "`index`+1"
+      },
+      success: function() {},
+      error: function() {}
+    });
+    // 4.2. move the tab
     Storage.update({
       table: "tabs",
       conditions: "`group_id`="+src_gid+" AND `index`="+src_index,
@@ -389,47 +400,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         index: dest_index
       },
       success: function() {
-        // find the source tab ad delete it from the source group
-        /*var src_tab;
-        if(src_gid==0) {
-          for(var t in icebox.tabs) {
-            var tab = icebox.tabs[t];
-            if(tab.index == src_index) {
-              src_tab = tab;
-              delete icebox.tabs[t];
-              break;
-            }
-          }
-        } else {
-          for(var g in groups) {
-            var group = groups[g];
-            if(group.id == src_gid) {
-              for(var t in group.tabs) {
-                var tab = group.tabs[y];
-                if(tab.index == src_index) {
-                  src_tab = tab;
-                  delete groups[g].tabs[t];
-                  break;
-                }
-              }
-            }
-          }
-        }
-        if(src_tab==null) {
-          console.error('DI08 - Couldn\'t locate the source tab', src_gid, src_index);
-          return;
-        }
-        // add it to the destination group
-        if(gid==0) {
-          icebox.tabs.push(src_tab);
-        } else {
-          for(var g in groups) {
-            var group = groups[g];
-            if(group.id == dest_gid) {
-              groups[g].tabs.push(src_tab);
-            }
-          }
-        }*/
         // refresh the icebox and the groups
         syncGroupsFromDb(function() {
           sendResponse({status: "OK"});
@@ -438,6 +408,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       error: function() {
         chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
+    });
+    // 4.3. decrement the index of the above tabs in the destination group
+    Storage.update({
+      table: "tabs",
+      conditions: "`group_id`="+src_gid+" AND `index`>"+src_index,
+      changes: {
+        raw_sql_index: "`index`-1"
+      },
+      success: function() {},
+      error: function() {}
     });
   } else if(interaction == "DI09") {
     // DI09 – Close a tab
