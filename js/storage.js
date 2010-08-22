@@ -22,7 +22,7 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
-var DB_VERSION = "1.1";
+var DB_VERSION = "1.2";
 
 function openDb() {
   var db;
@@ -79,8 +79,8 @@ var Storage = new JS.Class({
       storage.db.transaction(function (tx) {
         tx.executeSql("DROP TABLE groups");
         tx.executeSql("DROP TABLE tabs");
-        tx.executeSql("DROP TABLE previews");
         if(settings && settings.success) settings.success.call();
+        tx.executeSql("DROP TABLE previews");
       });
     },
 
@@ -226,10 +226,14 @@ function makeDatabaseUpToDate(settings) {
   var db_up2date = localStorage.db_version==DB_VERSION;
   if(!db_up2date) {
     console.debug("UPDATING THE DATABASE SCHEMA...");
-    localStorage.db_version = DB_VERSION;
-    localStorage.initialized = false;
-    Storage.reset({success: settings.success});
+    Storage.reset({
+      success: function() {
+        localStorage.db_version = DB_VERSION;
+        localStorage.initialized = false;
+        settings.success();
+      }
+    });
   } else {
-    if(settings && settings.success) settings.success.call();
+    if(settings && settings.success) settings.success();
   }
 }
