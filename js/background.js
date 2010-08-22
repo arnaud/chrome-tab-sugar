@@ -113,6 +113,69 @@ function captureCurrentTab() {
   });
 }
 
+// checks whether the group matches the window
+// @param exceptionTab: optional, a tab that is contained by the window but that
+// must not be part of the comparison
+function compareGroupAndWindow(group, window, exceptionTab) {
+  console.debug('compareGroupAndWindow', group, window);
+  var tabs = window.tabs;
+  var window_tabs = [];
+  for(var t in tabs) {
+    var tab = tabs[t];
+    //if(SugarTab.persistable(t.url)) {
+      if(exceptionTab!=null && tab.id == exceptionTab.id) {
+        // do nothing
+      } else {
+        window_tabs.push(tab);
+      }
+    //}
+  }
+  console.debug('...has', window_tabs.length, 'tabs');
+  console.debug('...whereas the group has', group.tabs.length, 'tabs');
+  if(window_tabs.length == group.tabs.length) {
+    console.debug('=> OK!');
+    // 1st test is OK: the group and the window have the same tabs count
+    var same_tabs = true;
+    for(var t in window_tabs) {
+      var wtab = window_tabs[t];
+      var gtab = group.tabs[t];
+      console.debug(' tabs', '#'+t, wtab, gtab);
+      same_tabs = wtab.url == gtab.url;
+      if(!same_tabs) {
+        console.debug(' ... are not the same');
+        break;
+      }
+    }
+    if(same_tabs) {
+      // 2nd test is OK: the group tabs and the window tabs share the same characteristics
+      console.debug('===> OK!');
+      return true;
+    }
+  } else {
+    console.debug('=> KO');
+    return false;
+  }
+}
+
+// finds out which group corresponds to a window id
+function getGroupFromWid(wid, tab, callback) {
+  chrome.windows.getAll({populate: true}, function(windows) {
+    for(var w in windows) {
+      var window = windows[w];
+      if(window.id == wid) {
+        for(var g in groups) {
+          var group = groups[g];
+          if(compareGroupAndWindow(group, window, tab)) {
+            callback(group);
+            return;
+          }
+        }
+        break;
+      }
+    }
+  });
+}
+
 // finds out which window corresponds to a group id
 function getWindowFromGid(gid, callback) {
   console.debug('getWindowFromGid', gid);
@@ -142,37 +205,9 @@ function getWindowFromGid(gid, callback) {
       for(var w in windows) {
         var window = windows[w];
         console.debug('Window', '#'+w, window);
-        var tabs = window.tabs;
-        var window_tabs = [];
-        for(var t in tabs) {
-          //if(SugarTab.persistable(t.url)) {
-            window_tabs.push(t);
-          //}
-        }
-        console.debug('...has', window_tabs.length, 'tabs');
-        console.debug('...whereas the group has', group.tabs.length, 'tabs');
-        if(window_tabs.length == group.tabs.length) {
-          console.debug('=> OK!');
-          // 1st test is OK: the group and the window have the same tabs count
-          var same_tabs = true;
-          for(var t in window_tabs) {
-            var wtab = window_tabs[t];
-            var gtab = group.tabs[t];
-            console.debug(' tabs', '#'+t, wtab, gtab);
-            same_tabs = wtab.url == gtab.url;
-            if(!same_tabs) {
-              console.debug(' ... are not the same');
-              break;
-            }
-          }
-          if(same_tabs) {
-            // 2nd test is OK: the group tabs and the window tabs share the same characteristics
-            console.debug('===> OK!');
-            callback(window);
-            return;
-          }
-        } else {
-          console.debug('=> KO');
+        if(compareGroupAndWindow(group, window)) {
+          callback(window);
+          return;
         }
       }
     });
@@ -200,6 +235,22 @@ function getTabFromTid(gid, index, callback) {
       callback(window, tab);
     } else {
       console.error('Couldn\'t find a match for the tab', gid, index)
+    }
+  });
+}
+
+// find the window a tab belongs to
+function getWidFromTid(tid, callback) {
+  chrome.windows.getAll({populate:true}, function(windows) {
+    for(var w in windows) {
+      var window = windows[w];
+      for(var t in window.tabs) {
+        var tab = window.tabs[t];
+        if(tab.id == tid) {
+          callback(window.id, window);
+          return;
+        }
+      }
     }
   });
 }
@@ -250,6 +301,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       },
       error: function() {}
     });
+
+
+  /* Dashboard Interactions */
+
+
   } else if(interaction == "DI01") {
     // DI01 – Create a new group
     var group = new SugarGroup(request.group);
@@ -667,9 +723,24 @@ if(!initialized) {
 // BI05 – Create a tab
 chrome.tabs.onCreated.addListener(function(tab) {
   console.debug('chrome.tabs.onCreated', tab);
-  chrome.tabs.getSelected(null, function(t2) {
-    chrome.windows.getCurrent(function(window) {
-      chrome.extension.sendRequest({action: "new tab", wid: window.id, tab: tab});
+  track('Sugar', 'Create a tab', 'Create a tab in a window');
+  // 1. The user opens a new tab
+  //&2. The browser sends a request to the background page
+  var tab_backup = tab;
+  var wid = tab.windowId;
+  getGroupFromWid(wid, tab, function(group) {
+    var gid = group.id;
+    var tab = new SugarTab(tab_backup);
+    tab.group_id = gid;
+    tab.db_insert({
+      success: function() {
+        syncGroupsFromDb(function() {});
+        // 4. The background page sends a request to the dashboard
+        chrome.extension.sendRequest({action: "BI05", gid: gid, tab: tab});
+      },
+      error: function() {
+        console.error('OOOOPS');
+      }
     });
   });
 });
@@ -682,9 +753,11 @@ chrome.tabs.onCreated.addListener(function(tab) {
 
 // BI08 – Close a tab
 chrome.tabs.onRemoved.addListener(function(tabId) {
+  // 1. The user opens a new tab
   console.debug('chrome.tabs.onRemoved', tabId);
   chrome.windows.getCurrent(function(window) {
-    chrome.extension.sendRequest({action: "close tab", window: window.id, tid: tabId});
+    // 2. The browser sends a request to the background page
+    chrome.extension.sendRequest({action: "B08", window: window.id, tid: tabId});
   });
   //TODO tabs.unshift(tab);
 });
@@ -698,10 +771,34 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
 // BI10 – Update a tab
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if(changeInfo.status == "complete") {
-    console.debug('chrome.tabs.onUpdated', tabId, changeInfo, tab);
-    chrome.windows.getCurrent(function(window) {
-      chrome.extension.sendRequest({action: "update tab", wid: window.id, tab: tab});
-      captureCurrentTab();
+    console.debug('chrome.tabs.onUpdated', tab);
+    track('Sugar', 'Update a tab', 'Update a tab in a window');
+    // 1. The user changes the URL of a tab, navigates through a link, browse the web
+    //&2. The browser sends a request to the background page
+    var tab_backup = tab;
+    getWidFromTid(tabId, function(wid, window) {
+      getGroupFromWid(wid, tab, function(group) {
+        var gid = group.id;
+        var index = group.index;
+        var tab = new SugarTab(tab_backup);
+        tab.group_id = gid;
+        Storage.update({
+          table: "tabs",
+          conditions: "`group_id`="+gid+" AND `index`="+index,
+          changes: {
+            url: tab.url,
+            title: tab.title
+          },
+          success: function() {
+            syncGroupsFromDb(function() {});
+            // 4. The background page sends a request to the dashboard
+            chrome.extension.sendRequest({action: "BI10", gid: gid, tab: tab});
+          },
+          error: function() {
+            console.error('OOOOPS');
+          }
+        });
+      });
     });
   }
 });

@@ -607,19 +607,27 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     $.groups().tabs().find(".url[url='"+tab.url+"']").parent().find('>.preview')
       .removeClass('empty')
       .attr('src', preview);
-  } else if(action == "new tab") {
-    // create a new tab
-    var wid = request.wid;
-    var group_ui = $.findGroup(wid);
-    group_ui = $('#icebox'); //TODO remove me
+  } else if(action == "BI05") {
+    // BI05 - Create a tab
+    var gid = request.gid;
     var tab = request.tab;
-    var t = new SugarTab(tab);
-    var tab_ui = t.ui_create();
+    // 5. The dashboard adds the new tab into the corresponding group
+    var tab = new SugarTab(tab);
+    var group_ui = $('#icebox');
+    if(gid > 0) {
+      group_ui = $('#group-'+gid);
+    }
+    var tab_ui = tab.ui_create();
     group_ui.addTab(tab_ui);
     group_ui.autoFitTabs();
-  } else if(action == "update tab") {
-    // update a tab URL
+  } else if(action == "B08") {
+    // B08 - Close a tab
     var wid = request.wid;
+    var tid = request.tid;
+    //TODO
+  } else if(action == "B10") {
+    // B10 - Update a tab
+    var gid = request.gid;
     var group_ui = $.findGroup(window.id);
     var tab = request.tab;
     var t = new SugarTab(tab);
@@ -628,10 +636,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     tab_ui.find('.url').html(t.url);
     tab_ui.find('.favicon').html(t.favIconUrl);
     tab_ui.find('.preview').addClass('empty').attr('src','');
-  } else if(action == "close tab") {
-    var wid = request.wid;
-    var tid = request.tid;
-    //TODO
   } else if(action == "error") {
     var message = request.message;
     showMessage('Oops! '+message);
