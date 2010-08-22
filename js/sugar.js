@@ -254,31 +254,33 @@ $(function() {
 
         // 1. The user moves a tab to an existing group
         var tab_ui = ui.draggable;
-        var old_group_ui = $(tab_ui).group();
-        var new_group_ui = $(this);
-        var old_group_id = old_group_ui.uid();
-        if(old_group_id=="icebox") old_group_id = 0;
-        var new_group_id = new_group_ui.uid();
-        if(new_group_id=="icebox") new_group_id = 0;
-        console.debug(old_group_ui, new_group_ui);
-        if(old_group_ui.get(0) == new_group_ui.get(0)) {
+        var src_group_ui = $(tab_ui).group();
+        var dest_group_ui = $(this);
+        var src_group_id = src_group_ui.uid();
+        if(src_group_id=="icebox") src_group_id = 0;
+        var dest_group_id = dest_group_ui.uid();
+        if(dest_group_id=="icebox") dest_group_id = 0;
+        console.debug(src_group_ui, dest_group_ui);
+        if(src_group_ui.get(0) == dest_group_ui.get(0)) {
           return false;
         }
-        var old_index = tab_ui.indexWithinParent();
+        var src_index = tab_ui.indexWithinParent();
         // the tab should fade out and appear in a newly created group
         tab_ui.fadeOut(function() {
-          new_group_ui.addTab(tab_ui);
+          $(this).remove();
+          dest_group_ui.addTab(tab_ui);
           tab_ui.show();
-          new_group_ui.autoFitTabs();
+          src_group_ui.autoFitTabs();
+          dest_group_ui.autoFitTabs();
 
           // 2. The dashboard sends a request to the background page
-          var new_index = tab_ui.indexWithinParent();
+          var dest_index = tab_ui.indexWithinParent();
           chrome.extension.sendRequest({
             action: 'DI08', // Move a tab to an existing group
-            src_gid: old_group_id,
-            src_index: old_index,
-            dest_gid: new_group_id,
-            dest_index: new_index
+            src_gid: src_group_id,
+            src_index: src_index,
+            dest_gid: dest_group_id,
+            dest_index: dest_index
           },
           function(response) {
           });
@@ -370,7 +372,9 @@ $(function() {
           $('#dashboard').append(dest_group_ui);
           dest_group_ui.addTab(dest_tab_ui);
           dest_tab_ui.show();
+          src_group_ui.autoFitTabs();
           dest_group_ui.autoFitTabs();
+          chrome.extension.sendRequest({action: 'gimme the tab preview', tab: dest_tab});
         });
 
         // 2. The dashboard sends a request to the background page
@@ -412,29 +416,41 @@ $(function() {
       }
     });
 
-    // group titles are editable
-    $('.group>.title').not('#icebox>.title').editable(function(name, settings) {
-      // DI02 – Rename a group
-      track('Sugar', 'Rename a group', name, $(this).parent().tabs().length);
-      // 1. The user renames a group in the dashboard (already done)
-      // 2. The dashboard sends a request to the background page
-      var gid = $(this).parent().uid();
-      chrome.extension.sendRequest({
-        action: 'DI02', // Rename a group
-        gid: gid,
-        name: name
-      },
-      function(response) {
-      });
-
-      if(localStorage.debug=="true") {
-        $('.debug', $(this).parent()).html('#'+gid+' / '+name);
-      }
-      return name;
+  });
+  
+  // renames a group with a new name
+  function renameGroup(group, name) {
+    console.debug("renameGroup:", group, name);
+    // DI02 – Rename a group
+    track('Sugar', 'Rename a group', name, group.tabs().length);
+    // 1. The user renames a group in the dashboard (already done)
+    // 2. The dashboard sends a request to the background page
+    var gid = group.uid();
+    chrome.extension.sendRequest({
+      action: 'DI02', // Rename a group
+      gid: gid,
+      name: name
     },
-    {
-      onblur: 'submit'
+    function(response) {
     });
+
+    if(localStorage.debug=="true") {
+      $('.debug', group).html('#'+gid+' / '+name);
+    }
+    return name;
+  }
+  // group titles are editable
+  $('.group>.title').live("blur", function(e) {
+    var name = $(this).val();
+    renameGroup($(this).parent(), name);
+    return false;
+  });
+  $('.group>.title').live("keypress", function(e) {
+    console.debug('Event keypress', e);
+    if(e.keyCode == 13) { // 'Enter' key
+      $(this).blur();
+      return false;
+    }
   });
 
   // groups are closeable

@@ -143,39 +143,6 @@ function opening() {
   // chrome-extension://libokbfffpaopdjmeofdfpmlanaenaje/sugar.html
 }
 
-function remainingSpace(min, max) {
-  if(min == max) return min;
-  var content = "";
-  var mid = min + Math.round((max - min) / 2);
-  for(var i=0; i<mid; i++) {
-    content += "m";
-  }
-  try {
-    localStorage.setItem("TEST_REMAINING_SPACE", content);
-  } catch(ex) {
-    // KO
-    console.debug("LIMIT REACHED: (" + i + ")");
-    console.debug(ex);
-    return remainingSpace(min, mid);
-  }
-  // OK
-  return remainingSpace(mid, max);
-}
-
-// Updates the 'storage used' UI
-function updateStorageUseMeter() {
-  track('Options', 'Storage used', 'Display the local storage usage');
-  showMessage("Calculating the remaining storage space&hellip;");
-  setTimeout(function() {
-    var max = 5242880;
-    var remaining = remainingSpace(0, max);
-    var used = max - remaining;
-    $('#storageuse').attr('max', max).attr('value', used).show();
-    $('#storageuse_calculate').hide();
-    showMessage("Remaining storage space calculated successfully.");
-  }, 500);
-}
-
 var dev = false;
 
 // Activate/deactivate the developer mode (advanced configuration)

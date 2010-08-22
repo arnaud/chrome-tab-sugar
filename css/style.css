@@ -133,8 +133,6 @@ section>ul {
 }
 .stacked_tabs_bg {
   position: absolute;
-  top: 23px;
-  left: 4px;
   border: 1px solid #bbb;
   background: #fff;
   /*background-image: url(/ico/blank_preview.png);
@@ -186,24 +184,19 @@ section>ul {
   margin: 10px;
   float: left;
 }
-.group:before {
-  color: #999;
-  margin-left: 4px;
-  content: "\274D";
-  text-shadow: 1px 1px 1px #fff;
-}
 .group>.title {
-  padding: 5px;
-  font-size: 12px;
-  color: rgba(0,0,0,0.5);
-  font-weight: bold;
-  text-shadow: 1px 1px 1px #fff;
-}
-.group>.title>* {
   display: inline;
-}
-.group>.title input {
+  width: 80%;
+  margin: 4px;
+  padding: 2px;
+  font-size: 12px;
   background: transparent;
+  border: none;
+  color: #777;
+}
+.group>.title:hover {
+  border: 1px solid #ccc;
+  padding: 1px;
 }
 .group .close {
   position: absolute;
