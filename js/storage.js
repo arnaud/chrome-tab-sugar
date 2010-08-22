@@ -22,6 +22,24 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
+var DB_VERSION = "1.1";
+
+function openDb() {
+  var db;
+  try {
+    db = openDatabase("TabSugar", DB_VERSION, "Tab Sugar", this.DB_SIZE * 1024 * 1024);
+  } catch(ex) {
+    try {
+      db = openDatabase("TabSugar", localStorage.db_version, "Tab Sugar", this.DB_SIZE * 1024 * 1024);
+    } catch(ex2) {
+      try {
+        db = openDatabase("TabSugar", "1.0", "Tab Sugar", this.DB_SIZE * 1024 * 1024);
+      } catch(ex3) {}
+    }
+  }
+  return db;
+}
+
 /**
  * @class Storage
  */
@@ -31,7 +49,7 @@ var Storage = new JS.Class({
   DB_SIZE: 50,
 
   // Actual db reference
-  db: openDatabase("TabSugar", "1.0", "Tab Sugar", this.DB_SIZE * 1024 * 1024),
+  db: openDb(),
 
   initialize: function() {
   },
@@ -51,6 +69,8 @@ var Storage = new JS.Class({
         if(settings && settings.success) settings.success.call();
       });
     },
+
+
 
     // resets the database by dropping all of its tables
     reset: function(settings) {
@@ -196,6 +216,20 @@ var Storage = new JS.Class({
         success: settings.success,
         error: settings.error
       });
-    },
+    }
   }
 });
+
+// check if the database schema/version are up-to-date
+// if not, then make sure it is
+function makeDatabaseUpToDate(settings) {
+  var db_up2date = localStorage.db_version==DB_VERSION;
+  if(!db_up2date) {
+    console.debug("UPDATING THE DATABASE SCHEMA...");
+    localStorage.db_version = DB_VERSION;
+    localStorage.initialized = false;
+    Storage.reset({success: settings.success});
+  } else {
+    if(settings && settings.success) settings.success.call();
+  }
+}

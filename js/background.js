@@ -645,64 +645,70 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  */
 
 // At first execution of Tab Sugar...
-var initialized = localStorage.initialized == "true";
-if(!initialized) {
-  // initialize the database
-  Storage.init({
-    success: function() {
-      // load the icebox
-      SugarGroup.load_icebox({
-        success: function(rs) {
-          // the extension has been initialized with all the already opened tabs
-          localStorage.initialized = "true";
-          // tab preview feature is ON by default
-          localStorage.feature_tab_preview = "true";
-          // tabs resizing feature is ON by default
-          localStorage.feature_autoresize = "true";
-          // snap groups feature is OFF by default
-          localStorage.feature_snapgroups = "false";
-          // the next group will be identified as "group 1"
-          localStorage.group_last_index = 0;
-          // initialize the extension by listing all the tabs of all the windows
-          chrome.windows.getAll({populate:true}, function (windows) {
-            console.debug('chrome.windows.getAll', windows);
-            chrome.windows.getCurrent(function(current_window) {
-              var gid = 1;
-              for(var w in windows) {
-                var group = icebox;
-                if(current_window.id != w.id) {
-                  group = new SugarGroup({id: gid, width: 400, height: 150, posX: 10, posY: 10+gid*180});
+
+// check wether the database version is up-to-date
+makeDatabaseUpToDate({success: function() {
+  // the database schema are now up-to-date
+  var initialized = localStorage.initialized == "true";
+  if(!initialized) {
+    // initialize the database
+    Storage.init({
+      success: function() {
+        // load the icebox
+        SugarGroup.load_icebox({
+          success: function(rs) {
+            // the extension has been initialized with all the already opened tabs
+            localStorage.initialized = "true";
+            // tab preview feature is ON by default
+            localStorage.feature_tab_preview = "true";
+            // tabs resizing feature is ON by default
+            localStorage.feature_autoresize = "true";
+            // snap groups feature is OFF by default
+            localStorage.feature_snapgroups = "false";
+            // the next group will be identified as "group 1"
+            localStorage.group_last_index = 0;
+            // initialize the extension by listing all the tabs of all the windows
+            chrome.windows.getAll({populate:true}, function (windows) {
+              console.debug('chrome.windows.getAll', windows);
+              chrome.windows.getCurrent(function(current_window) {
+                var gid = 1;
+                for(var w in windows) {
+                  var group = icebox;
+                  if(current_window.id != w.id) {
+                    group = new SugarGroup({id: gid, width: 400, height: 150, posX: 10, posY: 10+gid*180});
+                  }
+                  var tabs = windows[w].tabs;
+                  for(var t in tabs) {
+                    var tab = tabs[t];
+                    //if(SugarTab.persistable(tab.url)) {
+                      var tab = new SugarTab(tab);
+                      group.add_tab(tab, true);
+                    //}
+                  }
+                  if(current_window.id != w.id && group.tabs.length > 0) {
+                    group.db_insert({
+                      success: function() {}
+                    });
+                    groups.push(group);
+                    gid++;
+                  }
                 }
-                var tabs = windows[w].tabs;
-                for(var t in tabs) {
-                  var tab = tabs[t];
-                  //if(SugarTab.persistable(tab.url)) {
-                    var tab = new SugarTab(tab);
-                    group.add_tab(tab, true);
-                  //}
-                }
-                if(current_window.id != w.id && group.tabs.length > 0) {
-                  group.db_insert({
-                    success: function() {}
-                  });
-                  groups.push(group);
-                  gid++;
-                }
-              }
-              track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
+                track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
+              });
             });
-          });
-        }
-      });
-    }
-  });
-} else { // already initialized
-  // let's sync with the db
-  syncGroupsFromDb(function() {});
-  track('Background', 'Developer traces', '', localStorage.debug=="true");
-  track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
-  track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");
-}
+          }
+        });
+      }
+    });
+  } else { // already initialized
+    // let's sync with the db
+    syncGroupsFromDb(function() {});
+    track('Background', 'Developer traces', '', localStorage.debug=="true");
+    track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
+    track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");
+  }
+}});
+
 
 
 /**
