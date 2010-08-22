@@ -499,6 +499,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         }
       }
     });
+  } else if(interaction == "DI11") {
+    // DI11 – Open a single tab of a group
+    var url = request.url;
+    // 3. The background page sends a request to the browser to create a new window
+    // with a single focused tab
+    chrome.windows.create({ url: url });
   }
 });
 
