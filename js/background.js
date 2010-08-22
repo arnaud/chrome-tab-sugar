@@ -474,6 +474,31 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the tab in the db'});
       }
     });
+  } else if(interaction == "DI10") {
+    // DI10 – Open all tabs of a group
+    var gid = request.gid;
+    var focused_url = request.focused_url;
+    // 3. The background page sends a request to the browser to create a new window
+    // with all the group tabs, and to focus the clicked tab
+    var group = icebox;
+    if(gid > 0) {
+      for(var g in groups) {
+        group = groups[g];
+        if(group.id == gid) break;
+      }
+    }
+    var tabs = group.tabs;
+    chrome.windows.create({ url: focused_url }, function(window) {
+      // with all its tabs
+      for(var t in tabs) {
+        var tab = tabs[t];
+        var index = parseInt(t);
+        // don't open the current tab (already opened with the window)
+        if(tab.url != focused_url) {
+          chrome.tabs.create({ windowId: window.id, index: index, url: tab.url, selected: false });
+        }
+      }
+    });
   }
 });
 

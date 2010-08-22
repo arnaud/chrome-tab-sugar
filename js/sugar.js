@@ -165,21 +165,21 @@ $(function() {
   // tabs are clickable
   $('.tab').live("click", function(e) {
     console.debug('Event', 'tab click', e);
-    var group = $(this).group();
-    track('Sugar', 'Click a tab', '', group.tabs().length);
+    // DI03 – Resize a group
+    var group_ui = $(this).group();
+    track('Sugar', 'Click a tab', '', group_ui.tabs().length);
+    // 1. The user left clicks a tab within a group (already done)
+    // 2. The dashboard sends a request to the background page
+    var gid = group_ui.uid();
+    if(gid=="icebox") gid = 0;
     var selected_tab = $(this);
-    var url = selected_tab.find('.url').html();
-    // open a new window
-    chrome.windows.create({ url: url }, function(window) {
-      // with all its tabs
-      group.tabs().each(function(index) {
-        // don't open the current tab (already opened with the window)
-        if($(this).get(0) != selected_tab.get(0)) {
-          var url = $(this).find('.url').html();
-          chrome.tabs.create({ windowId: window.id, index: index, url: url, selected: false });
-        }
-        //alert(index+" "+url);
-      });
+    var focused_url = selected_tab.find('.url').html();
+    chrome.extension.sendRequest({
+      action: 'DI10', // Open all tabs of a group
+      gid: gid,
+      focused_url: focused_url
+    },
+    function(response) {
     });
   });
 
