@@ -50,10 +50,13 @@ function reinitialize() {
     // database
     Storage.reset({
       success: function () {
+        console.debug('- database cleared!');
         // reload the extension
-        reloadTabSugar();
-        // display a success message
-        showMessage("Tab Sugar was reinitialized.");
+        setTimeout(function() {
+          reloadTabSugar();
+          // display a success message
+          showMessage("Tab Sugar was reinitialized.");
+        }, 500);
       }
     });
   } else {
