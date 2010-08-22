@@ -58,6 +58,7 @@ function initUI() {
   for(var t in ice.tabs) {
     var tab = ice.tabs[t];
     $('#icebox').addTab( tab.ui_create() );
+    chrome.extension.sendRequest({action: 'gimme the tab preview', tab: tab});
   }
   $('#icebox').autoFitTabs();
 
@@ -71,6 +72,7 @@ function initUI() {
     for(var t in group.tabs) {
       var tab = group.tabs[t];
       group_ui.addTab( tab.ui_create() );
+      chrome.extension.sendRequest({action: 'gimme the tab preview', tab: tab});
     }
     group_ui.autoFitTabs();
   }

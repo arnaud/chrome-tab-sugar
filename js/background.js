@@ -233,7 +233,24 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(request.action == "gimme the shortcut key") {
     // BI12 – Use the extension shortcut key
     sendResponse({shortcut_key: localStorage.shortcut_key});
-  } else if(request.action == "DI01") {
+  } else if(request.action == "gimme the tab preview") {
+    // Get the preview of a tab
+    var tab = request.tab;
+    var url = tab.url;
+    Storage.select({
+      table: "previews",
+      what: "preview",
+      conditions: "`url`='"+url.replace(/'/g,"''")+"'",
+      success: function(tx, rs) {
+        if(rs.rows && rs.rows.length > 0) {
+          console.debug("Tab preview found", tx, rs);
+          var preview = rs.rows.item(0).preview;
+          chrome.extension.sendRequest({action: 'update tab preview', tab: tab, preview: preview});
+        }
+      },
+      error: function() {}
+    });
+  } else if(interaction == "DI01") {
     // DI01 – Create a new group
     var group = new SugarGroup(request.group);
     // 3. The background page inserts the new group in the database
