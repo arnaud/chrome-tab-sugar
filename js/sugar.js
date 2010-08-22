@@ -121,7 +121,9 @@ $(function() {
     // 1. The user closes a tab
     var tab_ui = $(this).parent().parent();
     tab_ui.fadeOut(function() {
+      var group_ui = $(this).group();
       $(this).remove();
+      group_ui.autoFitTabs();
     });
 
     // 2. The dashboard sends a request to the background page
