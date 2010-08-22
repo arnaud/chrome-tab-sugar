@@ -95,7 +95,7 @@ var Storage = new JS.Class({
       var query = settings.query;
       var success = settings.success;
       var error = settings.error;
-      console.debug("Storage execute_sql", query.substr(0, 120), settings);
+      console.debug("Storage execute_sql", query.substr(0, 200), settings);
       var storage = new Storage();
       storage.db.transaction(function (tx) {
         tx.executeSql(query, [], function (tx, rs) {

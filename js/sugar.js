@@ -628,7 +628,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(action == "B10") {
     // B10 - Update a tab
     var gid = request.gid;
-    var group_ui = $.findGroup(window.id);
+    var group_ui = $('#icebox');
+    if(gid > 0) {
+      group_ui = $('#group-'+gid);
+    }
     var tab = request.tab;
     var t = new SugarTab(tab);
     var tab_ui = $.findTab(wid, t);

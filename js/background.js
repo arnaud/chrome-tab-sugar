@@ -123,7 +123,9 @@ function compareGroupAndWindow(group, window, exceptionTab) {
   for(var t in tabs) {
     var tab = tabs[t];
     //if(SugarTab.persistable(t.url)) {
-      if(exceptionTab!=null && tab.id == exceptionTab.id) {
+      /*if(exceptionTab!=null && tab.id == exceptionTab.id) {
+        // do nothing
+      } else*/ if(tab.status == 'loading') {
         // do nothing
       } else {
         window_tabs.push(tab);
