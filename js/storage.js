@@ -79,7 +79,7 @@ var Storage = new JS.Class({
         } else if(attr.indexOf("raw_sql_") != -1) {
           attr = attr.replace('raw_sql_','');
         } else if(type=="string") {
-          val = '"' + val.replace('"','\\"') + '"';
+          val = "'" + val.replace(/'/g, "''") + "'";
         } else if(type=="undefined") {
           val = "NULL";
         } else {
