@@ -337,14 +337,19 @@ $(function() {
       hoverClass: 'hover',
       greedy: true,
       drop: function(ev, ui) {
+        // DI06 – Move a tab to the dashboard
         track('Sugar', 'Drop a tab in a new group', 'Drop a tab in a new group');
-        var tab_ui = ui.draggable;
-        //var tab = tab_ui.object();
-
-        var old_group_ui = tab_ui.group();
-        //var old_group = old_group_ui.object();
-
-        var new_group = new SugarGroup({
+        // 1. The user moves a tab to the dashboard
+        var src_tab_ui = ui.draggable;
+        var src_tab = new SugarTab({
+          group_id: src_tab_ui.group().uid(),
+          index: src_tab_ui.indexWithinParent(),
+          title: src_tab_ui.title(),
+          url: src_tab_ui.url(),
+          favIconUrl: src_tab_ui.favIconUrl()
+        });
+        var src_group_ui = src_tab_ui.group();
+        var dest_group = new SugarGroup({
           id: SugarGroup.next_index(),
           name: "New group",
           posX: ev.clientX-ev.layerX-17,
@@ -352,51 +357,28 @@ $(function() {
           width: 155,
           height: 150
         });
-        var new_group_ui = new_group.ui_create();
-
+        var dest_group_ui = dest_group.ui_create();
+        var dest_tab = new SugarTab(src_tab);
+        dest_tab.group_id = dest_group.id;
+        dest_tab.index = 0;
+        var dest_tab_ui = dest_tab.ui_create();
         // the tab should fade out and appear in a newly created group
-        tab_ui.fadeOut(function() {
-
-          // visual
-          $('#dashboard').append(new_group_ui);
-          new_group_ui.addTab(tab_ui);
-          tab_ui.show();
-          new_group_ui.autoFitTabs();
-
-          // db
-          new_group.db_insert({
-            success: function(rs) {
-              var t = new SugarTab({group_id: old_group.id, index: tab.index});
-              t.db_update({
-                key: 'group_id',
-                val: new_group.id,
-                success: function(rs) {
-                  t.db_update({
-                    key: 'index',
-                    val: new_group_ui.tabs().length, // the new index corresponds to the number of tabs already owned by the new group
-                    success: function(rs) {
-                      // when grabbing the last tab of a group, the initial group should disappear if empty
-                      var nb_tabs_in_old_group = old_group_ui.tabs().not(tab_ui).length;
-                      if(nb_tabs_in_old_group == 0) {
-                        // visually
-                        old_group_ui.fadeOut();
-                        // in the db
-                        old_group.db_delete({
-                          success: function(rs) {}
-                        });
-                      }
-
-                      // add it to the group list
-                      back.updateUI(true);
-                    }
-                  });
-                }
-              });
-            }
-          });
-
+        src_tab_ui.fadeOut(function() {
+          src_tab_ui.remove();
+          $('#dashboard').append(dest_group_ui);
+          dest_group_ui.addTab(dest_tab_ui);
+          dest_tab_ui.show();
+          dest_group_ui.autoFitTabs();
         });
 
+        // 2. The dashboard sends a request to the background page
+        chrome.extension.sendRequest({
+          action: 'DI06', // Move a tab to the dashboard
+          src_tab: src_tab,
+          dest_group: dest_group
+        },
+        function(response) {
+        });
       }
     });
 

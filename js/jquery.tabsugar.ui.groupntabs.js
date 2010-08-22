@@ -230,6 +230,26 @@
     }
   },
 
+  // get the URL of a tab
+  $.fn.url = function() {
+    if(this.isTab()) {
+      return this.find('>div>.url').html();
+    } else {
+      console.error('The url method only applies to tabs');
+      return "";
+    }
+  },
+
+  // get the favicon of a tab
+  $.fn.favIconUrl = function() {
+    if(this.isTab()) {
+      return this.find('>div>.favicon').attr('src');
+    } else {
+      console.error('The favIconUrl method only applies to tabs');
+      return "";
+    }
+  },
+
   // is there a group at the [x,y] position?
   $.fn.isGroupAtPosition = function(x, y) {
     var is_group = false;

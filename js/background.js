@@ -96,7 +96,7 @@ function captureCurrentTab() {
   console.debug('captureCurrentTab');
   chrome.windows.getCurrent(function(window) {
     chrome.tabs.getSelected(null, function(tab) {
-      if(SugarTab.persistable(tab.url)) {
+      //if(SugarTab.persistable(tab.url)) {
         chrome.tabs.captureVisibleTab(null, function (dataUrl) {
           var factor = window.width / window.height;
           var width = 500;
@@ -108,7 +108,7 @@ function captureCurrentTab() {
             chrome.extension.sendRequest({action: "update tab preview", tab: tab, preview: dataUrl});
           });
         });
-      }
+      //}
     });
   });
 }
@@ -145,9 +145,9 @@ function getWindowFromGid(gid, callback) {
         var tabs = window.tabs;
         var window_tabs = [];
         for(var t in tabs) {
-          if(SugarTab.persistable(t.url)) {
+          //if(SugarTab.persistable(t.url)) {
             window_tabs.push(t);
-          }
+          //}
         }
         console.debug('...has', window_tabs.length, 'tabs');
         console.debug('...whereas the group has', group.tabs.length, 'tabs');
@@ -188,9 +188,9 @@ function getTabFromTid(gid, index, callback) {
     var idx = 0;
     for(var t in window.tabs) {
       tab = window.tabs[t];
-      if(SugarTab.persistable(t.url)) {
+      //if(SugarTab.persistable(t.url)) {
         idx++;
-      }
+      //}
       if(idx == index) {
         tab_found = true;
         break;
@@ -206,6 +206,9 @@ function getTabFromTid(gid, index, callback) {
 
 // syncs the the 'icebox' and 'groups' variables with the ones from the database
 function syncGroupsFromDb(callback) {
+  console.debug('SYNC');
+  icebox = null;
+  groups = [];
   SugarGroup.load_icebox({
     success: function(rs) {
       // load the other groups
@@ -350,21 +353,74 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       table: "groups",
       conditions: "`id`="+gid,
       success: function() {
-        // remove the right group in the groups array
-        /*for(var g in groups) {
-          var group = groups[g];
-          if(group.id == gid) {
-            delete groups[g];
-            return;
+        Storage.delete({
+          table: "tabs",
+          conditions: "`group_id`="+gid,
+          success: function() {
+            // refresh the icebox and the groups
+            syncGroupsFromDb(function() {
+              sendResponse({status: "OK"});
+            });
+          },
+          error: function() {
+            // refresh the icebox and the groups
+            syncGroupsFromDb(function() {
+              sendResponse({status: "OK"});
+            });
           }
-        }*/
-        // refresh the icebox and the groups
-        syncGroupsFromDb(function() {
-          sendResponse({status: "OK"});
         });
       },
       error: function() {
         chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the group in the db'});
+      }
+    });
+  } else if(interaction == "DI06") {
+    // DI06 – Move a tab to the dashboard
+    var src_tab = request.src_tab;
+    var dest_group = request.dest_group;
+    // 3. The background page sends a request to the browser to close the corresponding tab
+    getTabFromTid(src_tab.group_id, src_tab.index, function(window, tab) {
+      var tid = tab.id;
+      chrome.tabs.remove(tid);
+    });
+    // 4. -On success-, the background page inserts a new group and updates the tab’s group id in the database
+    dest_group = new SugarGroup(dest_group);
+    dest_group.db_insert({
+      success: function() {
+        Storage.update({
+          table: "tabs",
+          conditions: "`group_id`="+src_tab.group_id+" AND `index`="+src_tab.index,
+          changes: {
+            group_id: dest_group.id,
+            index: 0
+          },
+          success: function() {
+            // decrement the index of the above tabs in the source group
+            Storage.update({
+              table: "tabs",
+              conditions: "`group_id`="+src_tab.group_id+" AND `index`>="+src_tab.index,
+              changes: {
+                raw_sql_index: "`index`-1"
+              },
+              success: function() {
+                syncGroupsFromDb(function() {
+                  sendResponse({status: "OK"});
+                });
+              },
+              error: function() {
+                syncGroupsFromDb(function() {
+                  sendResponse({status: "OK"});
+                });
+              }
+            });
+          },
+          error: function() {
+            chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab to the new group in the db'});
+          }
+        });
+      },
+      error: function() {
+        chrome.extension.sendRequest({action: 'error', message: 'Error while creating the new group in the db'});
       }
     });
   } else if(interaction == "DI08") {
@@ -409,7 +465,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
     });
-    // 4.3. decrement the index of the above tabs in the destination group
+    // 4.3. decrement the index of the above tabs in the source group
     Storage.update({
       table: "tabs",
       conditions: "`group_id`="+src_gid+" AND `index`>"+src_index,
@@ -545,10 +601,10 @@ if(!initialized) {
                 var tabs = windows[w].tabs;
                 for(var t in tabs) {
                   var tab = tabs[t];
-                  if(SugarTab.persistable(tab.url)) {
+                  //if(SugarTab.persistable(tab.url)) {
                     var tab = new SugarTab(tab);
                     group.add_tab(tab, true);
-                  }
+                  //}
                 }
                 if(current_window.id != w.id && group.tabs.length > 0) {
                   group.db_insert({
