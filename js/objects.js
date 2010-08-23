@@ -142,13 +142,13 @@ var SugarGroup = new JS.Class({
   db_delete: function(settings) {
     console.debug("Group delete", this);
     if(settings == null) settings = {};
-    Storage.delete({
+    Storage.remove({
       table: "tabs",
       conditions: {group_id: this.id},
       success: function() {},
       error: function() {}
     });
-    Storage.delete({
+    Storage.remove({
       table: "groups",
       conditions: {id: this.id},
       success: settings.success,
@@ -377,7 +377,7 @@ var SugarTab = new JS.Class({
   db_delete: function(settings) {
     console.debug("Tab delete", this, settings);
     if(settings == null) settings = {};
-    Storage.delete({
+    Storage.remove({
       table: "tabs",
       conditions: {
         group_id: this.group_id,

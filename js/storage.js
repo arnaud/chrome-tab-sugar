@@ -208,7 +208,7 @@ var Storage = new JS.Class({
     },
 
     // query a DELETE
-    delete: function(settings) {
+    remove: function(settings) {
       console.debug("Storage delete", settings);
       var table = settings.table;
       var conditions = settings.conditions;

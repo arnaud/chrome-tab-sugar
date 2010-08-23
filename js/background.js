@@ -424,11 +424,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       chrome.windows.remove(wid);
     });
     // 4. -On success-, the background page deletes the group from the database
-    Storage.delete({
+    Storage.remove({
       table: "groups",
       conditions: "`id`="+gid,
       success: function() {
-        Storage.delete({
+        Storage.remove({
           table: "tabs",
           conditions: "`group_id`="+gid,
           success: function() {
@@ -560,7 +560,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       chrome.tabs.remove(tid);
     });
     // 4. -On success-, the background page deletes the tab from the database
-    Storage.delete({
+    Storage.remove({
       table: "tabs",
       conditions: "`group_id`="+gid+" AND `index`="+index,
       success: function() {
