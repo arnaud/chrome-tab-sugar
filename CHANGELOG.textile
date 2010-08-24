@@ -2,6 +2,11 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.13
+
+ * Added a tiny top bar to the dashboard
+ * Disabled the spell-checker on group names
+
 h3. 0.9.12
 
  * Bug fix (issue #3)

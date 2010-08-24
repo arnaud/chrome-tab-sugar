@@ -1,7 +1,7 @@
 {
   "name": "Tab Sugar",
-  "version": "0.9.12",
-  "description": "Sprinkle some Sugar on Chrome Tabs!",
+  "version": "0.9.13",
+  "description": "Organize and manage your tabs from a single page!",
   "icons": {
     "16": "ico/16.png",
     "48": "ico/48.png",
