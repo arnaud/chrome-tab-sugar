@@ -31,8 +31,27 @@ html,body {
 }
 #dashboard {
   width: 98%;
-  height: 80%;
+  height: 90%;
   padding: 10px;
+}
+
+#top {
+  padding: 0 10px;
+  text-align: right;
+  line-height: 16px;
+  border-bottom: 1px solid #eee;
+}
+#top, #top * {
+  font-size: 10px;
+  color: #569;
+}
+.feedback {
+  background: url(/ico/feedback.png) left no-repeat;
+  padding-left: 14px;
+}
+.options {
+  background: url(/ico/options.png) left no-repeat;
+  padding-left: 14px;
 }
 
 
