@@ -285,7 +285,6 @@ $(function() {
         var src_group_ui = src_tab_ui.group();
         var dest_group = new SugarGroup({
           id: SugarGroup.next_index(),
-          name: "New group",
           posX: ev.clientX-ev.layerX-17,
           posY: ev.clientY-ev.layerY-36,
           width: 155,
