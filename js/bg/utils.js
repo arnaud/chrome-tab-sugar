@@ -168,6 +168,7 @@ function getWindowFromGid(gid, callback, error) {
   console.debug('getWindowFromGid', 'wid=', wid);
   if(wid == null || isNaN(wid)) {
     console.error('Window not found for group #'+gid);
+    if(error) error();
     return;
   }
   chrome.windows.getAll({populate:true}, function(windows) {
@@ -178,7 +179,6 @@ function getWindowFromGid(gid, callback, error) {
         return;
       }
     }
-    if(error) error();
   });
 }
 

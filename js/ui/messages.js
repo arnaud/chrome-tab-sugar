@@ -67,9 +67,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var t = new SugarTab(tab);
     var tab_ui = $.findTab(gid, t);
     tab_ui.find('.title>span').html(t.title);
-    tab_ui.find('.url').html(t.url);
+    tab_ui.find('.url').attr('url',t.url).html(t.url);
     tab_ui.find('.favicon').html(t.favIconUrl);
-    tab_ui.find('.preview').removeAttr('src').addClass('empty');
+    tab_ui.find('.preview').addClass('empty').attr('src','/ico/transparent.gif');
   } else if(action == "error") {
     var message = request.message;
     showMessage('Oops! '+message);

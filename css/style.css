@@ -52,6 +52,9 @@ html,body {
   margin: 0 10px 0 0;
   opacity: 0.7;
 }
+#search, #top label {
+  display: none;
+}
 .feedback {
   background: url(/ico/feedback.png) left no-repeat;
   padding-left: 14px;
@@ -237,6 +240,7 @@ section>ul {
   text-shadow: 1px 1px 1px #fff;
 }
 .group .new_page {
+  display: none;
   position: absolute;
   bottom: 0;
   left: 0;

@@ -399,6 +399,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         setTimeout(matchWindowsAndGroups, 1000); // O
         setTimeout(matchWindowsAndGroups, 1500); // M
         setTimeout(matchWindowsAndGroups, 3000); // G
+        setTimeout(matchWindowsAndGroups, 5000); // !
       });
     });
   } else if(interaction == "DI11") {
