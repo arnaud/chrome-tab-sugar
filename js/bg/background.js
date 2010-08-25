@@ -73,7 +73,7 @@ makeDatabaseUpToDate({success: function() {
                 for(var w in windows) {
                   var group = icebox;
                   if(current_window.id != w.id) {
-                    group = new SugarGroup({id: gid, width: 400, height: 150, posX: 10, posY: 10+gid*180});
+                    group = new SugarGroup({id: gid, width: 400, height: 150, posX: 0, posY: 18+gid*180});
                   }
                   var tabs = windows[w].tabs;
                   for(var t in tabs) {
@@ -91,6 +91,8 @@ makeDatabaseUpToDate({success: function() {
                     gid++;
                   }
                 }
+                // let the windows and groups make a match
+                matchWindowsAndGroups();
                 track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
               });
             });

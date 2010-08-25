@@ -144,60 +144,60 @@ function compareGroupAndWindow(group, window, exceptionTab) {
 }
 
 // finds out which group corresponds to a window id
-function getGroupFromWid(wid, tab, callback) {
-  chrome.windows.getAll({populate: true}, function(windows) {
-    for(var w in windows) {
-      var window = windows[w];
-      if(window.id == wid) {
-        for(var g in groups) {
-          var group = groups[g];
-          if(compareGroupAndWindow(group, window, tab)) {
-            callback(group);
-            return;
-          }
-        }
-        break;
-      }
+function getGroupFromWid(wid, callback) {
+  console.debug('getGroupFromWid', wid);
+  var gid = parseInt( sessionStorage['w'+wid] );
+  console.debug('getGroupFromWid', 'gid=', gid);
+  if(gid == null || isNaN(gid)) {
+    console.error('Group not found for window #'+wid);
+    return;
+  }
+  for(var g in groups) {
+    var group = groups[g];
+    if(group.id == gid) {
+      callback(group);
+      break;
     }
-  });
+  }
 }
 
 // finds out which window corresponds to a group id
-function getWindowFromGid(gid, callback) {
+function getWindowFromGid(gid, callback, error) {
   console.debug('getWindowFromGid', gid);
-  // 1. Find the group object
-  var group_found = false;
-  var group = null;
-  if(gid==0) {
-    group_found = true;
-    group = icebox;
+  var wid = parseInt( sessionStorage['g'+gid] );
+  console.debug('getWindowFromGid', 'wid=', wid);
+  if(wid == null || isNaN(wid)) {
+    console.error('Window not found for group #'+gid);
+    return;
   }
-  if(!group_found) {
-    for(var g in groups) {
-      group = groups[g];
-      if(group.id == gid) {
-        group_found = true;
-        break;
+  chrome.windows.getAll({populate:true}, function(windows) {
+    for(var w in windows) {
+      var window = windows[w];
+      if(window.id == wid) {
+        callback(window);
+        return;
       }
     }
-  }
-  if(!group_found) {
-    // the group couldn't be found :-|
-    console.error('The group #'+gid+' could not be found');
-    callback(null);
-  } else {
-    // the group was found, let's check the actual windows now for comparison
-    chrome.windows.getAll({populate:true}, function(windows) {
-      for(var w in windows) {
-        var window = windows[w];
-        console.debug('Window', '#'+w, window);
+    if(error) error();
+  });
+}
+
+// let windows and groups match together
+function matchWindowsAndGroups(callback) {
+  console.debug('matchWindowsAndGroups');
+  chrome.windows.getAll({populate:true}, function(windows) {
+    for(var w in windows) {
+      var window = windows[w];
+      for(var g in groups) {
+        var group = groups[g];
         if(compareGroupAndWindow(group, window)) {
-          callback(window);
-          return;
+          sessionStorage['g'+group.id] = window.id;
+          sessionStorage['w'+window.id] = group.id;
         }
       }
-    });
-  }
+    }
+    if(callback) callback();
+  });
 }
 
 // finds out which tab corresponds to a group id and index
@@ -250,7 +250,12 @@ function syncGroupsFromDb(callback) {
     success: function(rs) {
       // load the other groups
       SugarGroup.load_groups({
-        success: callback
+        success: function() {
+          // let the windows and groups make a match
+          matchWindowsAndGroups();
+          // do our little thing
+          callback();
+        }
       });
     }
   });

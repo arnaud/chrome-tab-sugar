@@ -330,14 +330,14 @@
     });
   },
 
-  // find a group by its window id
-  $.findGroup = function(wid) {
-    return $('.group.window-'+wid);
+  // find a group by its group id
+  $.findGroup = function(gid) {
+    return $('#group-'+gid);
   },
 
-  // find a tab by its window id and its own data
-  $.findTab = function(wid, tab) {
-    return $.findGroup(wid).tabs().filter(':eq('+tab.index+')');
+  // find a tab by its group id and its own data
+  $.findTab = function(gid, tab) {
+    return $.findGroup(gid).tabs().filter(':eq('+tab.index+')');
   }
   
 })(jQuery);

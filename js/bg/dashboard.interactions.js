@@ -367,17 +367,39 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         if(group.id == gid) break;
       }
     }
-    var tabs = group.tabs;
-    chrome.windows.create({ url: focused_url }, function(window) {
-      // with all its tabs
-      for(var t in tabs) {
-        var tab = tabs[t];
-        var index = parseInt(t);
-        // don't open the current tab (already opened with the window)
-        if(tab.url != focused_url) {
-          chrome.tabs.create({ windowId: window.id, index: index, url: tab.url, selected: false });
+    getWindowFromGid(gid, function(window) {
+      if(window != null) {
+        // 3a. If the window already is open, let's show it
+        for(var t in window.tabs) {
+          var tab = window.tabs[t];
+          console.warn(focused_url, tab.url, tab.url == focused_url);
+          if(tab.url == focused_url) {
+            chrome.tabs.update(tab.id, {selected: true});
+            break;
+          }
         }
+      } else {
+        console.error('Couldn\'t find a window for the group #'+gid);
       }
+    }, function() {
+      // 3b. If the window isn't open anymore, let's recreate it
+      var tabs = group.tabs;
+      chrome.windows.create({ url: focused_url }, function(window) {
+        // with all its tabs
+        for(var t in tabs) {
+          var tab = tabs[t];
+          var index = parseInt(t);
+          // don't open the current tab (already opened with the window)
+          if(tab.url != focused_url) {
+            chrome.tabs.create({ windowId: window.id, index: index, url: tab.url, selected: false });
+          }
+        }
+        // update the windows and groups matches
+        setTimeout(matchWindowsAndGroups, 500);  // z
+        setTimeout(matchWindowsAndGroups, 1000); // O
+        setTimeout(matchWindowsAndGroups, 1500); // M
+        setTimeout(matchWindowsAndGroups, 3000); // G
+      });
     });
   } else if(interaction == "DI11") {
     // DI11 – Open a single tab of a group

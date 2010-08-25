@@ -47,7 +47,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
   //&2. The browser sends a request to the background page
   var tab_backup = tab;
   var wid = tab.windowId;
-  getGroupFromWid(wid, tab, function(group) {
+  getGroupFromWid(wid, function(group) {
     var gid = group.id;
     var tab = new SugarTab(tab_backup);
     tab.group_id = gid;
@@ -96,9 +96,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     //&2. The browser sends a request to the background page
     var tab_backup = tab;
     getWidFromTid(tabId, function(wid, window) {
-      getGroupFromWid(wid, tab, function(group) {
+      getGroupFromWid(wid, function(group) {
         var gid = group.id;
-        var index = group.index;
+        var index = tab_backup.index;
         var tab = new SugarTab(tab_backup);
         tab.group_id = gid;
         Storage.update({
