@@ -109,11 +109,11 @@ function compareGroupAndWindow(group, window, exceptionTab) {
     //if(SugarTab.persistable(t.url)) {
       /*if(exceptionTab!=null && tab.id == exceptionTab.id) {
         // do nothing
-      } else*/ if(tab.status == 'loading') {
+      } else*/ //if(tab.status == 'loading') {
         // do nothing
-      } else {
+      //} else {
         window_tabs.push(tab);
-      }
+      //}
     //}
   }
   console.debug('...has', window_tabs.length, 'tabs');
@@ -175,11 +175,19 @@ function getWindowFromGid(gid, callback, error) {
     for(var w in windows) {
       var window = windows[w];
       if(window.id == wid) {
+        bindWindowToGroup(wid, gid);
         callback(window);
         return;
       }
     }
+    if(error) error();
   });
+}
+
+// binds a window to a group in the session storage
+function bindWindowToGroup(wid, gid) {
+  sessionStorage['g'+gid] = wid;
+  sessionStorage['w'+wid] = gid;
 }
 
 // let windows and groups match together
@@ -191,8 +199,7 @@ function matchWindowsAndGroups(callback) {
       for(var g in groups) {
         var group = groups[g];
         if(compareGroupAndWindow(group, window)) {
-          sessionStorage['g'+group.id] = window.id;
-          sessionStorage['w'+window.id] = group.id;
+          bindWindowToGroup(window.id, group.id);
         }
       }
     }
