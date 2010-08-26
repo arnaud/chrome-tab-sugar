@@ -76,7 +76,21 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
   console.debug('chrome.tabs.onRemoved', tabId);
   chrome.windows.getCurrent(function(window) {
     // 2. The browser sends a request to the background page
-    chrome.extension.sendRequest({action: "B08", window: window.id, tid: tabId});
+    getWidFromTid(tabId, function(wid, window) {
+      getGroupFromWid(wid, function(group) {
+        var cur_tab;
+        for(var t in group.tabs) {
+          var tab = group.tabs[t];
+          if(tab.url == tabId.url) {
+            cur_tab = tab;
+            break;
+          }
+        }
+        if(cur_tab != null) {
+          chrome.extension.sendRequest({action: "B08", gid: group.id, tab: cur_tab});
+        }
+      });
+    });
   });
   //TODO tabs.unshift(tab);
 });

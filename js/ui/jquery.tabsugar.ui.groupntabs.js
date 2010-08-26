@@ -332,6 +332,7 @@
 
   // find a group by its group id
   $.findGroup = function(gid) {
+    if(gid==0) return $('#icebox');
     return $('#group-'+gid);
   },
 

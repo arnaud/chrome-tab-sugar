@@ -149,7 +149,7 @@ function getGroupFromWid(wid, callback) {
   var gid = parseInt( sessionStorage['w'+wid] );
   console.debug('getGroupFromWid', 'gid=', gid);
   if(gid == null || isNaN(gid)) {
-    console.error('Group not found for window #'+wid);
+    console.warn('Group not found for window #'+wid);
     return;
   }
   for(var g in groups) {
@@ -167,7 +167,7 @@ function getWindowFromGid(gid, callback, error) {
   var wid = parseInt( sessionStorage['g'+gid] );
   console.debug('getWindowFromGid', 'wid=', wid);
   if(wid == null || isNaN(wid)) {
-    console.error('Window not found for group #'+gid);
+    console.warn('Window not found for group #'+gid);
     if(error) error();
     return;
   }

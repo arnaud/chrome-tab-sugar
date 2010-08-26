@@ -44,26 +44,23 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var tab = request.tab;
     // 5. The dashboard adds the new tab into the corresponding group
     var tab = new SugarTab(tab);
-    var group_ui = $('#icebox');
-    if(gid > 0) {
-      group_ui = $('#group-'+gid);
-    }
     var tab_ui = tab.ui_create();
+    var group_ui = $.findGroup(gid);
     group_ui.addTab(tab_ui);
     group_ui.autoFitTabs();
   } else if(action == "BI08") {
     // BI08 - Close a tab
-    var wid = request.wid;
-    var tid = request.tid;
-    //TODO
+    var gid = request.gid;
+    var tab = request.tab;
+    var t = new SugarTab(tab);
+    var tab_ui = $.findTab(gid, t);
+    var group_ui = $.findGroup(gid);
+    tab_ui.hide();
+    group_ui.autoFitTabs();
   } else if(action == "BI10") {
     // BI10 - Update a tab
     var gid = request.gid;
     var tab = request.tab;
-    var group_ui = $('#icebox');
-    if(gid > 0) {
-      group_ui = $('#group-'+gid);
-    }
     var t = new SugarTab(tab);
     var tab_ui = $.findTab(gid, t);
     tab_ui.find('.title>span').html(t.title);
