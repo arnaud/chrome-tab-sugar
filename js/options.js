@@ -137,6 +137,19 @@ function snapgroups() {
   }
 }
 
+// Activates the latest updates box in the dashboard
+function updates() {
+  var checked = $("#updates").attr("checked");
+  track('Options', 'Latest updates', 'Latest updates feature', checked);
+  if(checked) {
+    localStorage.feature_latestupdates = true;
+    showMessage("Feature 'latest updates' enabled.");
+  } else {
+    localStorage.feature_latestupdates = false;
+    showMessage("Feature 'latest updates' disabled.");
+  }
+}
+
 // Define the opening behavior
 function opening() {
   //TODO
@@ -174,6 +187,7 @@ $(function() {
   $('#preview').attr('checked', localStorage.feature_tab_preview=="true");
   $('#traces').attr('checked', localStorage.debug=="true");
   $('#snapgroups').attr('checked', localStorage.feature_snapgroups=="true");
+  $('#updates').attr('checked', localStorage.feature_latestupdates=="true");
   for(var i=0; i<26; i++) {
     var key = String.fromCharCode(65+i);
     $('#shortcut_key').append('<option value="'+key+'">'+key+'</option>');

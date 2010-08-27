@@ -347,3 +347,22 @@ section>ul {
   text-decoration: none;
   color: blue;
 }
+
+/* Twitter updates */
+
+#updates {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  text-shadow: 1px 1px 1px rgba(50, 50, 50, 0.5);
+}
+#updates .title {
+  padding-right: 12px;
+  color: #fff;
+  font-size: 12px;
+  text-align: right;
+}
+#updates .twtr-hd,
+#updates .twtr-ft {
+  display: none;
+}

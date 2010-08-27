@@ -63,6 +63,8 @@ makeDatabaseUpToDate({success: function() {
             localStorage.feature_autoresize = "true";
             // snap groups feature is OFF by default
             localStorage.feature_snapgroups = "false";
+            // latest updates feature is ON by default
+            localStorage.feature_latestupdates = "true";
             // the next group will be identified as "group 1"
             localStorage.group_last_index = 0;
             // initialize the extension by listing all the tabs of all the windows
@@ -103,9 +105,14 @@ makeDatabaseUpToDate({success: function() {
   } else { // already initialized
     // let's sync with the db
     syncGroupsFromDb(function() {});
+    // if the 'latest updates' feature wasn't set, ever, then set it on by default
+    var lu = localStorage.feature_latestupdates;
+    if(lu != "true" && lu != "false") localStorage.feature_latestupdates = "true";
+    // features tracking
     track('Background', 'Developer traces', '', localStorage.debug=="true");
     track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");
     track('Background', 'Auto resize feature', '', localStorage.feature_autoresize=="true");
+    track('Background', 'Latest updates feature', '', localStorage.feature_latestupdates=="true");
   }
 }});
 
