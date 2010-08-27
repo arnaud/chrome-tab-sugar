@@ -35,26 +35,34 @@ function openTabSugar(tab) {
   var updated = false;
 
   // check wether Sugar Tab is already opened in the current window
-  chrome.windows.getCurrent(function(window) {
-    for(var t in window.tabs) {
-      var tab = window.tabs[t];
-      console.error(tab, tab.id, tab.url);
-      if(tab.url == sugar_url) {
-        // reuse the last dashboard and reload it
-        chrome.tabs.update(tab.id, {url: sugar_url, selected: true});
-        updated = true;
+  chrome.windows.getCurrent(function(cur_win) {
+    var wid = cur_win.id;
+    getWindowWithTabs(wid, function(window) {
+      for(var t in window.tabs) {
+        var tab = window.tabs[t];
+        if(tab.url == sugar_url) {
+          // reuse the last dashboard and reload it
+          chrome.tabs.update(tab.id, {url: sugar_url, selected: true});
+          updated = true;
+        }
       }
-    }
-    if(!updated) {
-      // no dashboard were reused: let's create a new tab
-      //chrome.tabs.create({url: sugar_url});
-    }
+      if(!updated) {
+        // no dashboard were reused
+        chrome.tabs.getSelected(wid, function(tab) {
+          if(tab.url == 'chrome://newtab/') {
+            // let's reuse the current 'new tab' tab
+            chrome.tabs.update(tab.id, {url: sugar_url, selected: true});
+          } else {
+            // let's create a new tab
+            chrome.tabs.create({url: sugar_url});
+          }
+        });
+      }
+    }, function() {
+      // couldn't find the current window?!?
+      chrome.tabs.create({url: sugar_url});
+    });
   });
-
-  // opens Tab Sugar in a new window
-  //chrome.windows.create({url:chrome.extension.getURL("sugar.html"), left:0, top:0});
-  // opens Tab Sugar in a new tab
-  chrome.tabs.create({url: sugar_url});
 }
 
 // resizes an image to the desired size
@@ -143,6 +151,19 @@ function compareGroupAndWindow(group, window, exceptionTab) {
   }
 }
 
+function getWindowWithTabs(wid, success, error) {
+  chrome.windows.getAll({populate:true}, function(windows) {
+    for(var w in windows) {
+      var window = windows[w];
+      if(window.id == wid) {
+        success(window);
+        return;
+      }
+    }
+    if(error) error();
+  });
+}
+
 // finds out which group corresponds to a window id
 function getGroupFromWid(wid, callback) {
   console.debug('getGroupFromWid', wid);
@@ -171,17 +192,10 @@ function getWindowFromGid(gid, callback, error) {
     if(error) error();
     return;
   }
-  chrome.windows.getAll({populate:true}, function(windows) {
-    for(var w in windows) {
-      var window = windows[w];
-      if(window.id == wid) {
-        bindWindowToGroup(wid, gid);
-        callback(window);
-        return;
-      }
-    }
-    if(error) error();
-  });
+  getWindowWithTabs(wid, function(window) {
+    bindWindowToGroup(wid, gid);
+    callback(window);
+  }, error);
 }
 
 // binds a window to a group in the session storage
