@@ -26,8 +26,9 @@
  * UTILITY FUNCTIONS
  */
 
-function openTabSugar(tab) {
-  console.debug('chrome.browserAction.onClicked', tab);
+// opens the Tab Sugar dashboard
+function openDashboard() {
+  console.debug('chrome.browserAction.onClicked');
 
   // URL of the Sugar Tab dashboard
   var sugar_url = chrome.extension.getURL("sugar.html");
@@ -67,6 +68,7 @@ function openTabSugar(tab) {
 
 // resizes an image to the desired size
 function resizeImage(url, width, height, callback) {
+  console.debug('resizeImage', url, width+'x'+height);
   var sourceImage = new Image();
   sourceImage.onload = function() {
     // create a canvas with the desired dimensions
@@ -151,7 +153,9 @@ function compareGroupAndWindow(group, window, exceptionTab) {
   }
 }
 
+// get a window with all its tabs populated
 function getWindowWithTabs(wid, success, error) {
+  console.debug('getWindowWithTabs', wid);
   chrome.windows.getAll({populate:true}, function(windows) {
     for(var w in windows) {
       var window = windows[w];

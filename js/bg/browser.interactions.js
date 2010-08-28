@@ -137,4 +137,4 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 // BI11 – Click on the extension action button
-chrome.browserAction.onClicked.addListener(openTabSugar);
+chrome.browserAction.onClicked.addListener(openDashboard);

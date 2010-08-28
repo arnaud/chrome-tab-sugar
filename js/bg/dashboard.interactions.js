@@ -29,9 +29,8 @@
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   console.debug('Request', request.sender, request.action, request);
   var interaction = request.action;
-  // sender: dashboard
   if(interaction == "open") {
-    openTabSugar();
+    openDashboard();
   } else if(request.action == "gimme the shortcut key") {
     // BI12 – Use the extension shortcut key
     sendResponse({shortcut_key: localStorage.shortcut_key});
