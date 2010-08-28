@@ -116,9 +116,16 @@ function captureCurrentTab() {
  * WINDOWS, TABS AND GROUPS
  */
 
-// checks whether the group matches the window
-// @param exceptionTab: optional, a tab that is contained by the window but that
-// must not be part of the comparison
+/*
+  Function: compareGroupAndWindow
+  Checks whether the group matches the window.
+  
+  Parameters:
+     group - The first integer.
+     window - The second integer.
+     exceptionTab - *Unused*. Optional, a tab that is contained by the 
+                   window but that must not be part of the comparison.
+*/
 function compareGroupAndWindow(group, window, exceptionTab) {
   console.debug('compareGroupAndWindow', group, window);
   var tabs = window.tabs;

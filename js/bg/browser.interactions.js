@@ -35,7 +35,15 @@ chrome.windows.onCreated.addListener(function(window) {
   //&2. The browser sends a request to the background page
   var wid = window.id;
   // 3. The background page inserts the new group and its tab in the database
-  var group = new SugarGroup();
+  var g_pos = SugarGroup.next_position();
+  var group = new SugarGroup({
+    id: SugarGroup.next_index(),
+    name: null,
+    posX: g_pos.x,
+    posY: g_pos.y,
+    width: 300,
+    height: 150
+  });
   group.db_insert({
     success: function() {
       bindWindowToGroup(wid, group.id);

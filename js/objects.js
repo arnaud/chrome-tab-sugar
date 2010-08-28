@@ -286,6 +286,12 @@ var SugarGroup = new JS.Class({
         index = parseInt(localStorage.group_last_index) + 1;
       }
       return index;
+    },
+
+    next_position: function() {
+      var x = Math.floor(Math.random()*1000);
+      var y = Math.floor(Math.random()*700);
+      return {x: x, y: y};
     }
   }
 });
