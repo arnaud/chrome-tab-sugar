@@ -2,9 +2,19 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.15
+
+ * Better window/group matching
+ * Added the 'latest updates' feature
+ * Better browser interactions
+ * 'Alpha' mention in the dashboard
+ * The Options page opens as an inline popup
+ * Enhanced tab preview
+
 h3. 0.9.14
 
  * First browser interactions
+ * Creating a group as a result of a tab drop doesn't name the group by default any more
 
 h3. 0.9.13
 
