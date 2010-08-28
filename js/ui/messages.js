@@ -40,13 +40,15 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     $('#dashboard').append(group_ui);
   } else if(action == "update tab preview") {
     // update tab previews (& associated favicon)
-    var tab = request.tab;
-    var preview = request.preview;
-    var tabs_ui = $.groups().tabs().find(".url[url='"+tab.url+"']").parent();
-    tabs_ui.find('>.preview')
-      .removeClass('empty')
-      .attr('src', preview);
-    tabs_ui.find('>.favicon').attr('src','chrome://favicon/'+tab.url); //tab.favIconUrl
+    if(localStorage.feature_tab_preview=="true") {
+      var tab = request.tab;
+      var preview = request.preview;
+      var tabs_ui = $.groups().tabs().find(".url[url='"+tab.url+"']").parent();
+      tabs_ui.find('>.preview')
+        .removeClass('empty')
+        .attr('src', preview);
+      tabs_ui.find('>.favicon').attr('src','chrome://favicon/'+tab.url); //tab.favIconUrl
+    }
   } else if(action == "BI05") {
     // BI05 - Create a tab
     var gid = request.gid;
