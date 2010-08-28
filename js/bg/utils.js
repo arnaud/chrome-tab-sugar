@@ -111,6 +111,11 @@ function captureCurrentTab() {
   });
 }
 
+
+/**
+ * WINDOWS, TABS AND GROUPS
+ */
+
 // checks whether the group matches the window
 // @param exceptionTab: optional, a tab that is contained by the window but that
 // must not be part of the comparison

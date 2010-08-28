@@ -31,7 +31,14 @@
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   console.debug('Live interaction:', request.action, request);
   var action = request.action;
-  if(action == "update tab preview") {
+  if(action == "BI01") {
+    // BI01 - Create a group
+    var group = request.group;
+    // 5. The dashboard creates the corresponding group (and its tab)
+    var group = new SugarGroup(group);
+    var group_ui = group.ui_create();
+    $('#dashboard').append(group_ui);
+  } else if(action == "update tab preview") {
     // update tab previews
     var tab = request.tab;
     var preview = request.preview;

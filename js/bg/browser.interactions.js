@@ -28,7 +28,27 @@
  */
 
 // BI01 – Create a window
-//TODO
+chrome.windows.onCreated.addListener(function(window) {
+  console.debug('chrome.windows.onCreated', window);
+  track('Browser', 'Create a window', 'Create a window');
+  // 1. The user opens a new window
+  //&2. The browser sends a request to the background page
+  var wid = window.id;
+  // 3. The background page inserts the new group and its tab in the database
+  var group = new SugarGroup();
+  group.db_insert({
+    success: function() {
+      bindWindowToGroup(wid, group.id);
+      syncGroupsFromDb(function() {});
+      // 4. The background page sends a request to the dashboard
+      chrome.extension.sendRequest({action: "BI01", group: group});
+    },
+    error: function() {
+      console.error('OOOOPS');
+      chrome.extension.sendRequest({action: 'error', message: 'Error while inserting a group in the db [BI01]'});
+    }
+  });
+});
 
 // BI02 – Focus a window
 //TODO
@@ -42,7 +62,7 @@
 // BI05 – Create a tab
 chrome.tabs.onCreated.addListener(function(tab) {
   console.debug('chrome.tabs.onCreated', tab);
-  track('Sugar', 'Create a tab', 'Create a tab in a window');
+  track('Browser', 'Create a tab', 'Create a tab in a window');
   // 1. The user opens a new tab
   //&2. The browser sends a request to the background page
   var tab_backup = tab;
@@ -59,6 +79,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
       },
       error: function() {
         console.error('OOOOPS');
+      chrome.extension.sendRequest({action: 'error', message: 'Error while inserting a tab in the db [BI05]'});
       }
     });
   });
@@ -72,7 +93,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
 
 // BI08 – Close a tab
 chrome.tabs.onRemoved.addListener(function(tabId) {
-  // 1. The user opens a new tab
+  // 1. The user closes a tab
   console.debug('chrome.tabs.onRemoved', tabId);
   chrome.windows.getCurrent(function(window) {
     // 2. The browser sends a request to the background page
@@ -92,7 +113,6 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
       });
     });
   });
-  //TODO tabs.unshift(tab);
 });
 
 // BI09 – Select a tab
@@ -105,7 +125,7 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if(changeInfo.status == "complete") {
     console.debug('chrome.tabs.onUpdated', tab);
-    track('Sugar', 'Update a tab', 'Update a tab in a window');
+    track('Browser', 'Update a tab', 'Update a tab in a window');
     // 1. The user changes the URL of a tab, navigates through a link, browse the web
     //&2. The browser sends a request to the background page
     var tab_backup = tab;
@@ -129,6 +149,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
           },
           error: function() {
             console.error('OOOOPS');
+            chrome.extension.sendRequest({action: 'error', message: 'Error while updating a tab in the db [BI10]'});
           }
         });
       });
