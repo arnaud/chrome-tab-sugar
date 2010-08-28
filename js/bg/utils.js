@@ -66,25 +66,6 @@ function openDashboard() {
   });
 }
 
-// resizes an image to the desired size
-function resizeImage(url, width, height, callback) {
-  console.debug('resizeImage', url, width+'x'+height);
-  var sourceImage = new Image();
-  sourceImage.onload = function() {
-    // create a canvas with the desired dimensions
-    var canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-
-    // scale and draw the source image to the canvas
-    canvas.getContext("2d").drawImage(sourceImage, 0, 0, width, height);
-
-    // convert the canvas to a data URL in PNG format
-    callback(canvas.toDataURL());
-  }
-  sourceImage.src = url;
-}
-
 // captures the current tab as a 200px-width PNG snapshot
 function captureCurrentTab() {
   console.debug('captureCurrentTab');
@@ -92,15 +73,38 @@ function captureCurrentTab() {
     chrome.tabs.getSelected(null, function(tab) {
       //if(SugarTab.persistable(tab.url)) {
         chrome.tabs.captureVisibleTab(null, function (dataUrl) {
-          var factor = window.width / window.height;
-          var width = 500;
-          var height = Math.round(width / factor);
-          resizeImage(dataUrl, width, height, function(dataUrl) {
+          var sourceImage = new Image();
+          sourceImage.onload = function() {
+            // source
+            var sw = this.width;
+            var sh = this.height;
+            var s_scale = sw / sh;
+            // destination
+            var d_scale = 14 / 12;
+            var dw = 500;
+            var dh = Math.round( dw / d_scale );
+            // cropping
+            if(s_scale >= d_scale) {
+              sw = Math.round( sh * d_scale );
+            } else {
+              sh = Math.round( sw / d_scale );
+            }
+            // create a canvas with the desired dimensions
+            var canvas = document.createElement('canvas');
+            canvas.width = dw;
+            canvas.height = dh;
+            var ctx = canvas.getContext("2d");
+
+            // scale, crop and draw the source image to the canvas
+            ctx.drawImage(this, 0, 0, sw, sh, 0, 0, dw, dh);
+
+            // update the preview in the db
             var t = new SugarTab(tab);
             t.update_preview(dataUrl);
             // let's request the extension to update the preview accordingly
             chrome.extension.sendRequest({action: "update tab preview", tab: tab, preview: dataUrl});
-          });
+          }
+          sourceImage.src = dataUrl;
         });
       //}
     });
