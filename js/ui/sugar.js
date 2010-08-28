@@ -32,7 +32,6 @@ track('Sugar', 'Start', 'The dashboard starts');
 // keep a reference of the background page
 var back = chrome.extension.getBackgroundPage();
 
-
 /**
  * FUNCTIONS
  */
@@ -92,6 +91,9 @@ function hideMessage() {
  */
 
 $(function() {
+
+  // the Options page opens as a modal popup
+  $('#top .options').opensAsPopup();
 
   initUI();
 
