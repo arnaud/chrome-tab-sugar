@@ -39,12 +39,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var group_ui = group.ui_create();
     $('#dashboard').append(group_ui);
   } else if(action == "update tab preview") {
-    // update tab previews
+    // update tab previews (& associated favicon)
     var tab = request.tab;
     var preview = request.preview;
-    $.groups().tabs().find(".url[url='"+tab.url+"']").parent().find('>.preview')
+    var tabs_ui = $.groups().tabs().find(".url[url='"+tab.url+"']").parent();
+    tabs_ui.find('>.preview')
       .removeClass('empty')
       .attr('src', preview);
+    tabs_ui.find('>.favicon').attr('src','chrome://favicon/'+tab.url); //tab.favIconUrl
   } else if(action == "BI05") {
     // BI05 - Create a tab
     var gid = request.gid;
@@ -72,7 +74,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var tab_ui = $.findTab(gid, t);
     tab_ui.find('.title>span').html(t.title);
     tab_ui.find('.url').attr('url',t.url).html(t.url);
-    tab_ui.find('.favicon').html(t.favIconUrl);
+    tab_ui.find('.favicon').attr('src','chrome://favicon/'+t.url); //t.favIconUrl
     tab_ui.find('.preview').addClass('empty').attr('src','/ico/transparent.gif');
   } else if(action == "error") {
     var message = request.message;

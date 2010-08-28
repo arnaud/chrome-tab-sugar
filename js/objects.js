@@ -400,13 +400,17 @@ var SugarTab = new JS.Class({
   ui_create: function() {
     console.debug("Tab UI create");
     this.preview = localStorage['preview-'+this.url];
-    var preview;
+    var preview = $('<img>').addClass('preview');
     if(this.preview==null || localStorage.feature_tab_preview!="true") {
-      preview = '<img class="preview empty" />';
+      preview
+        .addClass('empty')
+        .css('background-image', 'url(chrome://favicon/'+this.url+'), url(/ico/blank_preview.png)');//url(banner_fresco.jpg) top 11px no-repeat
     } else {
-      preview = '<img class="preview" src="'+this.preview+'" />';
+      preview.attr('src',this.preview);
     }
-    return $('<li class="tab"><div>'+preview+'<img class="favicon" src="'+this.favIconUrl+'" /><span class="title"><span>'+this.title+'</span></span><span class="url" url="'+this.url+'">'+this.url+'</span><div class="close"></div></div></li>');
+    var tab = $('<li class="tab"><div><img class="favicon" src="'+this.favIconUrl+'" /><span class="title"><span>'+this.title+'</span></span><span class="url" url="'+this.url+'">'+this.url+'</span><div class="close"></div></div></li>');
+    tab.find('>div').prepend(preview);
+    return tab;
   },
 
   // CLASS METHODS

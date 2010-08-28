@@ -132,8 +132,10 @@ section>ul {
 }
 .tab .preview.empty{
   /*background: -webkit-gradient(linear, 0% 0%, 10% 100%, from(#fff), to(#cecece)) no-repeat;*/
-  background-image: url(/ico/blank_preview.png);
-  background-size: 112%;
+  background-image: url(), url(/ico/blank_preview.png);
+  background-size: 32px, 112%;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
   border: 0;
 }
 .tab .title {
