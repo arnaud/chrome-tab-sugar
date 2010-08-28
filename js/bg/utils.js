@@ -116,18 +116,11 @@ function captureCurrentTab() {
  * WINDOWS, TABS AND GROUPS
  */
 
-/*
-  Function: compareGroupAndWindow
-  Checks whether the group matches the window.
-  
-  Parameters:
-     group - The first integer.
-     window - The second integer.
-     exceptionTab - *Unused*. Optional, a tab that is contained by the 
-                   window but that must not be part of the comparison.
-*/
+// checks whether the group matches the window
+// @param exceptionTab: optional, a tab that is contained by the window but that
+// must not be part of the comparison
 function compareGroupAndWindow(group, window, exceptionTab) {
-  console.debug('compareGroupAndWindow', group, window);
+  //console.debug('compareGroupAndWindow', group, window);
   var tabs = window.tabs;
   var window_tabs = [];
   for(var t in tabs) {
@@ -142,29 +135,29 @@ function compareGroupAndWindow(group, window, exceptionTab) {
       //}
     //}
   }
-  console.debug('...has', window_tabs.length, 'tabs');
-  console.debug('...whereas the group has', group.tabs.length, 'tabs');
+  //console.debug('...has', window_tabs.length, 'tabs');
+  //console.debug('...whereas the group has', group.tabs.length, 'tabs');
   if(window_tabs.length == group.tabs.length) {
-    console.debug('=> OK!');
+    //console.debug('=> OK!');
     // 1st test is OK: the group and the window have the same tabs count
     var same_tabs = true;
     for(var t in window_tabs) {
       var wtab = window_tabs[t];
       var gtab = group.tabs[t];
-      console.debug(' tabs', '#'+t, wtab, gtab);
+      //console.debug(' tabs', '#'+t, wtab, gtab);
       same_tabs = wtab.url == gtab.url;
       if(!same_tabs) {
-        console.debug(' ... are not the same');
+        //console.debug(' ... are not the same');
         break;
       }
     }
     if(same_tabs) {
       // 2nd test is OK: the group tabs and the window tabs share the same characteristics
-      console.debug('===> OK!');
+      console.debug('Matching:', 'group', group, 'window', window);
       return true;
     }
   } else {
-    console.debug('=> KO');
+    //console.debug('=> KO');
     return false;
   }
 }
