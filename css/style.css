@@ -173,7 +173,7 @@ section>ul {
   display: none;
 }
 .tab:hover {
-  -webkit-transition: all .2s ease-out;
+  -webkit-transition: -webkit-box-shadow .2s ease-out;
 }
 .stacked_tabs_bg {
   position: absolute;
@@ -235,8 +235,9 @@ section>ul {
   padding: 2px;
   font-size: 12px;
   background: transparent;
-  border: none;
+  border: transparent;
   color: #777;
+  -webkit-transition: border-color .2s ease;
 }
 .group>.title:hover {
   border: 1px solid #ccc;
