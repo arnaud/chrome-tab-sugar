@@ -81,7 +81,7 @@ function captureCurrentTab() {
             var s_scale = sw / sh;
             // destination
             var d_scale = 14 / 12;
-            var dw = 500;
+            var dw = 400;
             var dh = Math.round( dw / d_scale );
             // cropping
             if(s_scale >= d_scale) {
