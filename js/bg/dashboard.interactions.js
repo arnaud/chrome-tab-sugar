@@ -393,12 +393,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             chrome.tabs.create({ windowId: window.id, index: index, url: tab.url, selected: false });
           }
         }
-        // update the windows and groups matches
-        setTimeout(matchWindowsAndGroups, 500);  // z
-        setTimeout(matchWindowsAndGroups, 1000); // O
-        setTimeout(matchWindowsAndGroups, 1500); // M
-        setTimeout(matchWindowsAndGroups, 3000); // G
-        setTimeout(matchWindowsAndGroups, 5000); // !
+        // bind the group to the new window
+        bindWindowToGroup(window, group);
       });
     });
   } else if(interaction == "DI11") {

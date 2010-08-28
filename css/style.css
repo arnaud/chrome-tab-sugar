@@ -137,6 +137,10 @@ section>ul {
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
   border: 0;
+  -webkit-transition: background-size .1s ease-out;
+}
+.tab:hover .preview.empty{
+  background-size: 40px, 112%;
 }
 .tab .title {
   height: 18px;
@@ -149,7 +153,7 @@ section>ul {
   font-size: 12px;
   white-space: nowrap;
   width: inherit;
-  position: absolute; /* needed for enabling overwlow */
+  position: absolute; /* needed for enabling overflow */
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
@@ -167,6 +171,9 @@ section>ul {
 }
 .tab .url {
   display: none;
+}
+.tab:hover {
+  -webkit-transition: all .2s ease-out;
 }
 .stacked_tabs_bg {
   position: absolute;
