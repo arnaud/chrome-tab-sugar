@@ -2,6 +2,14 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.16
+
+ * New interaction: Create a new tab from the dashboard
+ * Added some CSS transition effects
+ * Tab without previews show off their favicon more proudly
+ * Added a 'loading' icon when the extension isn't ready
+ * Better browser and dashboard interactions
+
 h3. 0.9.15
 
  * Better window/group matching
