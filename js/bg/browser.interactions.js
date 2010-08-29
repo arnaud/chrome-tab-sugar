@@ -47,12 +47,12 @@ chrome.windows.onCreated.addListener(function(window) {
   group.db_insert({
     success: function() {
       bindWindowToGroup(wid, group.id);
-      syncGroupsFromDb(function() {});
+      syncGroupsFromDb();
       // 4. The background page sends a request to the dashboard
       chrome.extension.sendRequest({action: "BI01", group: group});
     },
-    error: function() {
-      console.error('OOOOPS');
+    error: function(err) {
+      console.error('BI01 - Create a window', err);
       chrome.extension.sendRequest({action: 'error', message: 'Error while inserting a group in the db [BI01]'});
     }
   });
@@ -81,13 +81,13 @@ chrome.tabs.onCreated.addListener(function(tab) {
     tab.group_id = gid;
     tab.db_insert({
       success: function() {
-        syncGroupsFromDb(function() {});
+        syncGroupsFromDb();
         // 4. The background page sends a request to the dashboard
         chrome.extension.sendRequest({action: "BI05", gid: gid, tab: tab});
       },
-      error: function() {
-        console.error('OOOOPS');
-      chrome.extension.sendRequest({action: 'error', message: 'Error while inserting a tab in the db [BI05]'});
+      error: function(err) {
+        console.error('BI05 - Create a tab', err);
+        chrome.extension.sendRequest({action: 'error', message: 'Error while inserting a tab in the db [BI05]'});
       }
     });
   });
@@ -123,13 +123,30 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
           conditions: "`group_id`="+group.id+" AND `index`="+cur_tab.index,
           success: function() {
             console.warn('05', 'success');
-            // refresh the icebox and the groups
-            syncGroupsFromDb(function() {});
+            // decrement other tabs indexes for the same group
+            Storage.update({
+              table: "tabs",
+              conditions: "`group_id`="+gid+" AND `index`>"+index,
+              changes: {
+                raw_sql_index: "`index`-1"
+              },
+              success: function() {
+                // refresh the icebox and the groups
+                syncGroupsFromDb();
+              },
+              error: function() {
+                // having an error here doesn't mean this is wrong: it just means
+                // that the removed tab was the last one
+                
+                // refresh the icebox and the groups
+                syncGroupsFromDb();
+              }
+            });
             // 4. The background page sends a request to the dashboard
             chrome.extension.sendRequest({action: "BI08", gid: group.id, tab: cur_tab});
           },
-          error: function() {
-            console.error('BI08 - Close a tab');
+          error: function(err) {
+            console.error('BI08 - Close a tab', err);
             chrome.extension.sendRequest({action: 'error', message: 'Error while removing a tab from the db [BI08]'});
           }
         });
@@ -166,12 +183,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
             title: tab.title
           },
           success: function() {
-            syncGroupsFromDb(function() {});
+            syncGroupsFromDb();
             // 4. The background page sends a request to the dashboard
             chrome.extension.sendRequest({action: "BI10", gid: gid, tab: tab});
           },
-          error: function() {
-            console.error('OOOOPS');
+          error: function(err) {
+            console.error('BI10 - Update a tab', err);
             chrome.extension.sendRequest({action: 'error', message: 'Error while updating a tab in the db [BI10]'});
           }
         });

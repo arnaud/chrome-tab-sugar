@@ -116,7 +116,7 @@ var SugarGroup = new JS.Class({
       object: this,
       success: function() {
         localStorage.group_last_index++;
-        settings.success.call();
+        settings.success();
       },
       error: settings.error
     });
@@ -133,7 +133,7 @@ var SugarGroup = new JS.Class({
       changes: {key: val},
       success: function() {
         this[key] = val;
-        settings.success.call();
+        settings.success();
       },
       error: settings.error
     });
@@ -224,7 +224,7 @@ var SugarGroup = new JS.Class({
                     icebox.add_tab(tab, false);
                   }
                 }
-                settings.success.call();
+                settings.success();
               }
             });
           }
@@ -243,7 +243,7 @@ var SugarGroup = new JS.Class({
         success: function(tx ,rs) {
           console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" groups from db");
           if(rs.rows.length==0) {
-            settings.success.call();
+            settings.success();
             return;
           }
           for(var r=0; r<rs.rows.length; r++) {
@@ -269,7 +269,7 @@ var SugarGroup = new JS.Class({
                   }
                 }
                 if(last_group) {
-                  settings.success.call();
+                  settings.success();
                 }
               },
               error: settings.error
@@ -375,7 +375,7 @@ var SugarTab = new JS.Class({
       changes: {key: val},
       success: function() {
         this[key] = val;
-        settings.success.call();
+        settings.success();
       },
       error: settings.error
     });

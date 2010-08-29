@@ -337,7 +337,7 @@ function syncGroupsFromDb(callback) {
           // let the windows and groups make a match
           matchWindowsAndGroups();
           // do our little thing
-          callback();
+          if(callback) callback();
         }
       });
     }

@@ -104,7 +104,7 @@ makeDatabaseUpToDate({success: function() {
     });
   } else { // already initialized
     // let's sync with the db
-    syncGroupsFromDb(function() {});
+    syncGroupsFromDb();
     // if the 'latest updates' feature wasn't set, ever, then set it on by default
     var lu = localStorage.feature_latestupdates;
     if(lu != "true" && lu != "false") localStorage.feature_latestupdates = "true";

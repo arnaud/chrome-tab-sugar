@@ -66,7 +66,7 @@ var Storage = new JS.Class({
         tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT)");
         tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` (`url` TEXT UNIQUE, `preview` TEXT)");
         console.debug("Tab Sugar database is ready");
-        if(settings && settings.success) settings.success.call();
+        if(settings && settings.success) settings.success();
       });
     },
 
@@ -126,7 +126,7 @@ var Storage = new JS.Class({
           if(query.indexOf("INSERT")==0 || query.indexOf("UPDATE")==0) {
             if (!rs.rowsAffected) {
               console.error("An error occurred while querying the db (no rows affected)", rs);
-              if(error!=null) error.call();
+              if(error!=null) error(rs);
             } else {
               success(tx, rs);
             }
@@ -135,7 +135,7 @@ var Storage = new JS.Class({
           }
         }, function (tx, err) {
           console.error("An error occurred while querying the db", query, err);
-          if(error!=null) error.call();
+          if(error!=null) error(err);
         });
       });
     },
