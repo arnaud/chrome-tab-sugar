@@ -407,12 +407,22 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         bindWindowToGroup(window, group);
       });
     });
-    
+
   } else if(interaction == "DI11") {
     // DI11 – Open a single tab of a group
     var url = request.url;
     // 3. The background page sends a request to the browser to create a new window
     // with a single focused tab
     chrome.windows.create({ url: url });
+
+  } else if(interaction == "DI12") {
+    // DI12 - Create a new tab
+    var gid = request.gid;
+    // 3. The background page sends a request to the browser to create a new tab
+    // in the corresponding window, and focus it
+    getWindowFromGid(gid, function(window) {
+      var wid = window.id;
+      chrome.tabs.create({windowId: wid, url: 'chrome://newtab', selected: true});
+    });
   }
 });

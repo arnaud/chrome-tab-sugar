@@ -255,19 +255,19 @@ section>ul {
   content: "\00D7";
   text-shadow: 1px 1px 1px #fff;
 }
-.group .new_page {
-  display: none;
+.group .new_tab {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 16px;
   height: 16px;
   margin: 10px;
-  background: url(/ico/new_page.png) no-repeat;
+  background: url(/ico/new_tab.png) no-repeat;
   opacity: 0.2;
   cursor: pointer;
+  -webkit-transition: opacity .2s ease;
 }
-.group .new_page:hover {
+.group .new_tab:hover {
   opacity: 0.7;
 }
 .group .debug {

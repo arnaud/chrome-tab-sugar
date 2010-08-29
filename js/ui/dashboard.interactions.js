@@ -29,7 +29,7 @@
 $(function() {
   
   // tabs are draggable inside the dashboard
-  $('.tab').live("mouseover", function(e) {
+  $('.tab').live('mouseover', function(e) {
     console.debug('Event', 'tab mouseover', e);
     $('.tab').draggable({
       cursor: 'move',
@@ -45,7 +45,7 @@ $(function() {
   });
 
   // tabs are closeable
-  $('.tab .close').live("click", function(e) {
+  $('.tab .close').live('click', function(e) {
     console.debug('Event', 'tab close click', e);
     // DI09 – Close a tab
     track('Sugar', 'Close a tab');
@@ -95,14 +95,14 @@ $(function() {
   });
 
   // tabs are clickable
-  $('.tab').live("click", function(e) {
+  $('.tab').live('click', function(e) {
     console.debug('Event', 'tab click', e);
     if(!e.ctrlKey) {
       // DI10 – Open all tabs of a group
       var group_ui = $(this).group();
       track('Sugar', 'Click a tab', '', group_ui.tabs().length);
       // 1. The user clicks on a tab within a group (already done)
-      // 2. The dashboard sends a request to the background page
+      //&2. The dashboard sends a request to the background page
       var gid = group_ui.uid();
       if(gid=="icebox") gid = 0;
       var selected_tab = $(this);
@@ -119,7 +119,7 @@ $(function() {
       var group_ui = $(this).group();
       track('Sugar', 'Click a single tab', '', group_ui.tabs().length);
       // 1. The user ctrl+clicks on a tab within a group (already done)
-      // 2. The dashboard sends a request to the background page
+      //&2. The dashboard sends a request to the background page
       var tab_ui = $(this);
       var url = tab_ui.find('.url').html();
       chrome.extension.sendRequest({
@@ -129,6 +129,24 @@ $(function() {
       function(response) {
       });
     }
+  });
+
+  // new tabs can be created in groups
+  $('.new_tab').live('click', function(e) {
+    console.debug('Event', 'new tab', e);
+    var group_ui = $(this).parent();
+    track('Sugar', 'New tab', 'Create a new tab in a group', group_ui.tabs().length);
+    // DI12 – Create a new tab
+    // 1. The user clicks on the “new tab” icon of a group (already done)
+    //&2. The dashboard sends a request to the background page
+    var gid = group_ui.uid();
+    if(gid=="icebox") gid = 0;
+    chrome.extension.sendRequest({
+      action: 'DI12', // Create a new tab
+      gid: gid
+    },
+    function(response) {
+    });
   });
 
   if(localStorage.feature_snapgroups=="true") {
@@ -141,7 +159,7 @@ $(function() {
   }
 
   // groups are draggable, droppable and resizable
-  $('.group').live("mouseover", function(e) {
+  $('.group').live('mouseover', function(e) {
     console.debug('Event', 'group mouseover');
 
     // groups are draggable inside the dashboard
@@ -157,7 +175,7 @@ $(function() {
       },
       stop: function(ev, ui) {
         // 1. The user moves a group in the dashboard (already done)
-        // 2. The dashboard sends a request to the background page
+        //&2. The dashboard sends a request to the background page
         var gid = $(this).uid();
         if(gid=="icebox") gid = 0;
         var posX = $(this).position().left;
@@ -326,7 +344,7 @@ $(function() {
         // DI03 – Resize a group
         track('Sugar', 'Resize a group', '', $(this).tabs().length);
         // 1. The user resizes a group in the dashboard (already done)
-        // 2. The dashboard sends a request to the background page
+        //&2. The dashboard sends a request to the background page
         var gid = $(this).uid();
         if(gid=="icebox") gid = 0;
         var width = $(this).width();
@@ -353,7 +371,7 @@ $(function() {
     // DI02 – Rename a group
     track('Sugar', 'Rename a group', name, group.tabs().length);
     // 1. The user renames a group in the dashboard (already done)
-    // 2. The dashboard sends a request to the background page
+    //&2. The dashboard sends a request to the background page
     var gid = group.uid();
     chrome.extension.sendRequest({
       action: 'DI02', // Rename a group
@@ -369,12 +387,12 @@ $(function() {
     return name;
   }
   // group titles are editable
-  $('.group>.title').live("blur", function(e) {
+  $('.group>.title').live('blur', function(e) {
     var name = $(this).val();
     renameGroup($(this).parent(), name);
     return false;
   });
-  $('.group>.title').live("keypress", function(e) {
+  $('.group>.title').live('keypress', function(e) {
     console.debug('Event keypress', e);
     if(e.keyCode == 13) { // 'Enter' key
       $(this).blur();
@@ -383,7 +401,7 @@ $(function() {
   });
 
   // groups are closeable
-  $('.group>.close').live("click", function(e) {
+  $('.group>.close').live('click', function(e) {
     console.debug('Event', 'group close click', e);
     // DI04 – Close a group
     track('Sugar', 'Close a group', '', $(this).parent().tabs().length);
@@ -405,7 +423,7 @@ $(function() {
   });
 
   // stacked tabs can be fanned out
-  $('.fan_icon').live("click", function(e) {
+  $('.fan_icon').live('click', function(e) {
     console.debug('Event', 'group fan out click', e);
     var group = $(this).parent();
     track('Sugar', 'Fan out tabs', 'Fan out tabs of a group', group.tabs().length);
@@ -414,7 +432,7 @@ $(function() {
   });
 
   // fanned groups disappear when the mouse isn't hover anymore
-  $('.fangroup').live("mouseleave", function(e) {
+  $('.fangroup').live('mouseleave', function(e) {
     console.debug('Event', 'group fan out mouseleave', e);
     var group = $(this).parent();
     track('Sugar', 'Unfan out tabs', 'Unfan out tabs of a group', group.tabs().length);
@@ -422,7 +440,7 @@ $(function() {
   });
 
   // handle group creation with the mouse within the dashboard
-  $('#dashboard').live("mousedown", function(e) {
+  $('#dashboard').live('mousedown', function(e) {
     console.debug('Event', 'dashboard/group mousedown', e.currentTarget, e.pageX, e.pageY, e);
     // if there is already a group at this position, stop the event
     if($(this).isGroupAtPosition(e.pageX, e.pageY)) {

@@ -126,7 +126,7 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
             // decrement other tabs indexes for the same group
             Storage.update({
               table: "tabs",
-              conditions: "`group_id`="+gid+" AND `index`>"+index,
+              conditions: "`group_id`="+group.id+" AND `index`>"+cur_tab.index,
               changes: {
                 raw_sql_index: "`index`-1"
               },

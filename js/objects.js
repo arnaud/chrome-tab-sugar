@@ -168,7 +168,7 @@ var SugarGroup = new JS.Class({
       .css('top', this.posY+'px')
       .css('left', this.posX+'px')
       .append($('<ul></ul>'))
-      .append($('<div class="new_page" />'))
+      .append($('<div class="new_tab" />'))
       .append($('<div class="debug" />'))
       .append($('<div class="clear" />'));
     if(localStorage.feature_snapgroups=="true") {
