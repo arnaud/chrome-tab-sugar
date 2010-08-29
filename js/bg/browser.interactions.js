@@ -29,7 +29,7 @@
 
 // BI01 – Create a window
 chrome.windows.onCreated.addListener(function(window) {
-  console.debug('chrome.windows.onCreated', window);
+  console.warn('Live interaction:', 'BI01', window);
   track('Browser', 'Create a window', 'Create a window');
   // 1. The user opens a new window
   //&2. The browser sends a request to the background page
@@ -69,7 +69,7 @@ chrome.windows.onCreated.addListener(function(window) {
 
 // BI05 – Create a tab
 chrome.tabs.onCreated.addListener(function(tab) {
-  console.debug('chrome.tabs.onCreated', tab);
+  console.warn('Live interaction:', 'BI05', tab);
   track('Browser', 'Create a tab', 'Create a tab in a window');
   // 1. The user opens a new tab
   //&2. The browser sends a request to the background page
@@ -101,38 +101,53 @@ chrome.tabs.onCreated.addListener(function(tab) {
 
 // BI08 – Close a tab
 chrome.tabs.onRemoved.addListener(function(tabId) {
+  console.warn('Live interaction:', 'BI08', tabId);
+  track('Browser', 'Close a tab', 'Close a tab in a window');
   // 1. The user closes a tab
-  console.debug('chrome.tabs.onRemoved', tabId);
-  chrome.windows.getCurrent(function(window) {
-    // 2. The browser sends a request to the background page
-    getWidFromTid(tabId, function(wid, window) {
-      getGroupFromWid(wid, function(group) {
-        var cur_tab;
-        for(var t in group.tabs) {
-          var tab = group.tabs[t];
-          if(tab.url == tabId.url) {
-            cur_tab = tab;
-            break;
+  //&2. The browser sends a request to the background page
+  getWidFromTid(tabId, function(wid, window) {
+    console.warn('02', wid, window);
+    getGroupFromWid(wid, function(group) {
+      console.warn('03', group);
+      var diff = diffTabs(group.tabs, window.tabs);
+      console.debug('diff:', diff);
+      var cur_tab;
+      if(diff.length > 0) {
+        cur_tab = diff[0];
+      }
+      console.warn('04', cur_tab != null);
+      if(cur_tab != null) {
+        // 3. The background page deletes the corresponding tab from the database
+        Storage.remove({
+          table: "tabs",
+          conditions: "`group_id`="+group.id+" AND `index`="+cur_tab.index,
+          success: function() {
+            console.warn('05', 'success');
+            // refresh the icebox and the groups
+            syncGroupsFromDb(function() {});
+            // 4. The background page sends a request to the dashboard
+            chrome.extension.sendRequest({action: "BI08", gid: group.id, tab: cur_tab});
+          },
+          error: function() {
+            console.error('BI08 - Close a tab');
+            chrome.extension.sendRequest({action: 'error', message: 'Error while removing a tab from the db [BI08]'});
           }
-        }
-        if(cur_tab != null) {
-          chrome.extension.sendRequest({action: "B08", gid: group.id, tab: cur_tab});
-        }
-      });
+        });
+      }
     });
   });
 });
 
 // BI09 – Select a tab
 chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
-  console.debug('chrome.tabs.onSelectionChanged', tabId, selectInfo);
+  console.warn('Live interaction:', 'BI09', tabId, selectInfo);
   captureCurrentTab();
 });
 
 // BI10 – Update a tab
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if(changeInfo.status == "complete") {
-    console.debug('chrome.tabs.onUpdated', tab);
+  console.warn('Live interaction:', 'BI10', tabId, changeInfo, tab);
+  //if(changeInfo.status == "complete") {
     track('Browser', 'Update a tab', 'Update a tab in a window');
     // 1. The user changes the URL of a tab, navigates through a link, browse the web
     //&2. The browser sends a request to the background page
@@ -162,8 +177,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         });
       });
     });
-  }
+  //}
 });
 
 // BI11 – Click on the extension action button
-chrome.browserAction.onClicked.addListener(openDashboard);
+chrome.browserAction.onClicked.addListener(function() {
+  console.warn('Live interaction:', 'BI11');
+  openDashboard();
+});

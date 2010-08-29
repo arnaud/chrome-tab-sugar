@@ -218,16 +218,23 @@ function bindWindowToGroup(wid, gid) {
 }
 
 // let windows and groups match together
+// also keep a trace of tids and their matching gids
 function matchWindowsAndGroups(callback) {
   console.debug('matchWindowsAndGroups');
   chrome.windows.getAll({populate:true}, function(windows) {
     for(var w in windows) {
       var window = windows[w];
+      // match window/group
       for(var g in groups) {
         var group = groups[g];
         if(compareGroupAndWindow(group, window)) {
           bindWindowToGroup(window.id, group.id);
         }
+      }
+      // match tab/window
+      for(var t in window.tabs) {
+        var tab = window.tabs[t];
+        sessionStorage['t'+tab.id] = window.id;
       }
     }
     if(callback) callback();
@@ -261,6 +268,17 @@ function getTabFromTid(gid, index, callback) {
 
 // find the window a tab belongs to
 function getWidFromTid(tid, callback) {
+  console.debug('getWidFromTid', tid);
+  // 1. Look for the wid in the session storage, if it was stored in before
+  var wid = sessionStorage['t'+tid];
+  if(wid != null) {
+    wid = parseInt(wid);
+    getWindowWithTabs(wid, function(window) {
+      callback(wid, window);
+    });
+    return;
+  }
+  // 2. Look for the current windows
   chrome.windows.getAll({populate:true}, function(windows) {
     for(var w in windows) {
       var window = windows[w];
@@ -273,6 +291,37 @@ function getWidFromTid(tid, callback) {
       }
     }
   });
+}
+
+// compares two tabs
+function tabsIdentical(tab1, tab2) {
+  return tab1.url == tab2.url;// && tab1.index == tab2.index;
+}
+
+// look for the difference between two tabsets
+function diffTabs(gtabs, wtabs) {
+  var diff = [];
+  var gt = 0;
+  var max_gtabs = gtabs.length;
+  for(var wt in wtabs) {
+    var wtab = wtabs[wt];
+    var gtab = gtabs[gt];
+    if(!tabsIdentical(gtab, wtab)) {
+      diff.push(gtab);
+      wt--;
+    }
+    gt++;
+    if(parseInt(wt) == wtabs.length - 1 || gt > max_gtabs) {
+      // end of windows tabs
+      for(var i = parseInt(gt); i < gtabs.length; i++) {
+        // some group tabs left
+        gtab = gtabs[i];
+        diff.push(gtab);
+      }
+      break;
+    }
+  }
+  return diff;
 }
 
 // syncs the the 'icebox' and 'groups' variables with the ones from the database

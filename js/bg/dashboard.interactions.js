@@ -27,13 +27,16 @@
  */
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-  console.debug('Request', request.sender, request.action, request);
   var interaction = request.action;
+  console.warn('Live interaction:', interaction, request);
+
   if(interaction == "open") {
     openDashboard();
+
   } else if(request.action == "gimme the shortcut key") {
     // BI12 – Use the extension shortcut key
     sendResponse({shortcut_key: localStorage.shortcut_key});
+
   } else if(request.action == "gimme the tab preview") {
     // Get the preview of a tab
     var tab = request.tab;
@@ -72,6 +75,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while storing the group in the db'});
       }
     });
+
   } else if(interaction == "DI02") {
     // DI02 – Rename a group
     var gid = request.gid;
@@ -91,6 +95,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while renaming the group in the db'});
       }
     });
+
   } else if(interaction == "DI03") {
     // DI03 – Resize a group
     var gid = request.gid;
@@ -127,6 +132,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while updating the group sizes in the db'});
       }
     });
+
   } else if(interaction == "DI04") {
     // DI04 – Move a group
     var gid = request.gid;
@@ -163,6 +169,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
     });
+
   } else if(interaction == "DI05") {
     // DI05 – Close a group
     var gid = request.gid;
@@ -197,6 +204,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the group in the db'});
       }
     });
+
   } else if(interaction == "DI06") {
     // DI06 – Move a tab to the dashboard
     var src_tab = request.src_tab;
@@ -246,6 +254,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while creating the new group in the db'});
       }
     });
+
   } else if(interaction == "DI08") {
     // DI08 – Move a tab to an existing group
     var src_gid = request.src_gid;
@@ -298,6 +307,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       success: function() {},
       error: function() {}
     });
+
   } else if(interaction == "DI09") {
     // DI09 – Close a tab
     // 3. The background page sends a request to the browser to close the corresponding tab
@@ -353,6 +363,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the tab in the db'});
       }
     });
+
   } else if(interaction == "DI10") {
     // DI10 – Open all tabs of a group
     var gid = request.gid;
@@ -371,7 +382,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         // 3a. If the window already is open, let's show it
         for(var t in window.tabs) {
           var tab = window.tabs[t];
-          console.warn(focused_url, tab.url, tab.url == focused_url);
           if(tab.url == focused_url) {
             chrome.tabs.update(tab.id, {selected: true});
             break;
@@ -397,6 +407,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         bindWindowToGroup(window, group);
       });
     });
+    
   } else if(interaction == "DI11") {
     // DI11 – Open a single tab of a group
     var url = request.url;

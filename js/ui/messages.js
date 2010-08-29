@@ -29,16 +29,18 @@
 // live interactions to the dashboard which responds to actual browser events
 // see background.js for events requests sendings
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-  console.debug('Live interaction:', request.action, request);
-  var action = request.action;
-  if(action == "BI01") {
+  var interaction = request.action;
+  console.warn('Live interaction:', interaction, request);
+
+  if(interaction == "BI01") {
     // BI01 - Create a group
     var group = request.group;
     // 5. The dashboard creates the corresponding group (and its tab)
     var group = new SugarGroup(group);
     var group_ui = group.ui_create();
     $('#dashboard').append(group_ui);
-  } else if(action == "update tab preview") {
+
+  } else if(interaction == "update tab preview") {
     // update tab previews (& associated favicon)
     if(localStorage.feature_tab_preview=="true") {
       var tab = request.tab;
@@ -49,7 +51,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         .attr('src', preview);
       tabs_ui.find('>.favicon').attr('src','chrome://favicon/'+tab.url); //tab.favIconUrl
     }
-  } else if(action == "BI05") {
+
+  } else if(interaction == "BI05") {
     // BI05 - Create a tab
     var gid = request.gid;
     var tab = request.tab;
@@ -59,16 +62,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var group_ui = $.findGroup(gid);
     group_ui.addTab(tab_ui);
     group_ui.autoFitTabs();
-  } else if(action == "BI08") {
+
+  } else if(interaction == "BI08") {
     // BI08 - Close a tab
     var gid = request.gid;
     var tab = request.tab;
+    // 5. The dashboard hides and deletes the corresponding tab
     var t = new SugarTab(tab);
     var tab_ui = $.findTab(gid, t);
-    var group_ui = $.findGroup(gid);
+    var group_ui = tab_ui.group();
+    tab_ui.remove();
     tab_ui.hide();
     group_ui.autoFitTabs();
-  } else if(action == "BI10") {
+
+  } else if(interaction == "BI10") {
     // BI10 - Update a tab
     var gid = request.gid;
     var tab = request.tab;
@@ -78,7 +85,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     tab_ui.find('.url').attr('url',t.url).html(t.url);
     tab_ui.find('.favicon').attr('src','chrome://favicon/'+t.url); //t.favIconUrl
     tab_ui.find('.preview').addClass('empty').attr('src','/ico/transparent.gif');
-  } else if(action == "error") {
+
+  } else if(interaction == "error") {
     var message = request.message;
     showMessage('Oops! '+message);
   }
