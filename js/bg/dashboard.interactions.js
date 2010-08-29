@@ -421,8 +421,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     // 3. The background page sends a request to the browser to create a new tab
     // in the corresponding window, and focus it
     getWindowFromGid(gid, function(window) {
+      // the window is already opened, let's add a tab, shall we?
       var wid = window.id;
       chrome.tabs.create({windowId: wid, url: 'chrome://newtab', selected: true});
+    }, function() {
+      // if the window doesn't exist yet, let's create it
+      chrome.windows.create({url: 'chrome://newtab'});
     });
   }
 });
