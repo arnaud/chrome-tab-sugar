@@ -24,6 +24,9 @@
 
 track('Background', 'Start', 'The extension starts');
 
+// show a loading icon as the browser action icon
+chrome.browserAction.setIcon({path: '/ico/browser_action_loading.png'});
+
 // disable console debugs when the developer mode is off
 if(localStorage.debug != "true") {
   console.debug = function() {}
@@ -95,6 +98,8 @@ makeDatabaseUpToDate({success: function() {
                 }
                 // let the windows and groups make a match
                 matchWindowsAndGroups();
+                // show the normal browser action icon
+                chrome.browserAction.setIcon({path: '/ico/browser_action.png'});
                 track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
               });
             });
@@ -108,6 +113,8 @@ makeDatabaseUpToDate({success: function() {
     // if the 'latest updates' feature wasn't set, ever, then set it on by default
     var lu = localStorage.feature_latestupdates;
     if(lu != "true" && lu != "false") localStorage.feature_latestupdates = "true";
+    // show the normal browser action icon
+    chrome.browserAction.setIcon({path: '/ico/browser_action.png'});
     // features tracking
     track('Background', 'Developer traces', '', localStorage.debug=="true");
     track('Background', 'Tab preview feature', '', localStorage.feature_tab_preview=="true");

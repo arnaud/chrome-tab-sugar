@@ -8,7 +8,7 @@
     "128": "ico/128.png"
   },
   "browser_action": {
-    "default_icon": "ico/browser_action.png",
+    "default_icon": "ico/browser_action_loading.png",
     "default_title": "Tab Sugar"
   },
   "content_scripts": [
