@@ -86,7 +86,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       conditions: "`id`="+gid,
       changes: {name: name},
       success: function() {
-        // refresh the icebox and the groups
+        // refresh the groups
         syncGroupsFromDb(function() {
           sendResponse({status: "OK"});
         });
@@ -110,20 +110,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         height: height
       },
       success: function() {
-        // update the right group in the groups array
-        /*if(gid==0) {
-          icebox.width = width;
-          icebox.height = height;
-        } else {
-          for(var g in groups) {
-            var group = groups[g];
-            if(group.id == gid) {
-              group.width = width;
-              group.height = height;
-            }
-          }
-        }*/
-        // refresh the icebox and the groups
+        // refresh the groups
         syncGroupsFromDb(function() {
           sendResponse({status: "OK"});
         });
@@ -147,20 +134,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         posY: posY
       },
       success: function() {
-        // update the icebox or the right group in the groups array
-        /*if(gid==0) {
-          icebox.posX = posX;
-          icebox.posY = posY;
-        } else {
-          for(var g in groups) {
-            var group = groups[g];
-            if(group.id == gid) {
-              group.posX = posX;
-              group.posY = posY;
-            }
-          }
-        }*/
-        // refresh the icebox and the groups
+        // refresh the groups
         syncGroupsFromDb(function() {
           sendResponse({status: "OK"});
         });
@@ -187,13 +161,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
           table: "tabs",
           conditions: "`group_id`="+gid,
           success: function() {
-            // refresh the icebox and the groups
+            // refresh the groups
             syncGroupsFromDb(function() {
               sendResponse({status: "OK"});
             });
           },
           error: function() {
-            // refresh the icebox and the groups
+            // refresh the groups
             syncGroupsFromDb(function() {
               sendResponse({status: "OK"});
             });
@@ -288,7 +262,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         index: dest_index
       },
       success: function() {
-        // refresh the icebox and the groups
+        // refresh the groups
         syncGroupsFromDb(function() {
           sendResponse({status: "OK"});
         });
@@ -330,7 +304,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             raw_sql_index: "`index`-1"
           },
           success: function() {
-            // refresh the icebox and the groups
+            // refresh the groups
             syncGroupsFromDb(function() {
               sendResponse({status: "OK"});
             });
@@ -339,7 +313,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             // having an error here doesn't mean this is wrong: it just means
             // that the removed tab was the last one
             
-            // refresh the icebox and the groups
+            // refresh the groups
             syncGroupsFromDb(function() {
               sendResponse({status: "OK"});
             });
@@ -370,7 +344,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var focused_url = request.focused_url;
     // 3. The background page sends a request to the browser to create a new window
     // with all the group tabs, and to focus the clicked tab
-    var group = icebox;
+    var group;
     if(gid > 0) {
       for(var g in groups) {
         group = groups[g];

@@ -131,14 +131,14 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
                 raw_sql_index: "`index`-1"
               },
               success: function() {
-                // refresh the icebox and the groups
+                // refresh the groups
                 syncGroupsFromDb();
               },
               error: function() {
                 // having an error here doesn't mean this is wrong: it just means
                 // that the removed tab was the last one
                 
-                // refresh the icebox and the groups
+                // refresh the groups
                 syncGroupsFromDb();
               }
             });

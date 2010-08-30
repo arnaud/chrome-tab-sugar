@@ -286,7 +286,7 @@
     var uid = null;
     if(this.isGroup()) {
       uid = this.attr('id').replace('group-','');
-      if(uid!="icebox") uid = parseInt(uid);
+      uid = parseInt(uid);
     } else if(this.isTab()) {
       uid = this.attr('id');
     } else {
@@ -332,7 +332,6 @@
 
   // find a group by its group id
   $.findGroup = function(gid) {
-    if(gid==0) return $('#icebox');
     return $('#group-'+gid);
   },
 

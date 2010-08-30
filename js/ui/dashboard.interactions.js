@@ -60,7 +60,6 @@ $(function() {
 
     // 2. The dashboard sends a request to the background page
     var gid = tab_ui.group().uid();
-    if(gid=="icebox") gid = 0;
     var index = tab_ui.indexWithinParent();
     chrome.extension.sendRequest({
       action: 'DI09', // Close a tab
@@ -104,7 +103,6 @@ $(function() {
       // 1. The user clicks on a tab within a group (already done)
       //&2. The dashboard sends a request to the background page
       var gid = group_ui.uid();
-      if(gid=="icebox") gid = 0;
       var selected_tab = $(this);
       var focused_url = selected_tab.find('.url').html();
       chrome.extension.sendRequest({
@@ -140,7 +138,6 @@ $(function() {
     // 1. The user clicks on the “new tab” icon of a group (already done)
     //&2. The dashboard sends a request to the background page
     var gid = group_ui.uid();
-    if(gid=="icebox") gid = 0;
     chrome.extension.sendRequest({
       action: 'DI12', // Create a new tab
       gid: gid
@@ -148,15 +145,6 @@ $(function() {
     function(response) {
     });
   });
-
-  if(localStorage.feature_snapgroups=="true") {
-    $('#icebox')
-      .append($('<div class="snapper main"></div>'))
-      .append($('<div class="snapper top"></div>'))
-      .append($('<div class="snapper left"></div>'))
-      .append($('<div class="snapper right"></div>'))
-      .append($('<div class="snapper bottom"></div>'));
-  }
 
   // groups are draggable, droppable and resizable
   $('.group').live('mouseover', function(e) {
@@ -177,7 +165,6 @@ $(function() {
         // 1. The user moves a group in the dashboard (already done)
         //&2. The dashboard sends a request to the background page
         var gid = $(this).uid();
-        if(gid=="icebox") gid = 0;
         var posX = $(this).position().left;
         var posY = $(this).position().top;
         chrome.extension.sendRequest({
@@ -205,9 +192,7 @@ $(function() {
         var src_group_ui = $(tab_ui).group();
         var dest_group_ui = $(this);
         var src_group_id = src_group_ui.uid();
-        if(src_group_id=="icebox") src_group_id = 0;
         var dest_group_id = dest_group_ui.uid();
-        if(dest_group_id=="icebox") dest_group_id = 0;
         console.debug(src_group_ui, dest_group_ui);
         if(src_group_ui.get(0) == dest_group_ui.get(0)) {
           return false;
@@ -259,7 +244,6 @@ $(function() {
           // db
           var group_id = old_group_ui.uid();
           var index = JSON.parse(tab_ui.attr('obj')).index;
-          if(group_id=="icebox") group_id = 0;
           var tab = new SugarTab({group_id: group_id, index: index});
           group_id = new_group_ui.uid();
           index = new_group_ui.tabs().length;
@@ -346,7 +330,6 @@ $(function() {
         // 1. The user resizes a group in the dashboard (already done)
         //&2. The dashboard sends a request to the background page
         var gid = $(this).uid();
-        if(gid=="icebox") gid = 0;
         var width = $(this).width();
         var height = $(this).height();
         chrome.extension.sendRequest({
@@ -468,7 +451,7 @@ $(function() {
   // get rid of any group mousemove events on mouseup
   $('#dashboard').mouseup(function(e){
     console.debug('Event', 'dashboard mouseup', e.pageX, e.pageY, e);
-    $('.group', this).not('#icebox').unbind('mousemove');
+    $('.group', this).unbind('mousemove');
   });
 });
 

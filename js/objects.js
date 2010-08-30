@@ -187,11 +187,7 @@ var SugarGroup = new JS.Class({
 
   ui_get: function() {
     console.debug("Group UI get");
-    if(this.id=="icebox") {
-      return $('#icebox ul');
-    } else {
-      return $('#group-'+this.id+' ul');
-    }
+    return $('#group-'+this.id+' ul');
   },
 
   // class methods
@@ -202,36 +198,6 @@ var SugarGroup = new JS.Class({
       console.warn("TODO");
     },
 
-    // loads the icebox
-    load_icebox: function(settings) {
-      console.debug("Group load_icebox", settings);
-      if(settings == null) settings = {};
-      Storage.select({
-        table: "groups",
-        conditions: "`id`=0",
-        success: function(tx ,rs) {
-          if (rs.rows && rs.rows.length == 1) {
-            var icebox_item = rs.rows.item(0);
-            icebox = new SugarGroup(icebox_item);
-            Storage.select({
-              table: "tabs",
-              conditions: "`group_id`=0 ORDER BY `index` ASC",
-              success: function(tx, rs) {
-                if (rs.rows && rs.rows.length) {
-                  for (var j = 0; j < rs.rows.length; j++) {
-                    var tab_item = rs.rows.item(j);
-                    var tab = new SugarTab(tab_item);
-                    icebox.add_tab(tab, false);
-                  }
-                }
-                settings.success();
-              }
-            });
-          }
-        }
-      });
-    },
-
     // loads all groups
     load_groups: function(settings) {
       console.debug("Group load_groups", settings);
@@ -239,7 +205,7 @@ var SugarGroup = new JS.Class({
       groups = [];
       Storage.select({
         table: "groups",
-        conditions: "`id`<>0 ORDER BY `id` ASC",
+        conditions: "1=1 ORDER BY `id` ASC",
         success: function(tx ,rs) {
           console.debug("Loading "+(rs.rows ? rs.rows.length : 0)+" groups from db");
           if(rs.rows.length==0) {

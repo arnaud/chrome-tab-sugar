@@ -37,7 +37,6 @@ if(localStorage.shortcut_key!=null) {
   chrome.browserAction.setTitle({title: "Tab Sugar ("+localStorage.shortcut_key+")"});
 }
 
-var icebox;
 var groups = [];
 
 
@@ -55,55 +54,50 @@ makeDatabaseUpToDate({success: function() {
     // initialize the database
     Storage.init({
       success: function() {
-        // load the icebox
-        SugarGroup.load_icebox({
-          success: function(rs) {
-            // the extension has been initialized with all the already opened tabs
-            localStorage.initialized = "true";
-            // tab preview feature is ON by default
-            localStorage.feature_tab_preview = "true";
-            // tabs resizing feature is ON by default
-            localStorage.feature_autoresize = "true";
-            // snap groups feature is OFF by default
-            localStorage.feature_snapgroups = "false";
-            // latest updates feature is ON by default
-            localStorage.feature_latestupdates = "true";
-            // the next group will be identified as "group 1"
-            localStorage.group_last_index = 0;
-            // initialize the extension by listing all the tabs of all the windows
-            chrome.windows.getAll({populate:true}, function (windows) {
-              console.debug('chrome.windows.getAll', windows);
-              chrome.windows.getCurrent(function(current_window) {
-                var gid = 1;
-                for(var w in windows) {
-                  var group = icebox;
-                  if(current_window.id != w.id) {
-                    group = new SugarGroup({id: gid, width: 400, height: 150, posX: 0, posY: 18+gid*180});
-                  }
-                  var tabs = windows[w].tabs;
-                  for(var t in tabs) {
-                    var tab = tabs[t];
-                    //if(SugarTab.persistable(tab.url)) {
-                      var tab = new SugarTab(tab);
-                      group.add_tab(tab, true);
-                    //}
-                  }
-                  if(current_window.id != w.id && group.tabs.length > 0) {
-                    group.db_insert({
-                      success: function() {}
-                    });
-                    groups.push(group);
-                    gid++;
-                  }
-                }
-                // let the windows and groups make a match
-                matchWindowsAndGroups();
-                // show the normal browser action icon
-                chrome.browserAction.setIcon({path: '/ico/browser_action.png'});
-                track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs', icebox.tabs.length);
-              });
-            });
-          }
+        // the extension has been initialized with all the already opened tabs
+        localStorage.initialized = "true";
+        // tab preview feature is ON by default
+        localStorage.feature_tab_preview = "true";
+        // tabs resizing feature is ON by default
+        localStorage.feature_autoresize = "true";
+        // snap groups feature is OFF by default
+        localStorage.feature_snapgroups = "false";
+        // latest updates feature is ON by default
+        localStorage.feature_latestupdates = "true";
+        // the next group will be identified as "group 1"
+        localStorage.group_last_index = 0;
+        // initialize the extension by listing all the tabs of all the windows
+        chrome.windows.getAll({populate:true}, function (windows) {
+          console.debug('chrome.windows.getAll', windows);
+          chrome.windows.getCurrent(function(current_window) {
+            var gid = 1;
+            for(var w in windows) {
+              var group;
+              if(current_window.id != w.id) {
+                group = new SugarGroup({id: gid, width: 400, height: 150, posX: 0, posY: 17+(gid-1)*180});
+              }
+              var tabs = windows[w].tabs;
+              for(var t in tabs) {
+                var tab = tabs[t];
+                //if(SugarTab.persistable(tab.url)) {
+                  var tab = new SugarTab(tab);
+                  group.add_tab(tab, true);
+                //}
+              }
+              if(current_window.id != w.id && group.tabs.length > 0) {
+                group.db_insert({
+                  success: function() {}
+                });
+                groups.push(group);
+                gid++;
+              }
+            }
+            // let the windows and groups make a match
+            matchWindowsAndGroups();
+            // show the normal browser action icon
+            chrome.browserAction.setIcon({path: '/ico/browser_action.png'});
+            track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs');
+          });
         });
       }
     });

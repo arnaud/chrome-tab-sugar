@@ -324,22 +324,16 @@ function diffTabs(gtabs, wtabs) {
   return diff;
 }
 
-// syncs the the 'icebox' and 'groups' variables with the ones from the database
+// syncs the the 'groups' variable with the ones from the database
 function syncGroupsFromDb(callback) {
   console.debug('SYNC');
-  icebox = null;
   groups = [];
-  SugarGroup.load_icebox({
-    success: function(rs) {
-      // load the other groups
-      SugarGroup.load_groups({
-        success: function() {
-          // let the windows and groups make a match
-          matchWindowsAndGroups();
-          // do our little thing
-          if(callback) callback();
-        }
-      });
+  SugarGroup.load_groups({
+    success: function() {
+      // let the windows and groups make a match
+      matchWindowsAndGroups();
+      // do our little thing
+      if(callback) callback();
     }
   });
 }

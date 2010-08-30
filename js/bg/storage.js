@@ -62,7 +62,6 @@ var Storage = new JS.Class({
       var storage = new Storage();
       storage.db.transaction(function(tx) {
         tx.executeSql("CREATE TABLE IF NOT EXISTS `groups` (`id` REAL UNIQUE, `name` TEXT, `posX` REAL, `posY` REAL, `width` REAL, `height` REAL)");
-        tx.executeSql("INSERT INTO `groups` (`id`,`name`,`width`,`height`,`posX`,`posY`) VALUES (0,'icebox',586,150,0,17)");
         tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT)");
         tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` (`url` TEXT UNIQUE, `preview` TEXT)");
         console.debug("Tab Sugar database is ready");

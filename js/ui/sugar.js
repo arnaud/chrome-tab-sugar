@@ -36,33 +36,17 @@ var back = chrome.extension.getBackgroundPage();
  * FUNCTIONS
  */
 
-// initializes the dashboard with the icebox and groups
+// initializes the dashboard with the groups
 function initUI() {
-  var ice = back.icebox;
+  var groups = back.groups;
   // handle the situation where Tab Sugar isn't ready: the background page didn't do its work
-  if(ice==null) {
+  if(groups==null) {
     //showMessage('Tab Sugar isn\'t ready to rock just now. Please either reload the extension or restart Chrome.');
     chrome.extension.getBackgroundPage().location.reload();
     setTimeout(function() { this.location.reload() }, 500);
     return;
   }
-  // update the icebox
-  $('#icebox')
-    .width(ice.width)
-    .height(ice.height)
-    .css('position', 'absolute')
-    .css('top', ice.posY)
-    .css('left', ice.posX)
-    .show();
-  for(var t in ice.tabs) {
-    var tab = ice.tabs[t];
-    $('#icebox').addTab( tab.ui_create() );
-    chrome.extension.sendRequest({action: 'gimme the tab preview', tab: tab});
-  }
-  $('#icebox').autoFitTabs();
-
   // update the groups
-  var groups = back.groups;
   for(var g in groups) {
     var group = groups[g];
     var group_ui = group.ui_create();
