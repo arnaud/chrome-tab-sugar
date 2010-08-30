@@ -2,6 +2,10 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.17
+
+ * Death of the icebox, this unnameable/uncloseable initial group
+
 h3. 0.9.16
 
  * New interaction: Create a new tab from the dashboard
