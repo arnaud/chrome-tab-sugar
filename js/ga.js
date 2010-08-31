@@ -43,6 +43,12 @@ function track(category, action, label, value) {
       array.push(value);
     }
   }
-  console.debug("Tracking", array);
-  _gaq.push(array);
+  // fixes #5 (temporary solution because of the chromium issue #43400)
+  // http://code.google.com/p/chromium/issues/detail?id=43400
+  var os = $.client.os;
+  var activate_debug = os == 'Windows';
+  console.debug('Tracking', activate_debug, 'for '+os, array);
+  if(activate_debug) {
+    _gaq.push(array);
+  }
 }
