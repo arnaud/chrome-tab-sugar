@@ -46,6 +46,19 @@ var groups = [];
 
 // At first execution of Tab Sugar...
 
+// check if the version has changed
+var currVersion = getVersion();
+var prevVersion = localStorage['version']
+if (currVersion != prevVersion) {
+  // check if we just installed this extension
+  if (typeof(prevVersion) == 'undefined') {
+    track('Background', 'Install', 'First installation');
+  } else {
+    track('Background', 'Install', 'Update from '+prevVersion+' to '+currVersion);
+  }
+  localStorage['version'] = currVersion;
+}
+
 // check wether the database version is up-to-date
 makeDatabaseUpToDate({success: function() {
   // the database schema are now up-to-date
