@@ -355,7 +355,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       // 3b. If the window isn't open anymore, let's recreate it
       // but before, let's remember that the window that is going to create
       // won't have to be considered as a "new window"
-      localStorage.new_window_from_dashboard = true;
+      sessionStorage.new_window_from_dashboard = true;
       var tabs = group.tabs;
       chrome.windows.create({ url: focused_url }, function(window) {
         // with all its tabs
@@ -379,7 +379,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     // with a single focused tab
     // but before, let's remember that the window that is going to create
     // won't have to be considered as a "new window"
-    localStorage.new_window_from_dashboard = true;
+    sessionStorage.new_window_from_dashboard = true;
     chrome.windows.create({ url: url });
 
   } else if(interaction == "DI12") {
@@ -394,7 +394,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       chrome.tabs.create({windowId: wid, url: focused_url, selected: true});
     }, function() {
       // 3b. the window doesn't exist yet, let's create it
-      localStorage.new_window_from_dashboard = true;
+      sessionStorage.new_window_from_dashboard = true;
       var group = getGroupFromGid(gid);
       var tabs = group.tabs;
       chrome.windows.create({ url: focused_url }, function(window) {
