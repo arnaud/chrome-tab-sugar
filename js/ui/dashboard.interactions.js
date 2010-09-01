@@ -69,26 +69,6 @@ $(function() {
     function(response) {
     });
 
-    // when grabbing the last tab of a group, the initial group should disappear if empty
-    /*var old_group = $(tab).group();
-    var nb_tabs_in_old_group = old_group.tabs().not(tab).length;
-    if(nb_tabs_in_old_group == 0) {
-      // visually
-      group.fadeOut(function() {
-        $(this).remove();
-      });
-      // in the db
-      var id = group.uid();
-      var group = new SugarGroup({id: id});
-      group.db_delete({
-        success: function(rs) {}
-      });
-
-    // if the source group still has tabs, let's resize'em all
-    } else {
-      old_group.autoFitTabs();
-    }*/
-
     // prevent the tab clicking event to activate
     return false;
   });
@@ -217,52 +197,6 @@ $(function() {
           },
           function(response) {
           });
-
-          // when grabbing the last tab of a group, the initial group should disappear if empty
-          /*var nb_tabs_in_old_group = old_group_ui.tabs().not(tab_ui).length;
-          if(nb_tabs_in_old_group == 0) {
-            // visually
-            old_group_ui.fadeOut(function() {
-              $(this).remove();
-            });
-            // in the db
-            var id = old_group_ui.uid();
-            var old_group = new SugarGroup({id: id});
-            old_group.db_delete({
-              success: function(rs) {
-                console.debug('Removal of group was succesful', rs);
-              }
-            });
-
-          // if the source group still has tabs, let's resize'em all
-          } else {
-            old_group_ui.autoFitTabs();
-          }*/
-
-          /*old_group_ui.autoFitTabs();
-          new_group_ui.addTab(tab_ui);
-          // db
-          var group_id = old_group_ui.uid();
-          var index = JSON.parse(tab_ui.attr('obj')).index;
-          var tab = new SugarTab({group_id: group_id, index: index});
-          group_id = new_group_ui.uid();
-          index = new_group_ui.tabs().length;
-          tab.db_update({
-            key: 'group_id',
-            val: group_id,
-            success: function(rs) {
-              tab.db_update(
-                key: 'index',
-                val: index,
-                success: function(rs) {
-                  // visual
-                  tab_ui.css('top',0).css('left',0);
-                  tab_ui.show();
-                  new_group_ui.autoFitTabs();
-                }
-              });
-            }
-          });*/
         });
       }
     });

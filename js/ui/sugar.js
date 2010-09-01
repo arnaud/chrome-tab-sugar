@@ -69,6 +69,42 @@ function hideMessage() {
   $('#message').hide('clip');
 }
 
+// displays the 'latest updates' section in the dashboard
+function showLatestUpdates() {
+  $(document).ready(function() {
+      var title = $('<p>').addClass('title').html('lastest updates');
+      $('#updates').append(title);
+  });
+  new TWTR.Widget({
+    version: 2,
+    type: 'profile',
+    rpp: 4,
+    interval: 6000,
+    width: 250,
+    height: 300,
+    theme: {
+      shell: {
+        background: 'transparent',
+        color: '#ffffff'
+      },
+      tweets: {
+        background: 'transparent',
+        color: '#ffffff',
+        links: '#ffffff'
+      }
+    },
+    features: {
+      scrollbar: false,
+      loop: false,
+      live: false,
+      hashtags: false,
+      timestamp: true,
+      avatars: false,
+      behavior: 'all'
+    }
+  }).render().setUser('tabsugar').start();
+}
+
 
 /**
  * UI INITIALIZATION

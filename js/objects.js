@@ -48,13 +48,6 @@ var SugarGroup = new JS.Class({
     this.height = item.height;
     if(!this.height) this.height = 0;
     this.tabs = [];
-    //if(item.tabs) {
-    //  for(var t in item.tabs) {
-    //    var tab = item.tabs[tab];
-    //    var tab = new SugarTab(tab);
-    //    this.tabs.push(tab);
-    //  }
-    //}
   },
 
   to_s: function() {
@@ -277,8 +270,6 @@ var SugarTab = new JS.Class({
     this.url = item.url;
     this.favIconUrl = item.favIconUrl;
     if(!this.favIconUrl) this.favIconUrl = "ico/blank_preview.png";
-    //this.active = item.active;
-    //if(typeof(this.active)!="boolean") this.active = item.selected;
   },
 
   to_s: function() {
@@ -309,12 +300,6 @@ var SugarTab = new JS.Class({
         });
       }
     });
-    /*this.db_update("preview", preview, {
-      success: function(rs) {
-        console.debug("Tab update was successfull", rs);
-      }
-    });*/
-    //localStorage["preview-"+this.url] = preview;
   },
 
   // PERSISTABLE methods
