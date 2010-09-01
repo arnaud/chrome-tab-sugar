@@ -366,6 +366,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       }
     }, function() {
       // 3b. If the window isn't open anymore, let's recreate it
+      // but before, let's remember that the window that is going to create
+      // won't have to be considered as a "new window"
+      localStorage.new_window_from_dashboard = true;
       var tabs = group.tabs;
       chrome.windows.create({ url: focused_url }, function(window) {
         // with all its tabs
@@ -387,6 +390,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var url = request.url;
     // 3. The background page sends a request to the browser to create a new window
     // with a single focused tab
+    // but before, let's remember that the window that is going to create
+    // won't have to be considered as a "new window"
+    localStorage.new_window_from_dashboard = true;
     chrome.windows.create({ url: url });
 
   } else if(interaction == "DI12") {

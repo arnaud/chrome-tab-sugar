@@ -31,6 +31,11 @@
 chrome.windows.onCreated.addListener(function(window) {
   console.warn('Live interaction:', 'BI01', window);
   track('Browser', 'Create a window', 'Create a window');
+  // handle when a window is created because of a dashboard interaction
+  if(localStorage.new_window_from_dashboard == "true") {
+    localStorage.new_window_from_dashboard = false;
+    return;
+  }
   // 1. The user opens a new window
   //&2. The browser sends a request to the background page
   var wid = window.id;
