@@ -2,6 +2,11 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.19
+
+ * Prevent groups from being created after clicking on a tab from within an existing group
+ * Added a "groups cleaning" feature to get rid of the empty unnamed groups
+
 h3. 0.9.18
 
  * Fixed the OS-X issue for those folks that couldn't make Tab Sugar work at all on their computer
