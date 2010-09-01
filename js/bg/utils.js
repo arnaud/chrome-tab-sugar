@@ -196,13 +196,8 @@ function getGroupFromWid(wid, callback) {
     console.warn('Group not found for window #'+wid);
     return;
   }
-  for(var g in groups) {
-    var group = groups[g];
-    if(group.id == gid) {
-      callback(group);
-      break;
-    }
-  }
+  var group = getGroupFromGid(gid);
+  if(group!=null) callback(group);
 }
 
 // finds out which window corresponds to a group id
@@ -271,7 +266,7 @@ function getTabFromTid(gid, index, callback) {
     if(tab_found) {
       callback(window, tab);
     } else {
-      console.error('Couldn\'t find a match for the tab', gid, index)
+      console.error('Couldn\'t find a match for the tab', gid, index);
     }
   });
 }
@@ -301,6 +296,19 @@ function getWidFromTid(tid, callback) {
       }
     }
   });
+}
+
+// find a group by its id
+function getGroupFromGid(gid) {
+  console.debug('getGroupFromGid', gid);
+  for(var g in groups) {
+    var group = groups[g];
+    if(group.id == gid) {
+      return group;
+    }
+  }
+  console.error('Couldn\'t find the group', gid);
+  return null;
 }
 
 // compares two tabs

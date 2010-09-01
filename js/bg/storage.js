@@ -69,8 +69,6 @@ var Storage = new JS.Class({
       });
     },
 
-
-
     // resets the database by dropping all of its tables
     reset: function(settings) {
       console.debug("Storage reset", settings);
@@ -83,6 +81,17 @@ var Storage = new JS.Class({
       if(settings && settings.success) {
         setTimeout(settings.success, 300);
       }
+    },
+
+    // removes the empty unnamed groups
+    clean_groups: function(settings) {
+      console.debug("Storage clean_groups");
+      var storage = new Storage();
+      storage.db.transaction(function(tx) {
+        tx.executeSql("DELETE FROM `groups` WHERE (`name` IS NULL OR `name` = '') AND `id` NOT IN (SELECT DISTINCT `group_id` AS `id` FROM `tabs`)");
+        console.debug("Groups cleaned from the database");
+        if(settings && settings.success) settings.success();
+      });
     },
 
     // returns only the appropriate attributes of an object and

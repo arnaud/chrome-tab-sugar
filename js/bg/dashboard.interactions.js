@@ -319,19 +319,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             });
           }
         });
-        // remove the right tab in the groups array
-        /*for(var g in groups) {
-          var group = groups[g];
-          if(group.id == gid) {
-            for(var t in group.tabs) {
-              var tab = group.tabs[t];
-              if(t == index) {
-                delete groups[g].tabs[t];
-                return;
-              }
-            }
-          }
-        }*/
       },
       error: function() {
         chrome.extension.sendRequest({action: 'error', message: 'Error while deleting the tab in the db'});
@@ -398,15 +385,28 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(interaction == "DI12") {
     // DI12 - Create a new tab
     var gid = request.gid;
+    var focused_url = 'chrome://newtab';
     // 3. The background page sends a request to the browser to create a new tab
     // in the corresponding window, and focus it
     getWindowFromGid(gid, function(window) {
-      // the window is already opened, let's add a tab, shall we?
+      // 3a. the window is already opened, let's add a tab, shall we?
       var wid = window.id;
-      chrome.tabs.create({windowId: wid, url: 'chrome://newtab', selected: true});
+      chrome.tabs.create({windowId: wid, url: focused_url, selected: true});
     }, function() {
-      // if the window doesn't exist yet, let's create it
-      chrome.windows.create({url: 'chrome://newtab'});
+      // 3b. the window doesn't exist yet, let's create it
+      localStorage.new_window_from_dashboard = true;
+      var group = getGroupFromGid(gid);
+      var tabs = group.tabs;
+      chrome.windows.create({ url: focused_url }, function(window) {
+        // with all its tabs
+        for(var t in tabs) {
+          var tab = tabs[t];
+          var index = parseInt(t);
+          chrome.tabs.create({ windowId: window.id, index: index, url: tab.url, selected: false });
+        }
+        // bind the group to the new window
+        bindWindowToGroup(window, group);
+      });
     });
   }
 });
