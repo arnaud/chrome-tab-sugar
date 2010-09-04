@@ -64,13 +64,28 @@ chrome.windows.onCreated.addListener(function(window) {
 });
 
 // BI02 – Focus a window
-//TODO
+chrome.windows.onFocusChanged.addListener(function(windowId) {
+  console.warn('Live interaction:', 'BI02', windowId);
+  if(windowId == chrome.windows.WINDOW_ID_NONE) {
+    // unfocus
+    //TODO
+  } else {
+    // focus
+    //TODO
+  }
+});
 
 // BI03 – Close a window
-//TODO
+chrome.windows.onRemoved.addListener(function(windowId) {
+  console.warn('Live interaction:', 'BI03', windowId);
+  //TODO
+});
 
 // BI04 – Attach a tab to a window
-//TODO
+chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
+  console.warn('Live interaction:', 'BI04', tabId, attachInfo);
+  //TODO
+});
 
 // BI05 – Create a tab
 chrome.tabs.onCreated.addListener(function(tab) {
@@ -99,10 +114,16 @@ chrome.tabs.onCreated.addListener(function(tab) {
 });
 
 // BI06 – Detach a tab from a window
-//TODO
+chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
+  console.warn('Live interaction:', 'BI06', tabId, detachInfo);
+  //TODO
+});
 
 // BI07 – Move a tab within a window
-//TODO
+chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
+  console.warn('Live interaction:', 'BI07', tabId, moveInfo);
+  //TODO
+});
 
 // BI08 – Close a tab
 chrome.tabs.onRemoved.addListener(function(tabId) {
