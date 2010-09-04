@@ -80,6 +80,11 @@ label.main {
   padding: 8px;
   border-bottom: 1px solid #EDEFF5;
 }
+iframe {
+  position: absolute;
+  top: 20px;
+  right: 0;
+}
 #message {
   -webkit-border-radius: 5px;
   background: #fe9;
