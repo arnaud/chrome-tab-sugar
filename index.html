@@ -2,37 +2,37 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <title>Tab Sugar - the Tab Candy equivalent for Chrome</title>
-  <meta name="description" content="Tab Sugar is a Google Chrome extension equivalent to Tab Candy for Firefox." />
-  <meta name="keywords" content="Tab Sugar,TabSugar,Tab Candy,TabCandy,Chrome,Firefox,Tab Sets,TabSets,TabSense" />
+  <title>Tab Sugar - Chrome Panorama</title>
+  <meta name="description" content="Tab Sugar is a Google Chrome extension equivalent to Firefox Panorama." />
+  <meta name="keywords" content="Tab Sugar,TabSugar,Firefox Panorama,Chrome Panorama,Tab Candy,TabCandy,TabSense,Tab Sets,TabSets" />
   <meta name="author" content="Arnaud Leymet" />
-  <link rel="stylesheet" type="text/css" media="screen,projection" href="/assets/styles/reset.css">
-  <link rel="stylesheet" type="text/css" media="screen,projection" href="/assets/styles/jquery.lightbox-0.5.css">
-  <link rel="stylesheet" type="text/css" media="screen,projection" href="/assets/styles/master.css">
+  <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="assets/styles/reset.css">
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="assets/styles/jquery.lightbox-0.5.css">
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="assets/styles/master.css">
   <script>
     if(window.location.hostname=='arnaud.github.com') {
       document.location.href = 'http://tabsugar.com/';
     }
   </script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script type="text/javascript" src="/assets/js/jquery.lightbox-0.5.min.js"></script>
+  <script type="text/javascript" src="assets/js/jquery.lightbox-0.5.min.js"></script>
   <script type="text/javascript">
   $(function() {
     $('#screenshots a').lightBox({
-      fixedNavigation: true,
-      overlayBgColor: '#fff',
       overlayOpacity: 0.6,
-      imageLoading: '/assets/img/lightbox/lightbox-ico-loading.gif',
-      imageBtnClose: '/assets/img/lightbox/lightbox-btn-close.gif',
-      imageBtnPrev: '/assets/img/lightbox/lightbox-btn-prev.gif',
-      imageBtnNext: '/assets/img/lightbox/lightbox-btn-next.gif',
+      imageLoading: 'assets/img/lightbox/lightbox-blank.gif',
+      imageBtnClose: 'assets/img/lightbox/lightbox-btn-close.gif',
+      imageBtnPrev: 'assets/img/lightbox/lightbox-btn-prev.gif',
+      imageBtnNext: 'assets/img/lightbox/lightbox-btn-next.gif',
       containerResizeSpeed: 350,
       txtImage: 'Screenshot'
     });
   });
   </script>
   <!--[if lte IE 8]>
-  <script src="/assets/js/html5.js" type="text/javascript"></script>
+  <script src="assets/js/html5.js" type="text/javascript"></script>
   <![endif]--> 
 </head>
 <body>
@@ -48,82 +48,110 @@
   </script>
   <header>
     <div id="title">
-      <h1>Tab Sugar</h1>
+      <h1>Tab Sugar<span class="alpha"> {alpha}</span></h1>
       <h2>Chrome Tabs. Evolved.</h2>
+      <p class="description">Manage your Google Chrome tabs by moving them into groups.</p>
+      <div id="install">
+        <a class="btn" href="http://bit.ly/9MZk0v">Try Tab Sugar</a>
+      </div>
     </div>
-    <nav id="menu">
-      <ul>
-        <li>
-          <a href="http://bit.ly/9MZk0v">
-            <span class="entry">Try it!</span>
-            <span class="info">On Chrome extension page</span>
-          </a>
-        </li>
-        <li>
-          <a href="http://github.com/arnaud/chrome-tab-sugar/wiki">
-            <span class="entry">Documentation</span>
-            <span class="info">Learn it all from there</span>
-          </a>
-        </li>
-        <li>
-          <a href="http://github.com/arnaud/chrome-tab-sugar">
-            <span class="entry">Contribute</span>
-            <span class="info">Get involved &amp; help it grow</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
   </header>
-  <div id="downloads">
-    <a class="btn" href="http://bit.ly/9MZk0v">Try Tab Sugar</a>
+  <div id="presentation">
+    <span class="content-title">Tour</span>
+    <div id="presentation2">
+      <video id="vid" src="http://github.com/downloads/arnaud/chrome-tab-sugar/tabsugar_video_1.m4v" width="480" height="310" autobuffer="true" controls="false">
+        Oops&hellip; Your browser doesn't support HTML5 videos.<br />
+        You may want to install <a class="link" href="http://www.google.com/chrome/">Google Chrome</a>
+      </video>
+      <script>
+      $(document).ready(function() {
+        $('#vid').parent().append( $('<div>').attr('id','vidoverlay') );
+        $('#vid, #vidoverlay').click(function() {
+          $('#vidoverlay').hide();
+          $('#vid').get(0).play();
+        });
+      });
+      </script>
+      <section id="screenshots-container">
+        <h2>Screenshots</h2>
+        <ul id="screenshots">
+          <li>
+            <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_big/6001" title="Dashboard #1">
+              <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_thumb/6001" alt="Dashboard #1" />
+            </a>
+          </li>
+          <li>
+            <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1283525442.76/screenshot_big/9001" title="Dashboard #2">
+              <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1283525442.76/screenshot_thumb/9001" alt="Dashboard #2" />
+            </a>
+          </li>
+          <li>
+            <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1283525442.76/screenshot_big/11001" title="Dashboard #3">
+              <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1283525442.76/screenshot_thumb/11001" alt="Dashboard #3" />
+            </a>
+          </li>
+          <li>
+            <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_big/7001" title="Options page">
+              <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_thumb/7001" alt="Options page" />
+            </a>
+          </li>
+        </ul>
+      </section>
+    </div>
   </div>
-  <section id="body">
-    <section id="vertical">
-      <h3>Screenshots</h3>
-      <ul id="screenshots">
-        <li>
-          <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_big/6001" title="Dashboard">
-            <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_thumb/6001" width="64px" height="52px" alt="Dashboard" />
-          </a>
-          <a href="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_big/7001" title="Options page">
-            <img src="https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_thumb/7001" width="64px" height="52px" alt="Options page" />
-          </a>
-        </li>
-      </ul>
-      <h3>Open source</h3>
-      <p>Tab Sugar is open source and is licensed under the <a href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a>.</p>
-      <p>Its source code can be found on <a href="http://github.com/arnaud/chrome-tab-sugar">github</a>.</p>
-      <p><a href='http://www.pledgie.com/campaigns/12494'><img alt='Click here to lend your support to: chrome-tab-sugar and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/12494.png?skin_name=chrome' border='0' width='149px' height='37px' /></a></p>
-      <h3>Links</h3>
-      <ul>
-        <li><a href="https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje">Google Chrome extension page</a></li>
-        <li><a href="http://github.com/arnaud/chrome-tab-sugar/wiki">Wiki documentation</a></li>
-        <li><a href="http://github.com/arnaud/chrome-tab-sugar/issues">Issues tracker</a></li>
-        <li><a href="http://github.com/arnaud/chrome-tab-sugar">Source code</a></li>
-      </ul>
-    </section>
-    <h3>What is Tab Sugar?</h3>
-    <p>Tab Sugar is a Google Chrome extension that helps to manage all your tabs from a single page!</p>
-    <h3>Features</h3>
-    <p>Tab Sugar <i><span title="All of these features aren't implemented yet.">aims</span></i> to be the Tab Candy equivalent to Chrome and regroup the following features:</p> 
-    <ul> 
-      <li>Regroup your tabs your way: create groups, resize and drag'em</li>
-      <li>The state of your Tab Sugar dashboard is saved automatically</li>
-      <li>Regroup 20+ tabs inside a unique group: they'll stack up</li>
-      <li>Span out stacked-up tabs - get a quick look at a group content</li>
-    </ul> 
-    <h3>Other Tab Management Tools</h3> 
-    <p>There is a bunch of other tab management extensions and tools. Here is a non exhaustive list:</p> 
-    <ul> 
-      <li><a href="http://www.azarask.in/blog/post/tabcandy/">Tab Candy (Firefox)</a></li> 
-      <li><a>TabSense (Chrome)</a></li> 
-    </ul> 
-    <h3>Why is Tab Sugar better?</h3> 
-    <p>Try it and you'll see why :-).</p> 
-  </section> 
+  <nav id="menu">
+    <span class="content-title">Links</span>
+    <ul>
+      <li>
+        <a href="http://bit.ly/9MZk0v">
+          <span class="entry">Try it</span>
+          <span class="info">On the Chrome extension page</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://github.com/arnaud/chrome-tab-sugar/wiki/FAQ">
+          <span class="entry">FAQ &amp; bugs</span>
+          <span class="info">Known issues &amp; bug tracker</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://github.com/arnaud/chrome-tab-sugar/wiki">
+          <span class="entry">Learn</span>
+          <span class="info">Reading the Wiki documentation</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://github.com/arnaud/chrome-tab-sugar">
+          <span class="entry">Contribute</span>
+          <span class="info">Get involved &amp; help it grow</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div id="body">
+    <span class="content-title">Description</span>
+    <div id="content">
+      <section>
+        <h2>Features</h2>
+        <p>Tab Sugar <i><span title="All of these features aren't implemented yet.">aims</span></i> to become Chrome's &#8220;<a href="http://www.azarask.in/blog/post/designing-tab-candy/">Firefox Panorama</a>&#8221; equivalent and regroup the following features:</p> 
+        <ul> 
+          <li>Regroup your tabs your way: create groups, resize and drag'em</li>
+          <li>The state of your Tab Sugar dashboard is saved automatically</li>
+          <li>Regroup 20+ tabs inside a unique group: they'll stack up</li>
+          <li>Span out stacked-up tabs - get a quick look at a group content</li>
+        </ul> 
+      </section>
+      <section>
+        <h2>Open source</h2>
+        <p>Tab Sugar is open source and is licensed under the <a class="link" href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a></p>
+        <p>Its source code can be found on <a class="link" href="http://github.com/arnaud/chrome-tab-sugar">github</a></p>
+        <p>Support the development of "Tab Sugar" and <a class="link" href='http://www.pledgie.com/campaigns/12494' target='_new'>buy me a coffee</a></p>
+        <img id="opensourcelogo" src="http://opensource.org/trademarks/opensource/web/transparent/opensource-75x65-t.png" alt="Open source" title="Open source" />
+      </section>
+    </div>
+  </div>
   <footer> 
-    <span>Tab Sugar - Chrome Tabs. Evolved.</span> 
-    <img id="opensourcelogo" src="http://opensource.org/trademarks/opensource/web/opensource-75x65.gif" alt="Open source" title="Open source" /> 
+    <p><a href="http://tabsugar.com/">Tab Sugar</a> - Chrome Tabs. Evolved.</p> 
   </footer> 
 </body> 
 </html> 
