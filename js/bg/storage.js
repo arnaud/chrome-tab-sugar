@@ -22,21 +22,28 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
-var DB_VERSION = "1.2";
+var DB_VERSION_MAJOR = 1;
+var DB_VERSION_MINOR = 3;
+var DB_VERSION = DB_VERSION_MAJOR + "." + DB_VERSION_MINOR;
 
-function openDb() {
-  var db;
-  try {
-    db = openDatabase("TabSugar", DB_VERSION, "Tab Sugar", this.DB_SIZE * 1024 * 1024);
-  } catch(ex) {
-    try {
-      db = openDatabase("TabSugar", localStorage.db_version, "Tab Sugar", this.DB_SIZE * 1024 * 1024);
-    } catch(ex2) {
-      try {
-        db = openDatabase("TabSugar", "1.0", "Tab Sugar", this.DB_SIZE * 1024 * 1024);
-      } catch(ex3) {}
-    }
+// Opens the database at version "1.<version>"
+function openDbVersion(version) {
+  var v = DB_VERSION_MAJOR + "." + version;
+  if(version < 0) {
+    console.error('Databse version error! Now let\'s panic!');
+    return;
   }
+  try {
+    return openDatabase("TabSugar", v, "Tab Sugar", this.DB_SIZE * 1024 * 1024);
+  } catch(ex) {
+    return openDbVersion(version-1);
+  }
+}
+
+// Opens the database, whatever its version
+function openDb() {
+  var db = openDbVersion(DB_VERSION_MINOR);
+  console.debug('Opening database version', db.version, db);
   return db;
 }
 
@@ -61,9 +68,92 @@ var Storage = new JS.Class({
       console.debug("Storage init");
       var storage = new Storage();
       storage.db.transaction(function(tx) {
-        tx.executeSql("CREATE TABLE IF NOT EXISTS `groups` (`id` REAL UNIQUE, `name` TEXT, `posX` REAL, `posY` REAL, `width` REAL, `height` REAL)");
-        tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` (`group_id` REAL, `index` REAL, `title` TEXT, `url` TEXT, `favIconUrl` TEXT)");
-        tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` (`url` TEXT UNIQUE, `preview` TEXT)");
+
+        function onError(tx, err) {
+          console.error("An error occurred while initializing the db", err);
+        };
+
+        // Tables
+
+        // Groups
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `groups` ("
+                     +"`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                     +"`name` TEXT,"
+                     +"`posX` INTEGER,"
+                     +"`posY` INTEGER,"
+                     +"`width` INTEGER,"
+                     +"`height` INTEGER"
+                     +")", [], null, onError);
+
+        // Tabs
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `tabs` ("
+                     +"`group_id` INTEGER NOT NULL,"
+                     +"`index` INTEGER NOT NULL,"
+                     +"`title` TEXT,"
+                     +"`url` TEXT,"
+                     +"`favIconUrl` TEXT"
+                     //+"CONSTRAINT primary_key PRIMARY KEY(`group_id`,`index`) ON CONFLICT FAIL"
+                     //+"CONSTRAINT foreign_key FOREIGN KEY(`group_id`) REFERENCES `group_id`"
+                     +")", [], null, onError);
+
+        // Previews
+        tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` ("
+                     +"`url` TEXT UNIQUE,"
+                     +"`preview` TEXT"
+                     +")", [], null, onError);
+
+        // Triggers
+
+        // TG01. Reorganize tabs after tab delete
+        tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_after_tab_delete;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_after_tab_delete AFTER DELETE ON `tabs`"
+                     +"BEGIN"
+                     +"  UPDATE `tabs`"
+                     +"     SET `index` = `index` - 1"
+                     +"   WHERE `group_id` = old.`group_id`"
+                     +"     AND `index` > old.`index`;"
+                     +"END;", [], null, onError);
+        
+        // TG02. Reorganize tabs before tab insert
+        tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_before_tab_insert;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_before_tab_insert BEFORE INSERT ON `tabs`"
+                     +"BEGIN"
+                     +"  UPDATE `tabs`"
+                     +"     SET `index` = `index` + 1"
+                     +"   WHERE `group_id` = new.`group_id`"
+                     +"     AND `index` >= new.`index`;"
+                     +"END;", [], null, onError);
+        
+        // TG03. Reorganize tabs before tab update
+        tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_before_tab_update;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_before_tab_update BEFORE UPDATE OF `group_id`, `index` ON `tabs`"
+                     +" WHEN old.`group_id` <> new.`group_id` "
+                     +"BEGIN"
+                     +"  UPDATE `tabs`"
+                     +"     SET `index` = `index` + 1"
+                     +"   WHERE `group_id` = new.`group_id`"
+                     +"     AND `index` >= new.`index`;"
+                     +"END;", [], null, onError);
+
+        // TG04. Reorganize tabs after tab update
+        tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_after_tab_update;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_after_tab_update AFTER UPDATE OF `group_id`, `index` ON `tabs`"
+                     +" WHEN old.`group_id` <> new.`group_id` "
+                     +"BEGIN"
+                     +"  UPDATE `tabs`"
+                     +"     SET `index` = `index` - 1"
+                     +"   WHERE `group_id` = old.`group_id`"
+                     +"     AND `index` > old.`index`;"
+                     +"END;", [], null, onError);
+
+        // TG05. Delete tabs after group delete
+        tx.executeSql("DROP TRIGGER IF EXISTS delete_tabs_after_group_delete;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS delete_tabs_after_group_delete AFTER DELETE ON `groups`"
+                     +"BEGIN"
+                     +"  DELETE FROM `tabs`"
+                     +"        WHERE `group_id` = old.`id`;"
+                     +"END;", [], null, onError);
+        
         console.debug("Tab Sugar database is ready");
         if(settings && settings.success) settings.success();
       });

@@ -157,21 +157,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       table: "groups",
       conditions: "`id`="+gid,
       success: function() {
-        Storage.remove({
-          table: "tabs",
-          conditions: "`group_id`="+gid,
-          success: function() {
-            // refresh the groups
-            syncGroupsFromDb(function() {
-              sendResponse({status: "OK"});
-            });
-          },
-          error: function() {
-            // refresh the groups
-            syncGroupsFromDb(function() {
-              sendResponse({status: "OK"});
-            });
-          }
+        // refresh the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
         });
       },
       error: function() {
@@ -200,23 +188,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             index: 0
           },
           success: function() {
-            // decrement the index of the above tabs in the source group
-            Storage.update({
-              table: "tabs",
-              conditions: "`group_id`="+src_tab.group_id+" AND `index`>="+src_tab.index,
-              changes: {
-                raw_sql_index: "`index`-1"
-              },
-              success: function() {
-                syncGroupsFromDb(function() {
-                  sendResponse({status: "OK"});
-                });
-              },
-              error: function() {
-                syncGroupsFromDb(function() {
-                  sendResponse({status: "OK"});
-                });
-              }
+            // refresh the groups
+            syncGroupsFromDb(function() {
+              sendResponse({status: "OK"});
             });
           },
           error: function() {
@@ -243,16 +217,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       });
     });
     // 4. -On success-, the background page updates the tab’s group id in the database
-    // 4.1. increment the index of the above tabs in the destination group
-    Storage.update({
-      table: "tabs",
-      conditions: "`group_id`="+dest_gid+" AND `index`>="+dest_index,
-      changes: {
-        raw_sql_index: "`index`+1"
-      },
-      success: function() {},
-      error: function() {}
-    });
     // 4.2. move the tab
     Storage.update({
       table: "tabs",
@@ -271,16 +235,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
     });
-    // 4.3. decrement the index of the above tabs in the source group
-    Storage.update({
-      table: "tabs",
-      conditions: "`group_id`="+src_gid+" AND `index`>"+src_index,
-      changes: {
-        raw_sql_index: "`index`-1"
-      },
-      success: function() {},
-      error: function() {}
-    });
 
   } else if(interaction == "DI09") {
     // DI09 – Close a tab
@@ -296,28 +250,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       table: "tabs",
       conditions: "`group_id`="+gid+" AND `index`="+index,
       success: function() {
-        // decrement other tabs indexes for the same group
-        Storage.update({
-          table: "tabs",
-          conditions: "`group_id`="+gid+" AND `index`>"+index,
-          changes: {
-            raw_sql_index: "`index`-1"
-          },
-          success: function() {
-            // refresh the groups
-            syncGroupsFromDb(function() {
-              sendResponse({status: "OK"});
-            });
-          },
-          error: function() {
-            // having an error here doesn't mean this is wrong: it just means
-            // that the removed tab was the last one
-            
-            // refresh the groups
-            syncGroupsFromDb(function() {
-              sendResponse({status: "OK"});
-            });
-          }
+        // refresh the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
         });
       },
       error: function() {

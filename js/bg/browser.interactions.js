@@ -128,25 +128,8 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
           conditions: "`group_id`="+group.id+" AND `index`="+cur_tab.index,
           success: function() {
             console.warn('05', 'success');
-            // decrement other tabs indexes for the same group
-            Storage.update({
-              table: "tabs",
-              conditions: "`group_id`="+group.id+" AND `index`>"+cur_tab.index,
-              changes: {
-                raw_sql_index: "`index`-1"
-              },
-              success: function() {
-                // refresh the groups
-                syncGroupsFromDb();
-              },
-              error: function() {
-                // having an error here doesn't mean this is wrong: it just means
-                // that the removed tab was the last one
-                
-                // refresh the groups
-                syncGroupsFromDb();
-              }
-            });
+            // refresh the groups
+            syncGroupsFromDb();
             // 4. The background page sends a request to the dashboard
             chrome.extension.sendRequest({action: "BI08", gid: group.id, tab: cur_tab});
           },
