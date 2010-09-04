@@ -40,10 +40,11 @@ var back = chrome.extension.getBackgroundPage();
 function initUI() {
   var groups = back.groups;
   // handle the situation where Tab Sugar isn't ready: the background page didn't do its work
-  if(groups==null) {
+  if(groups==null || groups.length == 0) {
+    console.warn('Couldn\'t initialize the dashboard because groups aren\'t loaded yet in the background page ');
     //showMessage('Tab Sugar isn\'t ready to rock just now. Please either reload the extension or restart Chrome.');
     chrome.extension.getBackgroundPage().location.reload();
-    setTimeout(function() { this.location.reload() }, 500);
+    setTimeout(function() { this.location.reload() }, 1000);
     return;
   }
   // update the groups
