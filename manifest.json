@@ -9,7 +9,7 @@
   },
   "browser_action": {
     "default_icon": "ico/browser_action_loading.png",
-    "default_title": "Tab Sugar"
+    "default_title": "Loading Tab Sugar..."
   },
   "content_scripts": [
     {
