@@ -53,6 +53,11 @@ h2 {
   font-size: 12px;
   text-shadow: 0 -1px 0 #fff;
 }
+iframe {
+  position: absolute;
+  top: 50px;
+  right: 0;
+}
 #install {
   position: absolute;
   top: 100px;
@@ -108,6 +113,7 @@ h2 {
   width: 480px;
   height: 300px;
   margin: 26px;
+  cursor: pointer;
   -webkit-transition: background .1s ease-in;
 }
 #vidoverlay:hover {
