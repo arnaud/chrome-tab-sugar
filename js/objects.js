@@ -355,7 +355,7 @@ var SugarTab = new JS.Class({
     if(this.preview==null || localStorage.feature_tab_preview!="true") {
       preview
         .addClass('empty')
-        .css('background-image', 'url(chrome://favicon/'+this.url+'), url(/ico/blank_preview.png)');//url(banner_fresco.jpg) top 11px no-repeat
+        .css('background-image', 'url(chrome://favicon/'+this.url+'), url(/ico/blank_preview.png)');
     } else {
       preview.attr('src',this.preview);
     }
