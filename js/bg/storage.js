@@ -113,7 +113,7 @@ var Storage = new JS.Class({
 
         // Triggers
 
-        // TG01. Reorganize tabs after tab delete
+        // TG01 - Reorganize tabs after tab delete
         tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_after_tab_delete;");
         tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_after_tab_delete AFTER DELETE ON `tabs`"
                      +"BEGIN"
@@ -123,7 +123,7 @@ var Storage = new JS.Class({
                      +"     AND `index` > old.`index`;"
                      +"END;", [], null, onError);
         
-        // TG02. Reorganize tabs before tab insert
+        // TG02 - Reorganize tabs before tab insert
         tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_before_tab_insert;");
         tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_before_tab_insert BEFORE INSERT ON `tabs`"
                      +"BEGIN"
@@ -133,7 +133,7 @@ var Storage = new JS.Class({
                      +"     AND `index` >= new.`index`;"
                      +"END;", [], null, onError);
         
-        // TG03. Reorganize tabs before tab update
+        // TG03 - Reorganize tabs before tab update
         tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_before_tab_update;");
         tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_before_tab_update BEFORE UPDATE OF `group_id`, `index` ON `tabs`"
                      +" WHEN old.`group_id` <> new.`group_id` "
@@ -144,7 +144,7 @@ var Storage = new JS.Class({
                      +"     AND `index` >= new.`index`;"
                      +"END;", [], null, onError);
 
-        // TG04. Reorganize tabs after tab update
+        // TG04 - Reorganize tabs after tab update
         tx.executeSql("DROP TRIGGER IF EXISTS reorganize_tabs_after_tab_update;");
         tx.executeSql("CREATE TRIGGER IF NOT EXISTS reorganize_tabs_after_tab_update AFTER UPDATE OF `group_id`, `index` ON `tabs`"
                      +" WHEN old.`group_id` <> new.`group_id` "
@@ -155,7 +155,7 @@ var Storage = new JS.Class({
                      +"     AND `index` > old.`index`;"
                      +"END;", [], null, onError);
 
-        // TG05. Delete tabs after group delete
+        // TG05 - Delete tabs after group delete
         tx.executeSql("DROP TRIGGER IF EXISTS delete_tabs_after_group_delete;");
         tx.executeSql("CREATE TRIGGER IF NOT EXISTS delete_tabs_after_group_delete AFTER DELETE ON `groups`"
                      +"BEGIN"
@@ -163,7 +163,7 @@ var Storage = new JS.Class({
                      +"        WHERE `group_id` = old.`id`;"
                      +"END;", [], null, onError);
         
-        // TG06. Unselect all tabs of a group before tab selection
+        // TG06 - Unselect all tabs of a group before tab selection
         tx.executeSql("DROP TRIGGER IF EXISTS unselect_tabs_before_tab_selection;");
         tx.executeSql("CREATE TRIGGER IF NOT EXISTS unselect_tabs_before_tab_selection BEFORE UPDATE OF `selected` ON `tabs`"
                      +" WHEN new.`selected` = 1 "
@@ -171,6 +171,34 @@ var Storage = new JS.Class({
                      +"  UPDATE `tabs`"
                      +"     SET `selected` = 0"
                      +"   WHERE `group_id` = new.`group_id`;"
+                     +"END;", [], null, onError);
+
+        // TG07 - Update the updated_at column after group update
+        tx.executeSql("DROP TRIGGER IF EXISTS update_group;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS update_group AFTER UPDATE ON `groups`"
+                     +"BEGIN"
+                     +"  UPDATE `groups`"
+                     +"     SET `updated_at` = datetime('now')"
+                     +"   WHERE `id` = old.`id`;"
+                     +"END;", [], null, onError);
+
+        // TG08 - Update the updated_at column after tab update
+        tx.executeSql("DROP TRIGGER IF EXISTS update_tab;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS update_tab AFTER UPDATE ON `tabs`"
+                     +"BEGIN"
+                     +"  UPDATE `tabs`"
+                     +"     SET `updated_at` = datetime('now')"
+                     +"   WHERE `group_id` = old.`group_id`"
+                     +"     AND `index` = old.`index`;"
+                     +"END;", [], null, onError);
+
+        // TG09 - Update the updated_at column after preview update
+        tx.executeSql("DROP TRIGGER IF EXISTS update_preview;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS update_preview AFTER UPDATE ON `previews`"
+                     +"BEGIN"
+                     +"  UPDATE `previews`"
+                     +"     SET `updated_at` = datetime('now')"
+                     +"   WHERE `url` = old.`url`;"
                      +"END;", [], null, onError);
 
         console.debug("Tab Sugar database is ready");
