@@ -307,10 +307,13 @@ section.indented {
 /* Footer */
 
 footer {
+  position: relative;
+  display: block;
   font-family: 'Lobster', arial, serif;
   font-size: 18px;
   color: #fff;
   text-shadow: rgba(0,0,0,.8) -.5px -.5px 2px, .5px .5px 2px rgba(0,0,5,.5);
+  padding-bottom: 30px;
 }
 footer a {
   text-decoration: none;
@@ -318,6 +321,16 @@ footer a {
 }
 footer a:hover {
   text-decoration: underline;
+}
+#webdesign {
+  float: right;
+}
+#grab-template {
+  float: right;
+  padding-left: 30px;
+  margin-left: 130px;
+  height: 24px;
+  background: url(../img/download.png) left no-repeat;
 }
 
 /* Misc */
