@@ -127,8 +127,8 @@
       </li>
       <li>
         <a href="http://github.com/arnaud/chrome-tab-sugar/wiki/FAQ">
-          <span class="entry">FAQ &amp; bugs</span>
-          <span class="info">Known issues &amp; bug tracker</span>
+          <span class="entry">Support</span>
+          <span class="info">FAQ &amp; bug tracker</span>
         </a>
       </li>
       <li>
@@ -148,7 +148,40 @@
   <div id="body">
     <span class="content-title">Description</span>
     <div id="content">
-      <section>
+      <section id="twitter">
+        <h2>Twitter</h2>
+        <script src="http://widgets.twimg.com/j/2/widget.js"></script>
+        <script type="text/javascript">
+new TWTR.Widget({
+  version: 2,
+  type: 'profile',
+  rpp: 2,
+  interval: 6000,
+  width: 250,
+  height: 300,
+  theme: {
+    shell: {
+      background: 'transparent',
+      color: '#000'
+    },
+    tweets: {
+      background: 'transparent',
+      color: '#000'
+    }
+  },
+  features: {
+    scrollbar: false,
+    loop: false,
+    live: false,
+    hashtags: true,
+    timestamp: true,
+    avatars: false,
+    behavior: 'all'
+  }
+}).render().setUser('tabsugar').start();
+        </script>
+      </section>
+      <section class="indented">
         <h2>Features</h2>
         <p>Tab Sugar <i><span title="All of these features aren't implemented yet.">aims</span></i> to become Chrome's &#8220;<a href="http://www.azarask.in/blog/post/designing-tab-candy/">Firefox Panorama</a>&#8221; equivalent and regroup the following features:</p> 
         <ul> 
@@ -158,7 +191,7 @@
           <li>Span out stacked-up tabs - get a quick look at a group content</li>
         </ul> 
       </section>
-      <section>
+      <section class="indented">
         <h2>Open source</h2>
         <p>Tab Sugar is open source and is licensed under the <a class="link" href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a></p>
         <p>Its source code can be found on <a class="link" href="http://github.com/arnaud/chrome-tab-sugar">github</a></p>

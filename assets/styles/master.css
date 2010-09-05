@@ -226,6 +226,7 @@ iframe {
 }
 #content {
   line-height: 18px;
+  font-size: 13px;
 }
 #content section {
   position: relative;
@@ -266,6 +267,18 @@ section a {
 }
 section a:hover {
   text-decoration: underline;
+}
+section.indented {
+  margin-right: 280px;
+  min-height: 85px;
+}
+#twitter {
+  float: right;
+  min-height: 256px;
+  width: 250px;
+}
+#twitter .twtr-widget>* {
+  font-family: 'Molengo', arial, serif;
 }
 #opensourcelogo {
   position: absolute;
