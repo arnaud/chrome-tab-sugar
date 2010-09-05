@@ -65,7 +65,18 @@
   <div id="presentation">
     <span class="content-title">Tour</span>
     <div id="presentation2">
-      <video id="vid" src="http://github.com/downloads/arnaud/chrome-tab-sugar/tabsugar_video_1.m4v" width="480" height="310">
+      <video id="vid" poster="assets/vid/poster.png" width="480" height="300">
+        <source width="480" height="300" src="assets/vid/tabsugar_video_1.m4v" />
+        <source width="480" height="300" src="assets/vid/tabsugar_video_1.ogv" />
+        <!--[if lt IE 9]>
+        <!--<object classid='clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B' standby="data is loading..." codebase='http://www.apple.com/qtactivex/qtplugin.cab' width='480' height='300'>
+          <param name='src' value='http://github.com/downloads/arnaud/chrome-tab-sugar/tabsugar_video_1.m4v'>
+          <param name='autoplay' value='false'>
+          <param name='type' value='video/quicktime' width='480' height='300'>
+          <param name='controller' value='false'>
+          <embed src='http://github.com/downloads/arnaud/chrome-tab-sugar/tabsugar_video_1.m4v' width='480' height='300' autoplay='false' controller='false' type='video/quicktime' pluginspage='http://www.apple.com/quicktime/download/'>
+        </object>-->
+        <![endif]-->
         Oops&hellip; Your browser doesn't support HTML5 videos.<br />
         You may want to install <a class="link" href="http://www.google.com/chrome/">Google Chrome</a>
       </video>
