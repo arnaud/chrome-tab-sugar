@@ -270,6 +270,24 @@
     this.find('ul').append( tab );
     return this;
   },
+
+  // closes a tab or a group
+  $.fn.close = function() {
+    if(this.isTab()) {
+      // close a tab
+      this.fadeOut(function() {
+        $(this).remove();
+      });
+    } else if(this.isGroup()) {
+      // close a group
+      this.fadeOut(function() {
+        $(this).remove();
+      });
+    } else {
+      console.error('The close method only applies to groups and tabs');
+    }
+    return this;
+  },
   
   // tests wether the object is a group
   $.fn.isGroup = function() {

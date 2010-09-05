@@ -80,7 +80,30 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
 // BI03 – Close a window
 chrome.windows.onRemoved.addListener(function(windowId) {
   console.warn('Live interaction:', 'BI03', windowId);
-  //TODO
+  // 1. The user closes a window (Alt+F4)
+  getGroupFromWid(windowId, function(group) {
+    var name = group.name;
+    if(name != null && name != "") {
+      // keep it
+    } else {
+      // delete it
+      // 2. The browser sends a request to the background page
+      //&3. The background page deletes the corresponding group and its tabs from the database
+      group.db_delete({
+        success: function() {
+          // refresh the groups
+          syncGroupsFromDb();
+          // 4. The background page sends a request to the dashboard
+          chrome.extension.sendRequest({action: "BI03", gid: group.id});
+        },
+        error: function(err) {
+          console.error('BI03 - Close a window', err);
+          chrome.extension.sendRequest({action: 'error', message: 'Error while removing a group in the db [BI03]'});
+        }
+      });
+      chrome.extension.sendRequest({action: "BI01", group: group});
+    }
+  });
 });
 
 // BI04 – Attach a tab to a window
@@ -103,6 +126,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
     tab.group_id = gid;
     tab.db_insert({
       success: function() {
+        // refresh the groups
         syncGroupsFromDb();
         // 4. The background page sends a request to the dashboard
         chrome.extension.sendRequest({action: "BI05", gid: gid, tab: tab});

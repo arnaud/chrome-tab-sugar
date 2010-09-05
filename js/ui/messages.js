@@ -52,6 +52,21 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       tabs_ui.find('>.favicon').attr('src','chrome://favicon/'+tab.url); //tab.favIconUrl
     }
 
+  } else if(interaction == "BI02") {
+    // BI02 - Focus a window
+    //TODO
+    
+  } else if(interaction == "BI03") {
+    // BI03 - Close a window
+    var gid = request.gid;
+    // 5. The dashboard hides and deletes the corresponding group and its tabs
+    var group_ui = $.findGroup(gid);
+    group_ui.close();
+
+  } else if(interaction == "BI04") {
+    // BI04 - Attach a tab to a window
+    //TODO
+
   } else if(interaction == "BI05") {
     // BI05 - Create a tab
     var gid = request.gid;
@@ -63,6 +78,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     group_ui.addTab(tab_ui);
     group_ui.autoFitTabs();
 
+  } else if(interaction == "BI06") {
+    // BI06 - Detach a tab from a window
+    //TODO
+
+  } else if(interaction == "BI07") {
+    // BI07 - Move a tab within a window
+    //TODO
+
   } else if(interaction == "BI08") {
     // BI08 - Close a tab
     var gid = request.gid;
@@ -71,9 +94,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var t = new SugarTab(tab);
     var tab_ui = $.findTab(gid, t);
     var group_ui = tab_ui.group();
-    tab_ui.remove();
-    tab_ui.hide();
+    tab_ui.close();
     group_ui.autoFitTabs();
+
+  } else if(interaction == "BI09") {
+    // BI09 - Select a tab
+    //TODO
 
   } else if(interaction == "BI10") {
     // BI10 - Update a tab

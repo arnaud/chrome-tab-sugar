@@ -142,14 +142,8 @@ var SugarGroup = new JS.Class({
     console.debug("Group delete", this);
     if(settings == null) settings = {};
     Storage.remove({
-      table: "tabs",
-      conditions: {group_id: this.id},
-      success: function() {},
-      error: function() {}
-    });
-    Storage.remove({
       table: "groups",
-      conditions: {id: this.id},
+      conditions: "`id`="+this.id,
       success: settings.success,
       error: settings.error
     });
@@ -347,10 +341,7 @@ var SugarTab = new JS.Class({
     if(settings == null) settings = {};
     Storage.remove({
       table: "tabs",
-      conditions: {
-        group_id: this.group_id,
-        index: this.index
-      },
+      conditions: "`group_id`="+this.group_id+" AND `index`="+this.index,
       success: settings.success,
       error: settings.error
     });
