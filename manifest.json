@@ -28,6 +28,7 @@
   ],
   "background_page": "background.html",
   "options_page": "options.html",
+  "minimum_chrome_version": "6",
   "permissions": [
     "tabs",
     "unlimited_storage",
