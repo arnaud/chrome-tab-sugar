@@ -48,6 +48,12 @@ var SugarGroup = new JS.Class({
     this.height = item.height;
     if(!this.height) this.height = 0;
     this.tabs = [];
+    this.incognito = item.incognito;
+    if(this.incognito == false) this.incognito = 0;
+    else if(this.incognito == true) this.incognito = 1;
+    else this.incognito = 0;
+    this.type = item.type;
+    if(this.type == null) this.type = "normal";
   },
 
   to_s: function() {
@@ -270,6 +276,10 @@ var SugarTab = new JS.Class({
     this.url = item.url;
     this.favIconUrl = item.favIconUrl;
     if(!this.favIconUrl) this.favIconUrl = "ico/blank_preview.png";
+    this.selected = item.selected;
+    if(this.selected == false) this.selected = 0;
+    else if(this.selected == true) this.selected = 1;
+    else this.selected = 0;
   },
 
   to_s: function() {

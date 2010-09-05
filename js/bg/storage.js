@@ -82,7 +82,11 @@ var Storage = new JS.Class({
                      +"`posX` INTEGER,"
                      +"`posY` INTEGER,"
                      +"`width` INTEGER,"
-                     +"`height` INTEGER"
+                     +"`height` INTEGER,"
+                     +"`incognito` INTEGER NOT NULL DEFAULT 0 CHECK (`incognito`=0 OR `incognito`=1),"
+                     +"`type` TEXT NOT NULL CHECK (`type`='normal' OR `type`='popup' OR `type`='app'),"
+                     +"`created_at` TEXT DEFAULT (datetime('now')),"
+                     +"`updated_at` TEXT DEFAULT (datetime('now'))"
                      +")", [], null, onError);
 
         // Tabs
@@ -91,15 +95,20 @@ var Storage = new JS.Class({
                      +"`index` INTEGER NOT NULL,"
                      +"`title` TEXT,"
                      +"`url` TEXT,"
-                     +"`favIconUrl` TEXT"
+                     +"`favIconUrl` TEXT,"
+                     +"`selected` INTEGER DEFAULT 0 CHECK (`selected`=0 OR `selected`=1),"
+                     +"`created_at` TEXT DEFAULT (datetime('now')),"
+                     +"`updated_at` TEXT DEFAULT (datetime('now'))"
                      //+"CONSTRAINT primary_key PRIMARY KEY(`group_id`,`index`) ON CONFLICT FAIL"
                      //+"CONSTRAINT foreign_key FOREIGN KEY(`group_id`) REFERENCES `group_id`"
                      +")", [], null, onError);
 
         // Previews
         tx.executeSql("CREATE TABLE IF NOT EXISTS `previews` ("
-                     +"`url` TEXT UNIQUE,"
-                     +"`preview` TEXT"
+                     +"`url` TEXT UNIQUE NOT NULL,"
+                     +"`preview` BLOB NOT NULL,"
+                     +"`created_at` TEXT DEFAULT (datetime('now')),"
+                     +"`updated_at` TEXT DEFAULT (datetime('now'))"
                      +")", [], null, onError);
 
         // Triggers
@@ -154,6 +163,16 @@ var Storage = new JS.Class({
                      +"        WHERE `group_id` = old.`id`;"
                      +"END;", [], null, onError);
         
+        // TG06. Unselect all tabs of a group before tab selection
+        tx.executeSql("DROP TRIGGER IF EXISTS unselect_tabs_before_tab_selection;");
+        tx.executeSql("CREATE TRIGGER IF NOT EXISTS unselect_tabs_before_tab_selection BEFORE UPDATE OF `selected` ON `tabs`"
+                     +" WHEN new.`selected` = 1 "
+                     +"BEGIN"
+                     +"  UPDATE `tabs`"
+                     +"     SET `selected` = 0"
+                     +"   WHERE `group_id` = new.`group_id`;"
+                     +"END;", [], null, onError);
+
         console.debug("Tab Sugar database is ready");
         if(settings && settings.success) settings.success();
       });
@@ -327,7 +346,7 @@ var Storage = new JS.Class({
 function makeDatabaseUpToDate(settings) {
   var db_up2date = localStorage.db_version==DB_VERSION;
   if(!db_up2date) {
-    console.debug("UPDATING THE DATABASE SCHEMA...");
+    console.debug("MIGRATING THE DATABASE SCHEMA...");
     Storage.reset({
       success: function() {
         localStorage.db_version = DB_VERSION;

@@ -47,7 +47,9 @@ chrome.windows.onCreated.addListener(function(window) {
     posX: g_pos.x,
     posY: g_pos.y,
     width: 300,
-    height: 150
+    height: 150,
+    incognito: false,
+    type: "normal"
   });
   group.db_insert({
     success: function() {
