@@ -6,8 +6,8 @@ http://tabsugar.com/ - MIT License
 html {
   font-family: 'Molengo', arial, serif;
   background: #65a9d7;
-  background: #65a9d7 -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#65a9d7)) no-repeat;
-  background: #65a9d7 -moz-linear-gradient(top, #ccc, #65a9d7) no-repeat;
+  background: #65a9d7 -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#65a9d7)) no-repeat;
+  background: #65a9d7 -moz-linear-gradient(top, #ddd, #65a9d7) no-repeat;
 }
 
 /* Horizontal centering */
@@ -118,6 +118,9 @@ iframe {
 }
 #vidoverlay:hover {
   background-color: rgba(50,50,50,.5);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
 }
 #vid {
   width: 480px;
