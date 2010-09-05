@@ -87,6 +87,9 @@ iframe {
   text-decoration: none;
   text-shadow: rgba(0,0,0,.4) 0 1px 0;
   -webkit-transition: opacity .1s ease-in;
+  -moz-transition: all .1s ease-in;
+  -o-transition: all .1s ease-in;
+  transition: all .1s ease-in;
 }
 #install:hover .btn {
   border-top-color: #28597a;
@@ -115,6 +118,9 @@ iframe {
   margin: 26px;
   cursor: pointer;
   -webkit-transition: background .1s ease-in;
+  -moz-transition: background .1s ease-in;
+  -o-transition: background .1s ease-in;
+  transition: background .1s ease-in;
 }
 #vidoverlay:hover {
   background-color: rgba(50,50,50,.5);
@@ -156,6 +162,9 @@ iframe {
   border-radius: 3px;
   opacity: .5;
   -webkit-transition: opacity .1s ease-in;
+  -moz-transition: opacity .1s ease-in;
+  -o-transition: opacity .1s ease-in;
+  transition: opacity .1s ease-in;
 }
 #screenshots img:hover {
   opacity: 1;
@@ -183,6 +192,9 @@ iframe {
   border-radius: 5px;
   -webkit-box-shadow: #65a9d7 0 0 6px;
   -webkit-transition: background border-radius .1s ease-in;
+  -moz-transition: background border-radius .1s ease-in;
+  -o-transition: background border-radius .1s ease-in;
+  transition: background border-radius .1s ease-in;
 }
 #menu ul li:last-child {
   margin-right: 0;
@@ -205,6 +217,9 @@ iframe {
   color: #fff;
   text-shadow: 0 0 1px #fff;
   -webkit-transition: text-shadow .1s ease-in;
+  -moz-transition: text-shadow .1s ease-in;
+  -o-transition: text-shadow .1s ease-in;
+  transition: text-shadow .1s ease-in;
 }
 #menu ul li:hover {
   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#3e779d));
@@ -239,6 +254,9 @@ iframe {
   padding: 4px 6px 12px;
   margin-bottom: 16px;
   -webkit-transition: background .05s ease-in;
+  -moz-transition: background .05s ease-in;
+  -o-transition: background .05s ease-in;
+  transition: background .05s ease-in;
 }
 #content section:last-child {
   margin-bottom: 0;
@@ -316,6 +334,9 @@ a.link {
   border-radius: 3px;
   text-shadow: rgba(0,0,0,.4) 0 1px 0;
   -webkit-transition: opacity .1s ease-in;
+  -moz-transition: opacity .1s ease-in;
+  -o-transition: opacity .1s ease-in;
+  transition: opacity .1s ease-in;
 }
 a.link:hover {
   opacity: .8;
@@ -329,6 +350,9 @@ a.link:hover {
   color: #28597a;
   width: 0%;
   -webkit-transition: opacity .2s ease-in;
+  -moz-transition: opacity .2s ease-in;
+  -o-transition: opacity .2s ease-in;
+  transition: opacity .2s ease-in;
 }
 *:hover>.content-title {
   opacity: .3;
@@ -352,6 +376,9 @@ a.link:hover {
 #lightbox-nav>* {
   opacity: 0;
   -webkit-transition: opacity .2s ease-in;
+  -moz-transition: opacity .2s ease-in;
+  -o-transition: opacity .2s ease-in;
+  transition: opacity .2s ease-in;
 }
 #lightbox-nav>*:hover {
   opacity: 1;
