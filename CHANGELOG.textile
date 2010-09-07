@@ -2,6 +2,10 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.22
+
+ * Fixed the Google Analytics issue that affected Unix users (previous fix in 0.9.18 was incomplete)
+
 h3. 0.9.21
 
  * This extension can only be used with Google Chrome versions >= 6
