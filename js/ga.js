@@ -22,6 +22,7 @@
  * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
  */
 
+/*
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-17883489-2']);
 _gaq.push(['_trackPageview']);
@@ -31,8 +32,10 @@ _gaq.push(['_trackPageview']);
  ga.src = 'https://ssl.google-analytics.com/ga.js';
  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
+*/
 
 function track(category, action, label, value) {
+  /*
   var array = ['_trackEvent', category, action];
   if(label!=null) array.push(label);
   if(value!=null) {
@@ -51,4 +54,5 @@ function track(category, action, label, value) {
   if(activate_debug) {
     _gaq.push(array);
   }
+  */
 }
