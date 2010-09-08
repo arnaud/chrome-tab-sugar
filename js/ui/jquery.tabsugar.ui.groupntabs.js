@@ -356,6 +356,34 @@
   // find a tab by its group id and its own data
   $.findTab = function(gid, tab) {
     return $.findGroup(gid).tabs().filter(':eq('+tab.index+')');
+  },
+
+  $.fn.refreshLoading = function(percent, title) {
+    if(this.attr('id') != 'loading') {
+      console.error('The refreshLoading method only applies to the loading div');
+      return this;
+    }
+    this.children().remove();
+    this.append(
+      $('<span>').html(title)
+    ).append(
+      $('<progress>').attr('value',percent).attr('max','100').html(percent+'%')
+    );
+    if(percent != 100) {
+      this.append(
+        $('<a>').attr('href','#').html('force reload').click(function(e) {
+          localStorage.background_page_ready = false;
+          window.location.reload();
+          chrome.extension.getBackgroundPage().location.reload();
+        })
+      );
+    } else {
+      this.append(
+        $('<a>').attr('href','#').html('yay!')
+      );
+    }
+    console.warn(this);
+    return this;
   }
   
 })(jQuery);

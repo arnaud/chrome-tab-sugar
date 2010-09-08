@@ -61,7 +61,7 @@ var SugarGroup = new JS.Class({
     return 'Group "' + this.name + '"';
   },
 
-  add_tab: function(tab, persist) {
+  add_tab: function(tab, persist, callback) {
     console.debug("Group add_tab", tab);
 
     // 1. Map the tab to the group
@@ -84,6 +84,7 @@ var SugarGroup = new JS.Class({
       tab.db_insert({
         success: function(rs) {
           console.debug("Tab insertion was successfull", rs);
+          if(callback != null) callback();
         }
       });
     }

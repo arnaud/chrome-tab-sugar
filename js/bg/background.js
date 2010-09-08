@@ -24,9 +24,14 @@
 
 track('Background', 'Start', 'The extension starts');
 
+trackLoading(0, 'Initializing Tab Sugar...');
+
 // show a loading icon as the browser action icon
 chrome.browserAction.setIcon({path: '/ico/browser_action_loading.png'});
 chrome.browserAction.setTitle({title: "Loading Tab Sugar..."});
+
+// tell the extension that the background page isn't ready just yet
+localStorage.background_page_ready = false;
 
 // disable console debugs when the developer mode is off
 if(localStorage.debug != "true") {
@@ -39,7 +44,10 @@ if(localStorage.shortcut_key!=null) {
 }
 
 var groups = [];
-
+var tabs_to_insert = 0;
+var inserted_tabs = 0;
+var groups_to_insert = 0;
+var inserted_groups = 0;
 
 /**
  * INITIALIZE THE EXTENSION
@@ -48,6 +56,7 @@ var groups = [];
 // At first execution of Tab Sugar...
 
 // check if the version has changed
+trackLoading(10, 'Checking for version updates...');
 var currVersion = getVersion();
 var prevVersion = localStorage['version']
 if (currVersion != prevVersion) {
@@ -60,14 +69,19 @@ if (currVersion != prevVersion) {
   localStorage['version'] = currVersion;
 }
 
+trackLoading(20, 'Migrating the database...');
+
 // check wether the database version is up-to-date
 makeDatabaseUpToDate({success: function() {
   // the database schema are now up-to-date
   var initialized = localStorage.initialized == "true";
+  trackLoading(30, 'Database migrated');
   if(!initialized) {
+    trackLoading(40, 'Initializing the database...');
     // initialize the database
     Storage.init({
       success: function() {
+        trackLoading(50, 'Database initialized');
         // the extension has been initialized with all the already opened tabs
         localStorage.initialized = "true";
         // tab preview feature is ON by default
@@ -81,6 +95,7 @@ makeDatabaseUpToDate({success: function() {
         // the next group will be identified as "group 1"
         localStorage.group_last_index = 0;
         // initialize the extension by listing all the tabs of all the windows
+        trackLoading(60, 'Initializing tabs and groups...');
         chrome.windows.getAll({populate:true}, function (windows) {
           console.debug('chrome.windows.getAll', windows);
           var gid = 1;
@@ -96,36 +111,55 @@ makeDatabaseUpToDate({success: function() {
               type: window.type
             });
             var tabs = window.tabs;
+            tabs_to_insert += tabs.length;
             for(var t in tabs) {
               var tab = tabs[t];
               //if(SugarTab.persistable(tab.url)) {
                 var tab = new SugarTab(tab);
-                group.add_tab(tab, true);
+                group.add_tab(tab, true, function() { inserted_tabs++; } );
               //}
             }
             if(group.tabs.length > 0) {
+              groups_to_insert++;
               group.db_insert({
-                success: function() {}
+                success: function() { inserted_groups++; }
               });
               groups.push(group);
               gid++;
             }
           }
-          // let the windows and groups make a match
-          matchWindowsAndGroups();
-          // show the normal browser action icon
-          chrome.browserAction.setIcon({path: '/ico/browser_action.png'});
-          chrome.browserAction.setTitle({title: "Tab Sugar"});
-          track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs');
+          function waitForGroupsAndTabsToBeInserted() {
+            if(groups_to_insert == inserted_groups && tabs_to_insert == inserted_tabs) {
+              trackLoading(90, 'Tabs and groups initialized');
+              // let the windows and groups make a match
+              matchWindowsAndGroups();
+              // show the normal browser action icon
+              chrome.browserAction.setIcon({path: '/ico/browser_action.png'});
+              chrome.browserAction.setTitle({title: "Tab Sugar"});
+              // tell the extension that the background page is ready now
+              localStorage.background_page_ready = true;
+              trackLoading(100, 'Tab Sugar is ready to use!');
+              track('Background', 'Initialize', 'Initialize the extension with the default features and a listing of each opened windows and tabs');
+            } else {
+              setTimeout(waitForGroupsAndTabsToBeInserted, 500);
+            }
+          }
+          waitForGroupsAndTabsToBeInserted();
         });
       }
     });
   } else { // already initialized
     // let's clean groups in the database (removes the empty unnamed groups)
+    trackLoading(40, 'Synchronizing tabs and groups from the db');
     Storage.clean_groups({
       success: function() {
+        trackLoading(60, 'Groups cleaned up');
         // let's sync with the db
-        syncGroupsFromDb();
+        syncGroupsFromDb(function() {
+          // tell the extension that the background page is ready now
+          trackLoading(100, 'Tab Sugar is ready to use!');
+          localStorage.background_page_ready = true;
+        });
         // if the 'latest updates' feature wasn't set, ever, then set it on by default
         var lu = localStorage.feature_latestupdates;
         if(lu != "true" && lu != "false") localStorage.feature_latestupdates = "true";
@@ -141,3 +175,8 @@ makeDatabaseUpToDate({success: function() {
     });
   }
 }});
+
+function trackLoading(percent, message) {
+  localStorage.background_page_ready = percent == 100;
+  chrome.extension.sendRequest({action: 'loading', percent: percent, message: message});
+}

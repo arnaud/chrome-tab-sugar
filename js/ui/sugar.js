@@ -38,16 +38,15 @@ var back = chrome.extension.getBackgroundPage();
 
 // initializes the dashboard with the groups
 function initUI() {
-  var groups = back.groups;
+  console.debug('initUI');
   // handle the situation where Tab Sugar isn't ready: the background page didn't do its work
-  if(groups==null || groups.length == 0) {
-    console.warn('Couldn\'t initialize the dashboard because groups aren\'t loaded yet in the background page ');
-    //showMessage('Tab Sugar isn\'t ready to rock just now. Please either reload the extension or restart Chrome.');
-    chrome.extension.getBackgroundPage().location.reload();
-    setTimeout(function() { this.location.reload() }, 1000);
+  if(localStorage.background_page_ready != 'true') {
+    $('#loading').refreshLoading(0, 'Loading...').show();
+    console.warn('Couldn\'t initialize the dashboard because groups aren\'t loaded yet in the background page');
     return;
   }
   // update the groups
+  var groups = back.groups;
   for(var g in groups) {
     var group = groups[g];
     var group_ui = group.ui_create();
@@ -121,4 +120,22 @@ $(function() {
   // disable right-click contextual menu
   $.disableContextMenu();
 
+});
+
+
+// live interactions to the dashboard which responds to actual browser events
+// see background.js for events requests sendings
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
+  if(request.action == 'loading') {
+    var percent = request.percent;
+    var message = request.message;
+    $('#loading').refreshLoading(percent, message);
+    if(percent == "100") {
+      setTimeout(function() {
+        initUI();
+        $('#loading').hide();
+      }, 2000);
+    }
+  }
 });

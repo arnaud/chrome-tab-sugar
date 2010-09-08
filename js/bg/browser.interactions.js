@@ -68,6 +68,7 @@ chrome.windows.onCreated.addListener(function(window) {
 // BI02 – Focus a window
 chrome.windows.onFocusChanged.addListener(function(windowId) {
   console.warn('Live interaction:', 'BI02', windowId);
+  track('Browser', 'Focus a window', 'Focus a window');
   if(windowId == chrome.windows.WINDOW_ID_NONE) {
     // unfocus
     //TODO
@@ -80,6 +81,7 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
 // BI03 – Close a window
 chrome.windows.onRemoved.addListener(function(windowId) {
   console.warn('Live interaction:', 'BI03', windowId);
+  track('Browser', 'Close a window', 'Close a window');
   // 1. The user closes a window (Alt+F4)
   getGroupFromWid(windowId, function(group) {
     var name = group.name;
@@ -109,6 +111,7 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 // BI04 – Attach a tab to a window
 chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
   console.warn('Live interaction:', 'BI04', tabId, attachInfo);
+  track('Browser', 'Attach a tab', 'Attach a tab to a window');
   //TODO
 });
 
@@ -142,12 +145,14 @@ chrome.tabs.onCreated.addListener(function(tab) {
 // BI06 – Detach a tab from a window
 chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
   console.warn('Live interaction:', 'BI06', tabId, detachInfo);
+  track('Browser', 'Detach a tab', 'Detach a tab from a window');
   //TODO
 });
 
 // BI07 – Move a tab within a window
 chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
   console.warn('Live interaction:', 'BI07', tabId, moveInfo);
+  track('Browser', 'Move a tab', 'Move a tab within a window');
   //TODO
 });
 
@@ -193,6 +198,7 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
 // BI09 – Select a tab
 chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
   console.warn('Live interaction:', 'BI09', tabId, selectInfo);
+  track('Browser', 'Select a tab', 'Select a tab');
   captureCurrentTab();
 });
 
@@ -235,5 +241,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 // BI11 – Click on the extension action button
 chrome.browserAction.onClicked.addListener(function() {
   console.warn('Live interaction:', 'BI11');
+  track('Browser', 'BI11', 'Click on the extension action button');
   openDashboard();
 });

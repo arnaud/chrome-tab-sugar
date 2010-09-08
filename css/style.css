@@ -429,3 +429,36 @@ section>ul {
   border: none;
   overflow: hidden;
 }
+
+/* Loading */
+
+#loading {
+  display: none;
+  z-index: 99999999;
+  background: #eee;
+  border: 2px solid #fff;
+  padding: 15px;
+  position: absolute;
+  left: 50%;
+  margin-left: -117px;
+  width: 200px;
+  top: 80px;
+}
+#loading span {
+  font-size: 12px;
+  padding-bottom: 5px;
+  display: block;
+  text-align: center;
+}
+#loading progress {
+  display: block;
+  width: inherit;
+}
+#loading a {
+  font-size: 10px;
+  padding-top: 10px;
+  margin-bottom: -4px;
+  display: block;
+  text-align: right;
+  text-decoration: none;
+}

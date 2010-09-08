@@ -38,6 +38,8 @@ function reinitialize() {
   if(confirm("All your TabSugar groups and tabs will be reinitialized.\nAre you sure?")) {
     track('Options', 'Reset', 'Reinitialize the extension', true);
 
+    var debug = localStorage.debug == "true";
+
     //$("#reinit").attr("disabled", true);
 
     // remove the shortcut key from the browser action's description
@@ -45,12 +47,17 @@ function reinitialize() {
 
     // localStorage
     localStorage.clear();
+    if(debug) localStorage.debug = true;
+    localStorage.background_page_ready = false;
     console.debug('- localStorage cleared!');
 
     // database
     Storage.reset({
       success: function () {
         console.debug('- database cleared!');
+        if(window.location != window.parent.window.location) {
+          window.parent.window.location.reload();
+        }
         // reload the extension
         setTimeout(function() {
           reloadTabSugar();
