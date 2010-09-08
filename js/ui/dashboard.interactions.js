@@ -84,7 +84,7 @@ $(function() {
       //&2. The dashboard sends a request to the background page
       var gid = group_ui.uid();
       var selected_tab = $(this);
-      var focused_url = selected_tab.find('.url').html();
+      var focused_url = selected_tab.find('.url').attr('url');
       chrome.extension.sendRequest({
         action: 'DI10', // Open all tabs of a group
         gid: gid,
@@ -99,7 +99,7 @@ $(function() {
       // 1. The user ctrl+clicks on a tab within a group (already done)
       //&2. The dashboard sends a request to the background page
       var tab_ui = $(this);
-      var url = tab_ui.find('.url').html();
+      var url = tab_ui.find('.url').attr('url');
       chrome.extension.sendRequest({
         action: 'DI11', // Open a single tab of a group
         url: url
