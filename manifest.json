@@ -35,8 +35,6 @@
     "chrome://favicon/",
     "http://tabsugar.com/",
     "bookmarks",
-    "idle",
-    "geolocation",
     "contextMenus"
   ]
 }
