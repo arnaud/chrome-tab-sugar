@@ -2,6 +2,12 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.25
+
+ * Removed unnecessary permissions (geolocalisation & idle)
+ * Localization of the dashboard for french support
+ * Better browser and dashboard interactions
+
 h3. 0.9.24
 
  * Fixed a couple of bugs (issues #7 & #11)
