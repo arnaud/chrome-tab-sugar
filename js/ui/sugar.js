@@ -72,7 +72,7 @@ function hideMessage() {
 // displays the 'latest updates' section in the dashboard
 function showLatestUpdates() {
   $(document).ready(function() {
-      var title = $('<p>').addClass('title').html('lastest updates');
+      var title = $('<p>').addClass('title').html(chrome.i18n.getMessage('latestUpdates'));
       $('#updates').append(title);
   });
   new TWTR.Widget({

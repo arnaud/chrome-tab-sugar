@@ -1,0 +1,53 @@
+{
+  "extName": {
+    "message": "Tab Sugar (version alpha)"
+  },
+  "extDescription": {
+    "message": "Organisez et gérez vos onglets!"
+  },
+  "browserActionLoading": {
+    "message": "Tab Sugar en cours de chargement..."
+  },
+  "optionsTitle": {
+    "message": "Options"
+  },
+  "feedback": {
+  	"message": "Impressions"
+  },
+  "latestUpdates": {
+  	"message": "actualités"
+  },
+  "groupTitlePlaceholder": {
+    "message": "Nommer ce groupe&hellip;"
+  },
+  "optionsDevMode": {
+    "message": "Mode développeur"
+  },
+  "optionsReset": {
+    "message": "Réinitialiser Tab Sugar&hellip;"
+  },
+  "optionsFeatureTabsPreview": {
+    "message": "Prévisualiser les onglets"
+  },
+  "optionsFeatureRearrangeTabs": {
+    "message": "Réarranger les onglets"
+  },
+  "optionsFeatureSnapGroups": {
+    "message": "Ajuster la position des groupes"
+  },
+  "optionsFeatureKeyboardShortcut": {
+    "message": "Raccourci clavier"
+  },
+  "optionsFeatureLatestUpdates": {
+    "message": "Afficher les actualités"
+  },
+  "optionsTraces": {
+    "message": "Traces de développement"
+  },
+  "optionsActivate": {
+    "message": "Activer"
+  },
+  "optionsExperimental": {
+    "message": "expérimental"
+  }
+}

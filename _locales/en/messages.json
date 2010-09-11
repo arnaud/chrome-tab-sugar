@@ -1,0 +1,53 @@
+{
+  "extName": {
+    "message": "Tab Sugar (alpha version)"
+  },
+  "extDescription": {
+    "message": "Organize and manage your tabs from a single page!"
+  },
+  "browserActionLoading": {
+    "message": "Loading Tab Sugar..."
+  },
+  "optionsTitle": {
+    "message": "Options"
+  },
+  "feedback": {
+    "message": "Feedback"
+  },
+  "latestUpdates": {
+    "message": "latest updates"
+  },
+  "groupTitlePlaceholder": {
+    "message": "Name this group&hellip;"
+  },
+  "optionsDevMode": {
+    "message": "Developer mode"
+  },
+  "optionsReset": {
+    "message": "Reset Tab Sugar&hellip;"
+  },
+  "optionsFeatureTabsPreview": {
+    "message": "Show tabs preview"
+  },
+  "optionsFeatureRearrangeTabs": {
+    "message": "Auto rearrange group tabs"
+  },
+  "optionsFeatureSnapGroups": {
+    "message": "Snap groups"
+  },
+  "optionsFeatureKeyboardShortcut": {
+    "message": "Keyboard shortcut"
+  },
+  "optionsFeatureLatestUpdates": {
+    "message": "Show latest updates"
+  },
+  "optionsTraces": {
+    "message": "Developer traces"
+  },
+  "optionsActivate": {
+    "message": "Activate"
+  },
+  "optionsExperimental": {
+    "message": "experimental"
+  }
+}

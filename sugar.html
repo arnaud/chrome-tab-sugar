@@ -48,13 +48,13 @@
   <div id="loading"></div>
   <div id="top">
     <div class="left">
-      <a href="http://tabsugar.com/" target="_blank">Tab Sugar</a> &#945; <script>document.write(localStorage.version)</script>
+      <a href="http://tabsugar.com/" target="_blank"><script>document.write(chrome.i18n.getMessage("extName"))</script></a> &#945; <script>document.write(localStorage.version)</script>
     </div>
     <label for="search">Search:</label>
     <input id="search" type="search" placeholder="search a tab..."></input>
-    <a href="https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje" target="_blank" class="feedback">Feedback</a>
+    <a href="https://chrome.google.com/extensions/detail/libokbfffpaopdjmeofdfpmlanaenaje" target="_blank" class="feedback"><script>document.write(chrome.i18n.getMessage("feedback"))</script></a>
     |
-    <a rel="Tab Sugar - Options" href="options.html" class="options">Options</a>
+    <a rel="Tab Sugar - Options" href="options.html" class="options"><script>document.write(chrome.i18n.getMessage("optionsTitle"))</script></a>
   </div>
   <div id="dashboard">
     <div id="updates">

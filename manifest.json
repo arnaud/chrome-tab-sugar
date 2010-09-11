@@ -1,7 +1,8 @@
 {
-  "name": "Tab Sugar (alpha version)",
+  "name": "__MSG_extName__",
   "version": "0.9.24",
-  "description": "Organize and manage your tabs from a single page!",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
   "icons": {
     "16": "ico/16.png",
     "48": "ico/48.png",
@@ -9,7 +10,7 @@
   },
   "browser_action": {
     "default_icon": "ico/browser_action_loading.png",
-    "default_title": "Loading Tab Sugar..."
+    "default_title": "__MSG_browserActionLoading__"
   },
   "content_scripts": [
     {

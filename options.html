@@ -35,6 +35,21 @@
   <script src="js/lib/JS.Class.2-1-5/core.js" type="text/javascript"></script>
   <script src="js/lib/JS.Class.2-1-5/stdlib.js" type="text/javascript"></script>
   <script src="js/lib/jquery.client.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('h1').html('Tab Sugar '+chrome.i18n.getMessage("optionsTitle"));
+    $('h2').html(chrome.i18n.getMessage("optionsTitle"));
+    $('.activate').html(chrome.i18n.getMessage("optionsActivate"));
+    $('.experimental').html('('+chrome.i18n.getMessage("optionsExperimental")+')');
+    $('#devmode').html(chrome.i18n.getMessage("optionsDevMode"));
+    $('#reinit').parent().find('>label').first().html(chrome.i18n.getMessage("optionsDevMode")+':');
+    $('#preview').parent().find('>label').first().html(chrome.i18n.getMessage("optionsFeatureTabsPreview")+':');
+    $('#autoresize').parent().find('>label').first().html(chrome.i18n.getMessage("optionsFeatureRearrangeTabs")+':');
+    $('#snapgroups').parent().find('>label').first().html(chrome.i18n.getMessage("optionsFeatureSnapGroups")+':');
+    $('#shortcut_key').parent().find('>label').first().html(chrome.i18n.getMessage("optionsFeatureKeyboardShortcut")+':');
+    $('#updates').parent().find('>label').first().html(chrome.i18n.getMessage("optionsFeatureLatestUpdates")+':');
+  });
+  </script>
 </head>
 <body id="options">
   <script src="js/ga.js" type="text/javascript"></script>
@@ -48,39 +63,39 @@
     <span id="message" style="display: none"></span>
   </header>
   <div id="content">
-    <span id="devmode" href="#" onclick="devmode()">Developer mode</span>
+    <span id="devmode" href="#" onclick="devmode()"></span>
     <h2>Options</h2>
     <div class="dev advanced">
-      Developer mode:
+      <label></label>
       <input type="button" id="reinit" href="#" onclick="reinitialize()" value="Reset Tab Sugar&hellip;"></input>
     </div>
     <div id="innercontent">
       <div class="item">
-        <label for="preview" class="main">Show tab previews:</label>
-        <input type="checkbox" id="preview" onclick="preview()" /><label for="preview">Activate</label>
+        <label for="preview" class="main"></label>
+        <input type="checkbox" id="preview" onclick="preview()" /><label class="activate" for="preview"></label>
       </div>
       <div class="item">
-        <label for="autoresize" class="main">Auto rearrange group tabs:</label>
-        <input type="checkbox" id="autoresize" onclick="autoresize()" /><label for="autoresize">Activate</label>
+        <label for="autoresize" class="main"></label>
+        <input type="checkbox" id="autoresize" onclick="autoresize()" /><label class="activate" for="autoresize"></label>
       </div>
       <div class="item">
-        <label for="snapgroups" class="main">Snap groups:</label>
-        <input type="checkbox" id="snapgroups" onclick="snapgroups()" /><label for="snapgroups">Activate</label>
-        <span class="experimental">(experimental)</span>
+        <label for="snapgroups" class="main"></label>
+        <input type="checkbox" id="snapgroups" onclick="snapgroups()" /><label class="activate" for="snapgroups"></label>
+        <span class="experimental"></script>)</span>
       </div>
       <div class="item">
-        <label class="main">Keyboard shortcut:</label>
+        <label class="main"></label>
         <input type="checkbox" id="shortcut_ctrl" onclick="shortcut()" /><label for="shortcut_ctrl">Ctrl</label>
         +<input type="checkbox" id="shortcut_shift" onclick="shortcut()" /><label for="shortcut_shift">Shift</label>
         +<select id="shortcut_key" onchange="shortcut()">
           <option value="esc">esc</option>
           <option value="space">space</option>
         </select>
-        <span class="experimental">(experimental)</span>
+        <span class="experimental"></span>
       </div>
       <div class="item">
-        <label for="updates" class="main">Show latest updates:</label>
-        <input type="checkbox" id="updates" onclick="updates()" /><label for="updates">Activate</label>
+        <label for="updates" class="main"></label>
+        <input type="checkbox" id="updates" onclick="updates()" /><label class="activate" for="updates"></label>
       </div>
       <!--
       <label for="opening">Tab Sugar opens:</label>
@@ -93,7 +108,7 @@
       -->
       <div class="item advanced">
         <label for="traces" class="main">Developer traces:</label>
-        <input type="checkbox" id="traces" onclick="traces()" /><label for="traces">Activate</label>
+        <input type="checkbox" id="traces" onclick="traces()" /><label class="activate" for="traces"></label>
       </div>
     </div>
   </div>
