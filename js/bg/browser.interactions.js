@@ -112,7 +112,49 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
   console.warn('Live interaction:', 'BI04', tabId, attachInfo);
   track('Browser', 'Attach a tab', 'Attach a tab to a window');
-  //TODO
+  // 1. The user attaches a tab to a window
+  //&2. The browser sends a request to the background page
+  var tid = tabId;
+  var wid_dest = attachInfo.newWindowId;
+  var index_dest = attachInfo.newPosition;
+  var detachInfo = JSON.parse(sessionStorage.detached_tab);
+  var wid_src = detachInfo.wid;
+  var index_src = detachInfo.index;
+  // 3. The background page updates the tab's window and index in the database
+  sessionStorage.detached_tab = null; // nullify the detached tab data in storage
+  getGroupFromWid(wid_src, function(group_src) {
+    var gid_src = group_src.id;
+    getGroupFromWid(wid_dest, function(group_dest) {
+      var gid_dest = group_dest.id;
+      Storage.update({
+        table: "tabs",
+        conditions: "`group_id`="+gid_src+" AND `index`="+index_src,
+        changes: {
+          group_id: gid_dest,
+          index: index_dest
+        },
+        success: function() {
+          syncGroupsFromDb();
+          // 4. The background page sends a request to the dashboard
+          chrome.extension.sendRequest({
+            action: "BI04",
+            tab_src: {
+              group_id: gid_src,
+              index: index_src
+            },
+            tab_dest: {
+              group_id: gid_dest,
+              index: index_dest
+            }
+          });
+        },
+        error: function(err) {
+          console.error('BI04 - Attach a tab to a window', err);
+          chrome.extension.sendRequest({action: 'error', message: 'Error while moving a tab in the db [BI04]'});
+        }
+      });
+    });
+  });
 });
 
 // BI05 – Create a tab
@@ -146,7 +188,13 @@ chrome.tabs.onCreated.addListener(function(tab) {
 chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
   console.warn('Live interaction:', 'BI06', tabId, detachInfo);
   track('Browser', 'Detach a tab', 'Detach a tab from a window');
-  //TODO
+  // 1. The user detaches a tab from its window
+  //&2. The browser sends a request to the background page
+  var tid = tabId;
+  var wid = detachInfo.oldWindowId;
+  var index = detachInfo.oldPosition;
+  // 3. The background page keeps track of the currently dragged tab
+  sessionStorage.detached_tab = JSON.stringify({wid: wid, tid: tid, index: index});
 });
 
 // BI07 – Move a tab within a window

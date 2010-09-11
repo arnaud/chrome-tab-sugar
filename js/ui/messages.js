@@ -55,6 +55,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(interaction == "BI02") {
     // BI02 - Focus a window
     //TODO
+    console.warn('TODO: BI02');
     
   } else if(interaction == "BI03") {
     // BI03 - Close a window
@@ -65,7 +66,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
   } else if(interaction == "BI04") {
     // BI04 - Attach a tab to a window
-    //TODO
+    var tab_src = request.tab_src;
+    var tab_dest = request.tab_dest;
+    // 5. The dashboard moves the tab from its former window to its new one
+    var tab_src = new SugarTab(tab_src);
+    var tab_ui = $.findTab(tab_src.group_id, tab_src);
+    var tab_dest = new SugarTab(tab_dest);
+    var group_ui = $.findGroup(tab_dest.group_id);
+    var tab_dest_ui = tab_ui.clone()
+      .removeClass('ui-draggable-dragging')
+      .css('top','')
+      .css('left','');
+    tab_ui.close();
+    group_ui.addTab(tab_dest_ui, tab_dest.index);
+    group_ui.autoFitTabs();
 
   } else if(interaction == "BI05") {
     // BI05 - Create a tab
@@ -80,11 +94,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
   } else if(interaction == "BI06") {
     // BI06 - Detach a tab from a window
-    //TODO
+    // Nothing to do
 
   } else if(interaction == "BI07") {
     // BI07 - Move a tab within a window
     //TODO
+    console.warn('TODO: BI07');
 
   } else if(interaction == "BI08") {
     // BI08 - Close a tab
@@ -100,6 +115,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(interaction == "BI09") {
     // BI09 - Select a tab
     //TODO
+    console.warn('TODO: BI09');
 
   } else if(interaction == "BI10") {
     // BI10 - Update a tab

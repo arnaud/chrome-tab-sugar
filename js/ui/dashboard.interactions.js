@@ -179,15 +179,15 @@ $(function() {
         }
         var src_index = tab_ui.indexWithinParent();
         // the tab should fade out and appear in a newly created group
-        tab_ui.fadeOut(function() {
+        /*tab_ui.fadeOut(function() {
           $(this).remove();
           dest_group_ui.addTab(tab_ui);
           tab_ui.show();
           src_group_ui.autoFitTabs();
           dest_group_ui.autoFitTabs();
-
+*/
           // 2. The dashboard sends a request to the background page
-          var dest_index = tab_ui.indexWithinParent();
+          var dest_index = dest_group_ui.tabs().length;
           chrome.extension.sendRequest({
             action: 'DI08', // Move a tab to an existing group
             src_gid: src_group_id,
@@ -197,7 +197,7 @@ $(function() {
           },
           function(response) {
           });
-        });
+/*        });*/
       }
     });
 

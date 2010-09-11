@@ -266,8 +266,21 @@
   }
 
   // adds a tab into a group
-  $.fn.addTab = function(tab) {
-    this.find('ul').append( tab );
+  $.fn.addTab = function(tab, index) {
+    console.debug('addTab', tab.id, index);
+    if(this.isGroup()) {
+      if(index == null) {
+        this.find('ul').append( tab );
+      } else {
+        if(index == 0) {
+          this.find('.tab:eq(0)').before(tab);
+        } else {
+          this.find('.tab:eq('+(index-1)+')').after(tab);
+        }
+      }
+    } else {
+      console.error('The addTab method only applies to groups');
+    }
     return this;
   },
 

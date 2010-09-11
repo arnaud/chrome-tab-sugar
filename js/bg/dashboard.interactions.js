@@ -206,7 +206,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(interaction == "DI08") {
     // DI08 – Move a tab to an existing group
     var src_gid = request.src_gid;
-    var src_index = request.src_index;
+    var src_index = request.src_index+1;
     var dest_gid = request.dest_gid;
     var dest_index = request.dest_index;
     // 3. The background page sends a request to the browser to move the
@@ -216,9 +216,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         chrome.tabs.move(src_tab.id, {windowId: dest_window.id, index: dest_index})
       });
     });
+    // The rest is taken care of by both the BI04 and BI06 events that just were triggered
+
     // 4. -On success-, the background page updates the tab’s group id in the database
     // 4.2. move the tab
-    Storage.update({
+    /*Storage.update({
       table: "tabs",
       conditions: "`group_id`="+src_gid+" AND `index`="+src_index,
       changes: {
@@ -234,7 +236,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       error: function() {
         chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
       }
-    });
+    });*/
 
   } else if(interaction == "DI09") {
     // DI09 – Close a tab
