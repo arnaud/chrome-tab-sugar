@@ -55,7 +55,7 @@ function initUI() {
     for(var t in group.tabs) {
       var tab = group.tabs[t];
       group_ui.addTab( tab.ui_create() );
-      chrome.extension.sendRequest({action: 'gimme the tab preview', tab: tab});
+      //chrome.extension.sendRequest({action: 'gimme the tab preview', tab: tab});
     }
     group_ui.autoFitTabs();
   }

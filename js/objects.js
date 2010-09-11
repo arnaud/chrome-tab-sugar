@@ -275,6 +275,7 @@ var SugarTab = new JS.Class({
     if(this.selected == false) this.selected = 0;
     else if(this.selected == true) this.selected = 1;
     else this.selected = 0;
+    this.preview = item.preview;
   },
 
   to_s: function() {
@@ -352,7 +353,6 @@ var SugarTab = new JS.Class({
 
   ui_create: function() {
     console.debug("Tab UI create");
-    this.preview = localStorage['preview-'+this.url];
     var preview = $('<img>').addClass('preview');
     if(this.preview==null || localStorage.feature_tab_preview!="true") {
       preview

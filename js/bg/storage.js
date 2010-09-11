@@ -296,6 +296,13 @@ var Storage = new JS.Class({
       if(conditions) {
         query += " WHERE "+conditions;
       }
+      // handle the case when we select a tab => let's get its preview too
+      if(table == "tabs") {
+        query = "SELECT "+what+", `preview` FROM `"+table+"` LEFT OUTER JOIN `previews` ON `tabs`.`url`=`previews`.`url`";
+        if(conditions) {
+          query += " WHERE "+conditions;
+        }
+      }
       Storage.execute_sql({
         query: query,
         success: settings.success,
@@ -313,6 +320,7 @@ var Storage = new JS.Class({
       object = Storage._parse(object);
       for(var attr in object) {
         var val = object[attr];
+        if(table == "tabs" && attr == "preview") continue; // because of the method "select" in which we handle the case when we select a tab
         if(attributes.length > 0) {
           attributes += ", ";
           values += ", ";

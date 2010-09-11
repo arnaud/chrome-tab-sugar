@@ -239,7 +239,7 @@ $(function() {
           dest_tab_ui.show();
           src_group_ui.autoFitTabs();
           dest_group_ui.autoFitTabs();
-          chrome.extension.sendRequest({action: 'gimme the tab preview', tab: dest_tab});
+          //chrome.extension.sendRequest({action: 'gimme the tab preview', tab: dest_tab});
         });
 
         // 2. The dashboard sends a request to the background page
