@@ -2,6 +2,10 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.27
+
+ * Major bug fixes: tabs can now be moved again & tab previews are back
+
 h3. 0.9.26
 
  * Faster tab previews
