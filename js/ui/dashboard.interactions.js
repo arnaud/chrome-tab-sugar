@@ -173,7 +173,6 @@ $(function() {
         var dest_group_ui = $(this);
         var src_group_id = src_group_ui.uid();
         var dest_group_id = dest_group_ui.uid();
-        console.debug(src_group_ui, dest_group_ui);
         if(src_group_ui.get(0) == dest_group_ui.get(0)) {
           return false;
         }
@@ -188,6 +187,7 @@ $(function() {
 */
           // 2. The dashboard sends a request to the background page
           var dest_index = dest_group_ui.tabs().length;
+          console.error("Sending a DI08 request!");
           chrome.extension.sendRequest({
             action: 'DI08', // Move a tab to an existing group
             src_gid: src_group_id,

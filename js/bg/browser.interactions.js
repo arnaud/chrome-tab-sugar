@@ -247,28 +247,30 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
 chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
   console.warn('Live interaction:', 'BI09', tabId, selectInfo);
   track('Browser', 'Select a tab', 'Select a tab');
-  // Select the tab in the db
-  var wid = selectInfo.windowId;
-  getGroupFromWid(wid, function(group) {
-  });
-  Storage.update({
-    table: "tabs",
-    conditions: "`group_id`="+gid+" AND `index`="+index,
-    changes: {
-      selected: 1
-    },
-    success: function() {
-      syncGroupsFromDb();
-      // 4. The background page sends a request to the dashboard
-      chrome.extension.sendRequest({action: "BI10", gid: gid, tab: tab});
-    },
-    error: function(err) {
-      console.error('BI09 - Select a tab', err);
-      chrome.extension.sendRequest({action: 'error', message: 'Error while selecting a tab in the db [BI09]'});
-    }
-  });
-  // Also capture the tab so that we prepare a preview that'll be displayed in the dashboard
+  // capture the tab so that we prepare a preview that'll be displayed in the dashboard
   captureCurrentTab();
+  // Also select the tab in the db
+  /*var wid = selectInfo.windowId;
+  getGroupFromWid(wid, function(group) {
+    var gid = group.id;
+    var index = 0; //TODO
+    Storage.update({
+      table: "tabs",
+      conditions: "`group_id`="+gid+" AND `index`="+index,
+      changes: {
+        selected: 1
+      },
+      success: function() {
+        syncGroupsFromDb();
+        // 4. The background page sends a request to the dashboard
+        chrome.extension.sendRequest({action: "BI10", gid: gid, tab: tab});
+      },
+      error: function(err) {
+        console.error('BI09 - Select a tab', err);
+        chrome.extension.sendRequest({action: 'error', message: 'Error while selecting a tab in the db [BI09]'});
+      }
+    });
+  });*/
 });
 
 // BI10 – Update a tab

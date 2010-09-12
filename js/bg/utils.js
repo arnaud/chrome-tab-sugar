@@ -103,6 +103,16 @@ function captureCurrentTab() {
             t.update_preview(dataUrl);
             // let's request the extension to update the preview accordingly
             chrome.extension.sendRequest({action: "update tab preview", tab: tab, preview: dataUrl});
+            // also let's update the current 'groups' instance with the new preview
+            for(var g in groups) {
+              var group = groups[g];
+              for(var t in group.tabs) {
+                var tab2 = group.tabs[t];
+                if(tab2.url == tab.url) {
+                  groups[g].tabs[t].preview = dataUrl;
+                }
+              }
+            }
           }
           sourceImage.src = dataUrl;
         });
@@ -252,7 +262,7 @@ function matchWindowsAndGroups(callback) {
 }
 
 // finds out which tab corresponds to a group id and index
-function getTabFromTid(gid, index, callback) {
+function getTabFromTid(gid, index, callback, error) {
   console.debug('getTabFromTid', gid, index);
   getWindowFromGid(gid, function(window) {
     var tab_found = false;
@@ -272,8 +282,9 @@ function getTabFromTid(gid, index, callback) {
       callback(window, tab);
     } else {
       console.error('Couldn\'t find a match for the tab', gid, index);
+      if(error) error();
     }
-  });
+  }, error);
 }
 
 // find the window a tab belongs to
