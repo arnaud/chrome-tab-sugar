@@ -187,7 +187,6 @@ $(function() {
 */
           // 2. The dashboard sends a request to the background page
           var dest_index = dest_group_ui.tabs().length;
-          console.error("Sending a DI08 request!");
           chrome.extension.sendRequest({
             action: 'DI08', // Move a tab to an existing group
             src_gid: src_group_id,

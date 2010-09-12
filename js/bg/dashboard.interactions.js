@@ -217,7 +217,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     //    corresponding tab from its current window to the destination window
 
     function onError() {
-      console.error('onError');
       // 4. -On success-, the background page updates the tab’s group id in the database
       // 4.2. move the tab
       Storage.update({
@@ -228,7 +227,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
           index: dest_index
         },
         success: function() {
-      console.error('update successful');
           // refresh the groups
           syncGroupsFromDb(function() {
             sendResponse({status: "OK"});
@@ -247,7 +245,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
           });
         },
         error: function() {
-      console.error('update erroneous');
           chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
         }
       });
