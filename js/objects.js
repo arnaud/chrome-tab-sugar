@@ -154,13 +154,29 @@ var SugarGroup = new JS.Class({
 
   ui_create: function() {
     console.debug("Group UI create");
-    //if(!this.id) this.id = Math.floor(Math.random()*1001);
-    var group = $('<section class="group" id="group-'+this.id+'"><input type="text" placeholder="'+chrome.i18n.getMessage('groupTitlePlaceholder')+'" class="title" value="'+this.name+'" spellcheck="false"></input><div class="close"></div></section>')
+    var group = $('<section>')
+      .attr('id', 'group-'+this.id)
+      .addClass('group '+this.type)
       .width(this.width)
       .height(this.height)
       .css('position', 'absolute')
-      .css('top', this.posY+'px')
-      .css('left', this.posX+'px')
+      .offset({
+        top: this.posY,
+        left: this.posX
+      })
+      .append(
+        $('<input type="text">')
+          .addClass('title')
+          .attr({
+            'placeholder': chrome.i18n.getMessage('groupTitlePlaceholder'),
+            'spellcheck': false
+          })
+          .val(this.name)
+      )
+      .append(
+        $('<div>')
+          .addClass('close')
+      )
       .append($('<ul></ul>'))
       .append($('<div class="new_tab" />'))
       .append($('<div class="debug" />'))

@@ -278,6 +278,12 @@ section>ul {
   margin-left: 4px;
   font-size: 10px;
 }
+.group.app {
+  background: #eef;
+}
+.group.popup {
+  background: #efe;
+}
 .snapper {
   position: absolute;
   z-index: -10;

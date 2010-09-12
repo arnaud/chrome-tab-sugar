@@ -66,13 +66,13 @@ function openDashboard() {
   });
 }
 
-// captures the current tab as a 200px-width PNG snapshot
+// captures the current tab as a 320px-width JPEG snapshot
 function captureCurrentTab() {
   console.debug('captureCurrentTab');
   chrome.windows.getCurrent(function(window) {
     chrome.tabs.getSelected(null, function(tab) {
       //if(SugarTab.persistable(tab.url)) {
-        chrome.tabs.captureVisibleTab(null, function (dataUrl) {
+        chrome.tabs.captureVisibleTab(null, {format: 'jpeg'}, function (dataUrl) {
           var sourceImage = new Image();
           sourceImage.onload = function() {
             // source
@@ -222,6 +222,11 @@ function bindWindowToGroup(wid, gid) {
   sessionStorage['w'+wid] = gid;
 }
 
+// binds a window to a tab in the session storage
+function bindWindowToTab(wid, tid) {
+  sessionStorage['t'+tid] = wid;
+}
+
 // let windows and groups match together
 // also keep a trace of tids and their matching gids
 function matchWindowsAndGroups(callback) {
@@ -239,7 +244,7 @@ function matchWindowsAndGroups(callback) {
       // match tab/window
       for(var t in window.tabs) {
         var tab = window.tabs[t];
-        sessionStorage['t'+tab.id] = window.id;
+        bindWindowToTab(tab.id, window.id);
       }
     }
     if(callback) callback();

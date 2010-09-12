@@ -56,7 +56,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     });
 
 
-  /* Dashboard Interactions */
+  /**
+   * DASHBOARD INTERACTIONS
+   * @see http://github.com/arnaud/chrome-tab-sugar/wiki/Interactions
+   */
 
 
   } else if(interaction == "DI01") {
@@ -170,6 +173,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   } else if(interaction == "DI06") {
     // DI06 – Move a tab to the dashboard
     var src_tab = request.src_tab;
+    src_tab.index++;
     var dest_group = request.dest_group;
     // 3. The background page sends a request to the browser to close the corresponding tab
     getTabFromTid(src_tab.group_id, src_tab.index, function(window, tab) {
@@ -217,26 +221,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       });
     });
     // The rest is taken care of by both the BI04 and BI06 events that just were triggered
-
-    // 4. -On success-, the background page updates the tab’s group id in the database
-    // 4.2. move the tab
-    /*Storage.update({
-      table: "tabs",
-      conditions: "`group_id`="+src_gid+" AND `index`="+src_index,
-      changes: {
-        group_id: dest_gid,
-        index: dest_index
-      },
-      success: function() {
-        // refresh the groups
-        syncGroupsFromDb(function() {
-          sendResponse({status: "OK"});
-        });
-      },
-      error: function() {
-        chrome.extension.sendRequest({action: 'error', message: 'Error while moving the tab in the db'});
-      }
-    });*/
 
   } else if(interaction == "DI09") {
     // DI09 – Close a tab
@@ -335,14 +319,18 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
       var group = getGroupFromGid(gid);
       var tabs = group.tabs;
       chrome.windows.create({ url: focused_url }, function(window) {
-        // with all its tabs
+        // bind the group to the new window
+        bindWindowToGroup(window.id, group.id);
+        // let's create all its tabs
         for(var t in tabs) {
           var tab = tabs[t];
           var index = parseInt(t);
           chrome.tabs.create({ windowId: window.id, index: index, url: tab.url, selected: false });
         }
-        // bind the group to the new window
-        bindWindowToGroup(window, group);
+        // refresh the groups
+        syncGroupsFromDb(function() {
+          sendResponse({status: "OK"});
+        });
       });
     });
   }
