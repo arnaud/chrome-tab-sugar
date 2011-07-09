@@ -2,6 +2,12 @@ h1. Tab Sugar - the Google Chrome extension
 
 h2. Current version: 0.9.x
 
+h3. 0.9.28
+
+ * Re-enable the tabs thumbnails feature for Chrome 11+
+ * Adds some specs coverage with Jasmine
+ * Remove unnecessary traces
+
 h3. 0.9.27
 
  * Major bug fixes: tabs can now be moved again & tab previews are back
