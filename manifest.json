@@ -36,6 +36,7 @@
     "chrome://favicon/",
     "http://tabsugar.com/",
     "bookmarks",
-    "contextMenus"
+    "contextMenus",
+    "<all_urls>"
   ]
 }
