@@ -94,7 +94,8 @@ var SugarGroup = new JS.Class({
     console.debug("Group remove_tab", tab);
     var i = 0;
     for(var t in this.tabs) {
-      if(t.url == tab.url) {
+      var cur_tab = this.tabs[t];
+      if(cur_tab.url == tab.url) {
         this.tabs.splice(i, 1);
       }
       i++;
