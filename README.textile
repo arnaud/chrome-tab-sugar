@@ -10,7 +10,7 @@ Tab Sugar aims to be the "Tab Candy":http://www.azarask.in/blog/post/tabcandy/ e
  * Regroup 20+ tabs inside a unique group: they'll stack up
  * Span out stacked-up tabs - get a quick look at a group content
 
-!https://chrome.google.com/extensions/img/libokbfffpaopdjmeofdfpmlanaenaje/1281892641.14/screenshot_big/6001!
+!http://tabsugar.com/assets/img/screenshots/1.png!
 
 h2. Install
 
