@@ -7,6 +7,6 @@ describe("Utils", function() {
     var version = getVersion();
     
     expect(version).toBeDefined();
-    expect(version.substring(0,3)).toEqual("0.9");
+    expect(version.substring(0,3)).toEqual("0.1");
   });
 });
