@@ -30,7 +30,7 @@
 // see background.js for events requests sendings
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   var interaction = request.action;
-  console.warn('Live interaction:', interaction, request);
+  console.log('Live interaction:', interaction, request);
 
   if(interaction == "BI01") {
     // BI01 - Create a group

@@ -71,7 +71,7 @@ function captureCurrentTab() {
   console.debug('captureCurrentTab');
   chrome.windows.getCurrent(function(window) {
     chrome.tabs.getSelected(null, function(tab) {
-      //if(SugarTab.persistable(tab.url)) {
+      if(SugarTab.persistable(tab.url)) {
         chrome.tabs.captureVisibleTab(null, {format: 'jpeg'}, function (dataUrl) {
           var sourceImage = new Image();
           sourceImage.onload = function() {
@@ -116,7 +116,7 @@ function captureCurrentTab() {
           }
           sourceImage.src = dataUrl;
         });
-      //}
+      }
     });
   });
 }
@@ -371,4 +371,3 @@ function syncGroupsFromDb(callback) {
     }
   });
 }
-

@@ -29,7 +29,7 @@
 
 // BI01 – Create a window
 chrome.windows.onCreated.addListener(function(window) {
-  console.warn('Live interaction:', 'BI01', window);
+  console.log('Live interaction:', 'BI01', window);
   track('Browser', 'Create a window', 'Create a window');
   // handle when a window is created because of a dashboard interaction
   if(sessionStorage.new_window_from_dashboard == "true") {
@@ -67,7 +67,7 @@ chrome.windows.onCreated.addListener(function(window) {
 
 // BI02 – Focus a window
 chrome.windows.onFocusChanged.addListener(function(windowId) {
-  console.warn('Live interaction:', 'BI02', windowId);
+  console.log('Live interaction:', 'BI02', windowId);
   track('Browser', 'Focus a window', 'Focus a window');
   if(windowId == chrome.windows.WINDOW_ID_NONE) {
     // unfocus
@@ -80,7 +80,7 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
 
 // BI03 – Close a window
 chrome.windows.onRemoved.addListener(function(windowId) {
-  console.warn('Live interaction:', 'BI03', windowId);
+  console.log('Live interaction:', 'BI03', windowId);
   track('Browser', 'Close a window', 'Close a window');
   // 1. The user closes a window (Alt+F4)
   getGroupFromWid(windowId, function(group) {
@@ -110,7 +110,7 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 
 // BI04 – Attach a tab to a window
 chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
-  console.warn('Live interaction:', 'BI04', tabId, attachInfo);
+  console.log('Live interaction:', 'BI04', tabId, attachInfo);
   track('Browser', 'Attach a tab', 'Attach a tab to a window');
   // 1. The user attaches a tab to a window
   //&2. The browser sends a request to the background page
@@ -159,7 +159,7 @@ chrome.tabs.onAttached.addListener(function(tabId, attachInfo) {
 
 // BI05 – Create a tab
 chrome.tabs.onCreated.addListener(function(tab) {
-  console.warn('Live interaction:', 'BI05', tab);
+  console.log('Live interaction:', 'BI05', tab);
   track('Browser', 'Create a tab', 'Create a tab in a window');
   // 1. The user opens a new tab
   //&2. The browser sends a request to the background page
@@ -186,7 +186,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
 
 // BI06 – Detach a tab from a window
 chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
-  console.warn('Live interaction:', 'BI06', tabId, detachInfo);
+  console.log('Live interaction:', 'BI06', tabId, detachInfo);
   track('Browser', 'Detach a tab', 'Detach a tab from a window');
   // 1. The user detaches a tab from its window
   //&2. The browser sends a request to the background page
@@ -199,14 +199,14 @@ chrome.tabs.onDetached.addListener(function(tabId, detachInfo) {
 
 // BI07 – Move a tab within a window
 chrome.tabs.onMoved.addListener(function(tabId, moveInfo) {
-  console.warn('Live interaction:', 'BI07', tabId, moveInfo);
+  console.log('Live interaction:', 'BI07', tabId, moveInfo);
   track('Browser', 'Move a tab', 'Move a tab within a window');
   //TODO
 });
 
 // BI08 – Close a tab
 chrome.tabs.onRemoved.addListener(function(tabId) {
-  console.warn('Live interaction:', 'BI08', tabId);
+  console.log('Live interaction:', 'BI08', tabId);
   track('Browser', 'Close a tab', 'Close a tab in a window');
   // 1. The user closes a tab
   //&2. The browser sends a request to the background page
@@ -245,7 +245,7 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
 
 // BI09 – Select a tab
 chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
-  console.warn('Live interaction:', 'BI09', tabId, selectInfo);
+  console.log('Live interaction:', 'BI09', tabId, selectInfo);
   track('Browser', 'Select a tab', 'Select a tab');
   // capture the tab so that we prepare a preview that'll be displayed in the dashboard
   captureCurrentTab();
@@ -275,7 +275,7 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
 
 // BI10 – Update a tab
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  console.warn('Live interaction:', 'BI10', tabId, changeInfo, tab);
+  console.log('Live interaction:', 'BI10', tabId, changeInfo, tab);
   //if(changeInfo.status == "complete") {
     track('Browser', 'Update a tab', 'Update a tab in a window');
     // 1. The user changes the URL of a tab, navigates through a link, browse the web
@@ -311,7 +311,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 // BI11 – Click on the extension action button
 chrome.browserAction.onClicked.addListener(function() {
-  console.warn('Live interaction:', 'BI11');
+  console.log('Live interaction:', 'BI11');
   track('Browser', 'BI11', 'Click on the extension action button');
   openDashboard();
 });

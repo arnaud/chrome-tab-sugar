@@ -11,6 +11,9 @@
   "optionsTitle": {
     "message": "Options"
   },
+  "logsTitle": {
+    "message": "Logs"
+  },
   "feedback": {
   	"message": "Impressions"
   },

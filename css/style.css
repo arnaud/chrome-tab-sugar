@@ -468,3 +468,28 @@ section>ul {
   text-align: right;
   text-decoration: none;
 }
+
+/* Logs */
+
+.logs_content #actions {
+  height: 20px;
+  background: #4D94EA;
+}
+.logs_content #actions a {
+  color: #fff;
+  font-size: 12px;
+  text-decoration: none;
+}
+.logs_content #actions a:hover {
+  text-decoration: underline;
+}
+.logs_content #logs {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 0;
+  font-size: 11px;
+  font-family: courier;
+}

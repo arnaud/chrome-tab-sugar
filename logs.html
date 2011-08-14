@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+/**
+ * Copyright (c) 2010 Arnaud Leymet
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * Chrome Tab Sugar <http://github.com/arnaud/chrome-tab-sugar>
+ */
+-->
+
+<html>
+<head>
+  <title>Tab Sugar Logs</title>
+  <link href="css/style.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="js/lib/jquery.1.4.2.min.js" type="text/javascript"></script>
+</head>
+<body class="logs_content">
+  <script src="js/ga.js" type="text/javascript"></script>
+  <script src="js/bg/logs.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  function show_logs() {
+    get_logs(function(logs) {
+      if( $('#logs').text() !== logs) {
+        $('#logs').text(logs)
+      }
+    });
+    setTimeout(show_logs, 1000);
+  }
+  $(document).ready(show_logs);
+  </script>
+  <div id="actions">
+    <a href="javascript:remove_logs()">Flush</a>
+  </div>
+  <textarea id="logs">loading...</textarea>
+</body>
+</html>

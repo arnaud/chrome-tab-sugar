@@ -28,7 +28,7 @@
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   var interaction = request.action;
-  console.warn('Live interaction:', interaction, request);
+  console.log('Live interaction:', interaction, request);
 
   if(interaction == "open") {
     openDashboard();

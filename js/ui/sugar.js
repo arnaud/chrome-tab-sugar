@@ -115,6 +115,9 @@ $(function() {
   // the Options page opens as a modal popup
   $('#top .options').opensAsPopup();
 
+  // the Logs page opens as a modal popup
+  $('#top .logs').opensAsPopup();
+
   initUI();
 
   // disable right-click contextual menu
