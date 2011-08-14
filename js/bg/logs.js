@@ -98,7 +98,8 @@ var logs_locked = false;
 function write_to_logs(type, message) {
   var date = (new Date()).logFormat();
   var page = window.location.pathname.replace('/','').replace('.html','').toUpperCase();
-  if(page == "BACKGROUND") page = "BACKG";
+  if(page == "SUGAR") page = "UI";
+  if(page == "BACKGROUND") page = "BG";
   type = '['+type.toUpperCase()+']';
   for(var i = type.length; i < 7; i++) {
     type += ' '
