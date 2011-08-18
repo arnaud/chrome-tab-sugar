@@ -60,7 +60,7 @@ $(function() {
 
     // 2. The dashboard sends a request to the background page
     var gid = tab_ui.group().uid();
-    var index = tab_ui.indexWithinParent();
+    var index = tab_ui.indexWithinParent() + 1;
     chrome.extension.sendRequest({
       action: 'DI09', // Close a tab
       gid: gid,
