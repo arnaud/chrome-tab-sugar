@@ -1,4 +1,4 @@
-h1. Tab Sugar - the Google Chrome extension
+h1. Tab Sugar - the Google Chrome extension !http://stillmaintained.com/arnaud/chrome-tab-sugar.png!:http://stillmaintained.com/arnaud/chrome-tab-sugar
 
 h2. Features
 
